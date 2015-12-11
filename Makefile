@@ -5,8 +5,7 @@ LDFLAGS=$(shell pkg-config --libs-only-L --libs-only-other $(LIBS))
 CXXFLAGS=--std=c++11 -g -Wall -DGLM_FORCE_RADIANS $(shell pkg-config --cflags $(LIBS))
 BUILDDIR=build
 BINDIR=bin
-OBJ=$(addprefix $(BUILDDIR)/, Main.o BaseShaderProgram.o RenderShaderProgram.o \
-    RegistrablesContainer.o Camera.o)
+OBJ=$(patsubst src/%.cpp,$(BUILDDIR)/%.o,$(wildcard src/*.cpp))
 
 RM=rm -rf
 MKDIR=mkdir
