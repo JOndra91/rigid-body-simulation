@@ -1,0 +1,4 @@
+bin/
+build/
+nbproject/
+.clang_complete
