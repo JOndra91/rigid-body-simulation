@@ -35,37 +35,6 @@
 //--------------------------------------------------------------------------------------------------
 // q3ContactSolverCpu
 //--------------------------------------------------------------------------------------------------
-
-struct q3ContactState
-{
-	q3Vec3 ra;					// Vector from C.O.M to contact position
-	q3Vec3 rb;					// Vector from C.O.M to contact position
-	r32 penetration;			// Depth of penetration from collision
-	r32 normalImpulse;			// Accumulated normal impulse
-	r32 tangentImpulse[ 2 ];	// Accumulated friction impulse
-	r32 bias;					// Restitution + baumgarte
-	r32 normalMass;				// Normal constraint mass
-	r32 tangentMass[ 2 ];		// Tangent constraint mass
-};
-
-struct q3ContactConstraintState
-{
-	q3ContactState contacts[ 8 ];
-	i32 contactCount;
-	q3Vec3 tangentVectors[ 2 ];	// Tangent vectors
-	q3Vec3 normal;				// From A to B
-	q3Vec3 centerA;
-	q3Vec3 centerB;
-	q3Mat3 iA;
-	q3Mat3 iB;
-	r32 mA;
-	r32 mB;
-	r32 restitution;
-	r32 friction;
-	i32 indexA;
-	i32 indexB;
-};
-
 struct q3ContactSolverCpu : q3ContactSolver
 {
 	void Initialize( q3Island *island ) override;
