@@ -86,7 +86,17 @@ set(qu3e_hdr
 
 if(qu3e_use_gpu)
 	include_directories(${OPENCL_INCLUDE_DIR})
-  add_definitions(-DWITH_OCL)
+	add_definitions(-DWITH_OCL)
+
+	set(qu3e_dynamics_hdrs
+		${qu3e_dynamics_hdrs}
+		dynamics/q3ContactSolverCpu.cpp
+	)
+
+	set(qu3e_dynamics_srcs
+		${qu3e_dynamics_srcs}
+		dynamics/q3ContactSolverGpu.cpp
+	)
 endif()
 
 if(qu3e_build_shared)

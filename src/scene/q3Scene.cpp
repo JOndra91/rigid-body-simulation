@@ -82,11 +82,7 @@ void q3Scene::Step( )
 	island->m_bodies = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * m_bodyCount );
 	island->m_velocities = (q3VelocityState *)m_stack.Allocate( sizeof( q3VelocityState ) * m_bodyCount );
 	island->m_contacts = (q3ContactConstraint **)m_stack.Allocate( sizeof( q3ContactConstraint* ) * island->m_contactCapacity );
-#ifndef WITH_OCL
 	island->m_contactStates = (q3ContactConstraintState *)m_stack.Allocate( sizeof( q3ContactConstraintState ) * island->m_contactCapacity );
-#else // WITH_OCL
-#warning "Unimplemented OpenCL branch."
-#endif // WITH_OCL
 	island->m_allowSleep = m_allowSleep;
 	island->m_enableFriction = m_enableFriction;
 	island->m_bodyCount = 0;
