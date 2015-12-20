@@ -39,3 +39,7 @@ CmakeFiles/
 build/
 *.check_cache
 CMakeCache.txt
+nbproject/
+build_*/
+
+!cmake/**

@@ -83,6 +83,10 @@ set(qu3e_hdr
 	q3.h
 )
 
+if(qu3e_use_gpu)
+	include_directories(${OPENCL_INCLUDE_DIR})
+endif()
+
 if(qu3e_build_shared)
 	add_library(qu3e_shared SHARED
 		${qu3e_broadphase_srcs}
@@ -100,7 +104,7 @@ if(qu3e_build_shared)
 		${qu3e_scene_hdrs}
 		${qu3e_hdr}
 	)
-	
+
 	set_target_properties(qu3e_shared PROPERTIES
 		OUTPUT_NAME "qu3e"
 		CLEAN_DIRECT_OUTPUT 1
@@ -125,7 +129,7 @@ if(qu3e_build_static)
 		${qu3e_scene_hdrs}
 		${qu3e_hdr}
 	)
-	
+
 	set_target_properties(qu3e PROPERTIES
 		OUTPUT_NAME "qu3e"
 		CLEAN_DIRECT_OUTPUT 1
