@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------------------------------
 /**
-@file	q3Island.h
+@file	q3ContactSolverCpu.h
 
 @author	Randy Gaul
 @date	10/10/2014
@@ -24,56 +24,62 @@
 */
 //--------------------------------------------------------------------------------------------------
 
-#ifndef Q3ISLAND_H
-#define Q3ISLAND_H
+#ifndef Q3CONTACTSOLVERCPU_H
+#define Q3CONTACTSOLVERCPU_H
 
 #include "../math/q3Math.h"
-#include "../common/q3Geometry.h"
 #include "../common/q3Settings.h"
 #include "q3ContactSolver.h"
+#include "q3Island.h"
 
 //--------------------------------------------------------------------------------------------------
-// q3Island
+// q3ContactSolverCpu
 //--------------------------------------------------------------------------------------------------
-class q3BroadPhase;
-class q3Body;
-struct q3ContactConstraint;
-struct q3ContactConstraintState;
 
-struct q3VelocityState
+struct q3ContactState
 {
-	q3Vec3 w;
-	q3Vec3 v;
+	q3Vec3 ra;					// Vector from C.O.M to contact position
+	q3Vec3 rb;					// Vector from C.O.M to contact position
+	r32 penetration;			// Depth of penetration from collision
+	r32 normalImpulse;			// Accumulated normal impulse
+	r32 tangentImpulse[ 2 ];	// Accumulated friction impulse
+	r32 bias;					// Restitution + baumgarte
+	r32 normalMass;				// Normal constraint mass
+	r32 tangentMass[ 2 ];		// Tangent constraint mass
 };
 
-struct q3Island
+struct q3ContactConstraintState
 {
-	q3Island();
-	~q3Island();
+	q3ContactState contacts[ 8 ];
+	i32 contactCount;
+	q3Vec3 tangentVectors[ 2 ];	// Tangent vectors
+	q3Vec3 normal;				// From A to B
+	q3Vec3 centerA;
+	q3Vec3 centerB;
+	q3Mat3 iA;
+	q3Mat3 iB;
+	r32 mA;
+	r32 mB;
+	r32 restitution;
+	r32 friction;
+	i32 indexA;
+	i32 indexB;
+};
 
-	void Solve( );
-	void Add( q3Body *body );
-	void Add( q3ContactConstraint *contact );
-	void Initialize( );
+struct q3ContactSolverCpu : q3ContactSolver
+{
+	void Initialize( q3Island *island ) override;
+	void ShutDown( void ) override;
 
-	q3ContactSolver *m_solver;
+	void PreSolve( r32 dt ) override;
+	void Solve( void ) override;
 
-	q3Body **m_bodies;
-	q3VelocityState *m_velocities;
-	i32 m_bodyCapacity;
-	i32 m_bodyCount;
-
-	q3ContactConstraint **m_contacts;
-	q3ContactConstraintState *m_contactStates;
+	q3Island *m_island;
+	q3ContactConstraintState *m_contacts;
 	i32 m_contactCount;
-	i32 m_contactCapacity;
+	q3VelocityState *m_velocities;
 
-	r32 m_dt;
-	q3Vec3 m_gravity;
-	i32 m_iterations;
-
-	bool m_allowSleep;
 	bool m_enableFriction;
 };
 
-#endif // Q3ISLAND_H
+#endif // Q3CONTACTSOLVERCPU_H

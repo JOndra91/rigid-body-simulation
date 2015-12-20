@@ -30,6 +30,7 @@
 #include "../common/q3Settings.h"
 #include "../common/q3Memory.h"
 #include "../dynamics/q3ContactManager.h"
+#include "../dynamics/q3Island.h"
 
 //--------------------------------------------------------------------------------------------------
 // q3Scene
@@ -149,6 +150,7 @@ public:
 private:
 	q3ContactManager m_contactManager;
 	q3PagedAllocator m_boxAllocator;
+	q3Island m_island;
 
 	i32 m_bodyCount;
 	q3Body* m_bodyList;

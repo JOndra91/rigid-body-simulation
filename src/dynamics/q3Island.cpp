@@ -23,11 +23,13 @@
 	  3. This notice may not be removed or altered from any source distribution.
 */
 //--------------------------------------------------------------------------------------------------
+#include <cassert>
 
 #include "q3Island.h"
 #include "q3Body.h"
 #include "../common/q3Memory.h"
 #include "q3ContactSolver.h"
+#include "q3ContactSolverCpu.h"
 #include "../common/q3Settings.h"
 #include "../broadphase/q3BroadPhase.h"
 #include "q3Contact.h"
@@ -35,8 +37,25 @@
 //--------------------------------------------------------------------------------------------------
 // q3Island
 //--------------------------------------------------------------------------------------------------
+q3Island::q3Island()
+{
+#ifndef WITH_OCL
+	m_solver = new q3ContactSolverCpu;
+#else // WITH_OCL
+	m_solver = NULL;
+#warning "Unimplemented OpenCL branch."
+#endif // WITH_OCL
+}
+//--------------------------------------------------------------------------------------------------
+q3Island::~q3Island()
+{
+	delete m_solver;
+}
+//--------------------------------------------------------------------------------------------------
 void q3Island::Solve( )
 {
+	assert( m_solver != NULL );
+
 	// Apply gravity
 	// Integrate velocities and create state buffers, calculate world inertia
 	for ( i32 i = 0 ; i < m_bodyCount; ++i )
@@ -74,15 +93,15 @@ void q3Island::Solve( )
 
 	// Create contact solver, pass in state buffers, create buffers for contacts
 	// Initialize velocity constraint for normal + friction and warm start
-	q3ContactSolver contactSolver;
-	contactSolver.Initialize( this );
-	contactSolver.PreSolve( m_dt );
+	q3ContactSolver *contactSolver = m_solver;
+	contactSolver->Initialize( this );
+	contactSolver->PreSolve( m_dt );
 
 	// Solve contacts
 	for ( i32 i = 0; i < m_iterations; ++i )
-		contactSolver.Solve( );
+		contactSolver->Solve( );
 
-	contactSolver.ShutDown( );
+	contactSolver->ShutDown( );
 
 	// Copy back state buffers
 	// Integrate positions

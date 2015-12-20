@@ -41,7 +41,7 @@ set(qu3e_dynamics_srcs
 	dynamics/q3Body.cpp
 	dynamics/q3Contact.cpp
 	dynamics/q3ContactManager.cpp
-	dynamics/q3ContactSolver.cpp
+	dynamics/q3ContactSolverCpu.cpp
 	dynamics/q3Island.cpp
 )
 
@@ -50,6 +50,7 @@ set(qu3e_dynamics_hdrs
 	dynamics/q3Contact.h
 	dynamics/q3ContactManager.h
 	dynamics/q3ContactSolver.h
+	dynamics/q3ContactSolverCpu.h
 	dynamics/q3Island.h
 )
 
@@ -85,6 +86,7 @@ set(qu3e_hdr
 
 if(qu3e_use_gpu)
 	include_directories(${OPENCL_INCLUDE_DIR})
+  add_definitions(-DWITH_OCL)
 endif()
 
 if(qu3e_build_shared)

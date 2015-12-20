@@ -32,6 +32,7 @@
 #include "../dynamics/q3Contact.h"
 #include "../dynamics/q3Island.h"
 #include "../dynamics/q3ContactSolver.h"
+#include "../dynamics/q3ContactSolverCpu.h"
 #include "../collision/q3Box.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -75,20 +76,24 @@ void q3Scene::Step( )
 		c->m_flags &= ~q3ContactConstraint::eIsland;
 
 	// Size the stack island, pick worst case size
-	q3Island island;
-	island.m_bodyCapacity = m_bodyCount;
-	island.m_contactCapacity = m_contactManager.m_contactCount;
-	island.m_bodies = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * m_bodyCount );
-	island.m_velocities = (q3VelocityState *)m_stack.Allocate( sizeof( q3VelocityState ) * m_bodyCount );
-	island.m_contacts = (q3ContactConstraint **)m_stack.Allocate( sizeof( q3ContactConstraint* ) * island.m_contactCapacity );
-	island.m_contactStates = (q3ContactConstraintState *)m_stack.Allocate( sizeof( q3ContactConstraintState ) * island.m_contactCapacity );
-	island.m_allowSleep = m_allowSleep;
-	island.m_enableFriction = m_enableFriction;
-	island.m_bodyCount = 0;
-	island.m_contactCount = 0;
-	island.m_dt = m_dt;
-	island.m_gravity = m_gravity;
-	island.m_iterations = m_iterations;
+	q3Island *island = &m_island;
+	island->m_bodyCapacity = m_bodyCount;
+	island->m_contactCapacity = m_contactManager.m_contactCount;
+	island->m_bodies = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * m_bodyCount );
+	island->m_velocities = (q3VelocityState *)m_stack.Allocate( sizeof( q3VelocityState ) * m_bodyCount );
+	island->m_contacts = (q3ContactConstraint **)m_stack.Allocate( sizeof( q3ContactConstraint* ) * island->m_contactCapacity );
+#ifndef WITH_OCL
+	island->m_contactStates = (q3ContactConstraintState *)m_stack.Allocate( sizeof( q3ContactConstraintState ) * island->m_contactCapacity );
+#else // WITH_OCL
+#warning "Unimplemented OpenCL branch."
+#endif // WITH_OCL
+	island->m_allowSleep = m_allowSleep;
+	island->m_enableFriction = m_enableFriction;
+	island->m_bodyCount = 0;
+	island->m_contactCount = 0;
+	island->m_dt = m_dt;
+	island->m_gravity = m_gravity;
+	island->m_iterations = m_iterations;
 
 	// Build each active island and then solve each built island
 	i32 stackSize = m_bodyCount;
@@ -110,8 +115,8 @@ void q3Scene::Step( )
 
 		i32 stackCount = 0;
 		stack[ stackCount++ ] = seed;
-		island.m_bodyCount = 0;
-		island.m_contactCount = 0;
+		island->m_bodyCount = 0;
+		island->m_contactCount = 0;
 
 		// Mark seed as apart of island
 		seed->m_flags |= q3Body::eIsland;
@@ -121,7 +126,7 @@ void q3Scene::Step( )
 		{
 			// Decrement stack to implement iterative backtracking
 			q3Body *body = stack[ --stackCount ];
-			island.Add( body );
+			island->Add( body );
 
 			// Awaken all bodies connected to the island
 			body->SetToAwake( );
@@ -153,7 +158,7 @@ void q3Scene::Step( )
 
 				// Mark island flag and add to island
 				contact->m_flags |= q3ContactConstraint::eIsland;
-				island.Add( contact );
+				island->Add( contact );
 
 				// Attempt to add the other body in the contact to the island
 				// to simulate contact awakening propogation
@@ -168,16 +173,16 @@ void q3Scene::Step( )
 			}
 		}
 
-		assert( island.m_bodyCount != 0 );
+		assert( island->m_bodyCount != 0 );
 
-		island.Initialize( );
-		island.Solve( );
+		island->Initialize( );
+		island->Solve( );
 
 		// Reset all static island flags
 		// This allows static bodies to participate in other island formations
-		for ( i32 i = 0; i < island.m_bodyCount; i++ )
+		for ( i32 i = 0; i < island->m_bodyCount; i++ )
 		{
-			q3Body *body = island.m_bodies[ i ];
+			q3Body *body = island->m_bodies[ i ];
 
 			if ( body->m_flags & q3Body::eStatic )
 				body->m_flags &= ~q3Body::eIsland;
@@ -185,10 +190,10 @@ void q3Scene::Step( )
 	}
 
 	m_stack.Free( stack );
-	m_stack.Free( island.m_contactStates );
-	m_stack.Free( island.m_contacts );
-	m_stack.Free( island.m_velocities );
-	m_stack.Free( island.m_bodies );
+	m_stack.Free( island->m_contactStates );
+	m_stack.Free( island->m_contacts );
+	m_stack.Free( island->m_velocities );
+	m_stack.Free( island->m_bodies );
 
 	// Update the broadphase AABBs
 	for ( q3Body* body = m_bodyList; body; body = body->m_next )
@@ -424,7 +429,7 @@ void q3Scene::RayCast( q3QueryCallback *cb, q3RaycastData& rayCast ) const
 		const q3BroadPhase *broadPhase;
 		q3RaycastData *m_rayCast;
 	};
-	
+
 	SceneQueryWrapper wrapper;
 	wrapper.m_rayCast = &rayCast;
 	wrapper.broadPhase = &m_contactManager.m_broadphase;

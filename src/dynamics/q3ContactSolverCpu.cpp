@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------------------------------
 /**
-@file	q3ContactSolver.cpp
+@file	q3ContactSolverCpu.cpp
 
 @author	Randy Gaul
 @date	10/10/2014
@@ -25,6 +25,7 @@
 //--------------------------------------------------------------------------------------------------
 
 #include "q3ContactSolver.h"
+#include "q3ContactSolverCpu.h"
 #include "q3Contact.h"
 #include "q3Island.h"
 #include "../common/q3Memory.h"
@@ -33,19 +34,19 @@
 #include "../common/q3Settings.h"
 
 //--------------------------------------------------------------------------------------------------
-// q3ContactSolver
+// q3ContactSolverCpu
 //--------------------------------------------------------------------------------------------------
-void q3ContactSolver::Initialize( q3Island *island )
+void q3ContactSolverCpu::Initialize( q3Island *island )
 {
 	m_island = island;
 	m_contactCount = island->m_contactCount;
-	m_contacts = island->m_contactStates;
+	m_contacts = (q3ContactConstraintState*)(island->m_contactStates);
 	m_velocities = m_island->m_velocities;
 	m_enableFriction = island->m_enableFriction;
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3ContactSolver::ShutDown( void )
+void q3ContactSolverCpu::ShutDown( void )
 {
 	for ( i32 i = 0; i < m_contactCount; ++i )
 	{
@@ -64,7 +65,7 @@ void q3ContactSolver::ShutDown( void )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3ContactSolver::PreSolve( r32 dt )
+void q3ContactSolverCpu::PreSolve( r32 dt )
 {
 	for ( i32 i = 0; i < m_contactCount; ++i )
 	{
@@ -131,7 +132,7 @@ void q3ContactSolver::PreSolve( r32 dt )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3ContactSolver::Solve( )
+void q3ContactSolverCpu::Solve( )
 {
 	for ( i32 i = 0; i < m_contactCount; ++i )
 	{
