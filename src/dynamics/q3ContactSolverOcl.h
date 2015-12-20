@@ -47,6 +47,8 @@ struct q3ContactSolverOcl : q3ContactSolver
 	void PreSolve( r32 dt ) override;
 	void Solve( void ) override;
 
+	cl::Context m_clContext;
+
 	q3Island *m_island;
 	q3ContactConstraintState *m_contacts;
 	i32 m_contactCount;

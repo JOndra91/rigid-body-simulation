@@ -13,6 +13,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
+if(qu3e_use_gpu)
+  add_subdirectory(oclUtils)
+  set(OCL-Utilities_DIR ${CMAKE_BINARY_DIR}/oclUtils)
+  find_package(OCL-Utilities REQUIRED)
+endif()
+
 add_subdirectory(src)
 
 if(qu3e_build_demo)
@@ -20,10 +26,4 @@ if(qu3e_build_demo)
   add_subdirectory(freeglut)
   add_subdirectory(demo)
   add_subdirectory(imgui)
-endif()
-
-if(qu3e_use_gpu)
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules)
-  find_package( OpenCL REQUIRED)
-  add_subdirectory(oclUtils)
 endif()

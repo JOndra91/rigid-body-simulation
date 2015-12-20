@@ -85,7 +85,7 @@ set(qu3e_hdr
 )
 
 if(qu3e_use_gpu)
-	include_directories(${OPENCL_INCLUDE_DIR})
+	include_directories(${OPENCL_INCLUDE_DIR} ${OCL-Utilities_INCLUDE_DIRS})
 	add_definitions(-DWITH_OCL)
 
 	set(qu3e_dynamics_hdrs
@@ -122,6 +122,10 @@ if(qu3e_build_shared)
 		CLEAN_DIRECT_OUTPUT 1
 		VERSION ${qu3e_version}
 	)
+
+	if(qu3e_use_gpu)
+		target_link_libraries(qu3e_shared OCL-Utilities)
+	endif()
 endif()
 
 if(qu3e_build_static)
@@ -147,6 +151,11 @@ if(qu3e_build_static)
 		CLEAN_DIRECT_OUTPUT 1
 		VERSION ${qu3e_version}
 	)
+
+	if(qu3e_use_gpu)
+		target_link_libraries(qu3e OCL-Utilities)
+	endif()
+
 endif()
 
 source_group(broadphase FILES ${qu3e_broadphase_srcs} ${qu3e_broadphase_hdrs})
