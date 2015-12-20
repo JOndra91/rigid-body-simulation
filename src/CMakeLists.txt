@@ -90,12 +90,12 @@ if(qu3e_use_gpu)
 
 	set(qu3e_dynamics_hdrs
 		${qu3e_dynamics_hdrs}
-		dynamics/q3ContactSolverCpu.cpp
+		dynamics/q3ContactSolverOcl.h
 	)
 
 	set(qu3e_dynamics_srcs
 		${qu3e_dynamics_srcs}
-		dynamics/q3ContactSolverGpu.cpp
+		dynamics/q3ContactSolverOcl.cpp
 	)
 endif()
 

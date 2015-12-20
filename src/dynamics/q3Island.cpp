@@ -30,7 +30,7 @@
 #include "../common/q3Memory.h"
 #include "q3ContactSolver.h"
 #include "q3ContactSolverCpu.h"
-#include "q3ContactSolverGpu.h"
+#include "q3ContactSolverOcl.h"
 #include "../common/q3Settings.h"
 #include "../broadphase/q3BroadPhase.h"
 #include "q3Contact.h"
@@ -43,7 +43,7 @@ q3Island::q3Island()
 #ifndef WITH_OCL
 	m_solver = new q3ContactSolverCpu;
 #else // WITH_OCL
-	m_solver = new q3ContactSolverGpu;
+	m_solver = new q3ContactSolverOcl;
 #endif // WITH_OCL
 }
 //--------------------------------------------------------------------------------------------------

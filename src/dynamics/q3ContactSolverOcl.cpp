@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------------------------------
 /**
-@file	q3ContactSolverGpu.cpp
+@file	q3ContactSolverOcl.cpp
 
 @author	Randy Gaul
 @date	10/10/2014
@@ -24,8 +24,11 @@
 */
 //--------------------------------------------------------------------------------------------------
 
+#include <CL/cl.hpp>
+#include <openCLUtilities.hpp>
+
 #include "q3ContactSolver.h"
-#include "q3ContactSolverGpu.h"
+#include "q3ContactSolverOcl.h"
 #include "q3Contact.h"
 #include "q3Island.h"
 #include "../common/q3Memory.h"
@@ -34,9 +37,9 @@
 #include "../common/q3Settings.h"
 
 //--------------------------------------------------------------------------------------------------
-// q3ContactSolverGpu
+// q3ContactSolverOcl
 //--------------------------------------------------------------------------------------------------
-void q3ContactSolverGpu::Initialize( q3Island *island )
+void q3ContactSolverOcl::Initialize( q3Island *island )
 {
 	m_island = island;
 	m_contactCount = island->m_contactCount;
@@ -46,7 +49,7 @@ void q3ContactSolverGpu::Initialize( q3Island *island )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3ContactSolverGpu::ShutDown( void )
+void q3ContactSolverOcl::ShutDown( void )
 {
 	for ( i32 i = 0; i < m_contactCount; ++i )
 	{
@@ -65,7 +68,7 @@ void q3ContactSolverGpu::ShutDown( void )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3ContactSolverGpu::PreSolve( r32 dt )
+void q3ContactSolverOcl::PreSolve( r32 dt )
 {
 	for ( i32 i = 0; i < m_contactCount; ++i )
 	{
@@ -132,7 +135,7 @@ void q3ContactSolverGpu::PreSolve( r32 dt )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3ContactSolverGpu::Solve( )
+void q3ContactSolverOcl::Solve( )
 {
 	for ( i32 i = 0; i < m_contactCount; ++i )
 	{

@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------------------------------
 /**
-@file	q3ContactSolverGpu.h
+@file	q3ContactSolverOcl.h
 
 @author	Randy Gaul
 @date	10/10/2014
@@ -24,8 +24,10 @@
 */
 //--------------------------------------------------------------------------------------------------
 
-#ifndef Q3CONTACTSOLVERGPU_H
-#define Q3CONTACTSOLVERGPU_H
+#ifndef Q3CONTACTSOLVEROCL_H
+#define Q3CONTACTSOLVEROCL_H
+
+#include <CL/cl.hpp>
 
 #include "../math/q3Math.h"
 #include "../common/q3Settings.h"
@@ -33,10 +35,12 @@
 #include "q3Island.h"
 
 //--------------------------------------------------------------------------------------------------
-// q3ContactSolverGpu
+// q3ContactSolverOcl
 //--------------------------------------------------------------------------------------------------
-struct q3ContactSolverGpu : q3ContactSolver
+struct q3ContactSolverOcl : q3ContactSolver
 {
+	q3ContactSolverOcl();
+
 	void Initialize( q3Island *island ) override;
 	void ShutDown( void ) override;
 
@@ -51,4 +55,4 @@ struct q3ContactSolverGpu : q3ContactSolver
 	bool m_enableFriction;
 };
 
-#endif // Q3CONTACTSOLVERGPU_H
+#endif // Q3CONTACTSOLVEROCL_H
