@@ -40,7 +40,7 @@ void q3ContactSolverCpu::Initialize( q3Island *island )
 {
 	m_island = island;
 	m_contactCount = island->m_contactCount;
-	m_contacts = (q3ContactConstraintState*)(island->m_contactStates);
+	m_contacts = island->m_contactStates;
 	m_velocities = m_island->m_velocities;
 	m_enableFriction = island->m_enableFriction;
 }
