@@ -28,6 +28,7 @@
 #define Q3CONTACTSOLVEROCL_H
 
 #include <CL/cl.hpp>
+#include <openCLUtilities.hpp>
 
 #include "../math/q3Math.h"
 #include "../common/q3Settings.h"
