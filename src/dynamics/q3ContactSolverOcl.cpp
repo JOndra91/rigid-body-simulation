@@ -222,6 +222,24 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
 
         // TODO: Copy data to OpenCL buffers and prepare batches
 
+        m_clBufferBodyInfo = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE, sizeof(q3BodyInfoOcl) * m_island->m_bodyCount, m_clBodyInfos);
+        m_clBufferVelocity = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityState) * m_island->m_bodyCount, m_velocities);
+        m_clBufferContactInfo = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY, sizeof(q3ContactInfoOcl) * m_clContactCount, m_clContactInfos);
+        m_clBufferContactState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE, sizeof(q3ContactStateOcl) * m_clContactStateCount, m_clContactStates);
+        m_clBufferContactConstraintState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_clContactConstraints);
+
+        m_clGC.addMemObject(m_clBufferBodyInfo);
+        m_clGC.addMemObject(m_clBufferVelocity);
+        m_clGC.addMemObject(m_clBufferContactInfo);
+        m_clGC.addMemObject(m_clBufferContactState);
+        m_clGC.addMemObject(m_clBufferContactConstraintState);
+
+        m_clQueue.enqueueWriteBuffer(*m_clBufferBodyInfo, false, 0, sizeof(q3BodyInfoOcl) * m_island->m_bodyCount, m_clBodyInfos, NULL, NULL);
+        m_clQueue.enqueueWriteBuffer(*m_clBufferVelocity, false, 0, sizeof(q3VelocityState) * m_island->m_bodyCount, m_velocities, NULL, NULL);
+        m_clQueue.enqueueWriteBuffer(*m_clBufferContactInfo, false, 0, sizeof(q3ContactInfoOcl) * m_clContactCount, m_clContactInfos, NULL, NULL);
+        m_clQueue.enqueueWriteBuffer(*m_clBufferContactState, false, 0, sizeof(q3ContactStateOcl) * m_clContactStateCount, m_clContactStates, NULL, NULL);
+        m_clQueue.enqueueWriteBuffer(*m_clBufferContactConstraintState, false, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_clContactConstraints, NULL, NULL);
+
         // TODO: Copy batches to OpenCL
     }
 }
