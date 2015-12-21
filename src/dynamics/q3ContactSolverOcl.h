@@ -34,6 +34,33 @@
 #include "q3ContactSolver.h"
 #include "q3Island.h"
 
+
+typedef q3ContactState q3ContactStateOcl;
+
+struct q3BodyInfoOcl
+{
+    q3Vec3 center;
+	q3Mat3 i;                   // Inverse inertia tensor
+	r32 m;                      // Inverse mass
+};
+
+struct q3ContactConstraintStateOcl
+{
+	q3Vec3 tangentVectors[ 2 ];	// Tangent vectors
+	q3Vec3 normal;              // From A to B
+	r32 restitution;
+	r32 friction;
+};
+
+struct q3ContactInfoOcl
+{
+    i32 contactStateIndex;
+    i32 contactConstraintStateIndex;
+    i32 vIndex;                 // Index to velocity and bodyInfo arrays
+    // It's possible to determine according to index (starting with 0: even - A, odd - B)
+    //i32 isA;                   // Whether it's A or B, so we can use correct normal
+};
+
 //--------------------------------------------------------------------------------------------------
 // q3ContactSolverOcl
 //--------------------------------------------------------------------------------------------------
@@ -47,14 +74,31 @@ struct q3ContactSolverOcl : q3ContactSolver
 	void PreSolve( r32 dt ) override;
 	void Solve( void ) override;
 
-	cl::Context m_clContext;
-
 	q3Island *m_island;
 	q3ContactConstraintState *m_contacts;
 	i32 m_contactCount;
 	q3VelocityState *m_velocities;
 
 	bool m_enableFriction;
+
+    //-----------------------------------------------------------
+    // Properties for OpenCL acceleration
+    //-----------------------------------------------------------
+    cl::Context m_clContext;
+    cl::CommandQueue m_clQueue;
+    cl::Buffer *m_clBufferVelocity;
+    cl::Buffer *m_clBufferBodyInfo;
+    cl::Buffer *m_clBufferContactInfo;
+    cl::Buffer *m_clBufferContactState;
+    cl::Buffer *m_clBufferContactConstraintState;
+    GarbageCollector m_clGC;
+
+    q3ContactConstraintStateOcl *m_clContactConstraints;
+    q3ContactStateOcl *m_clContactStates;
+    q3BodyInfoOcl *m_clBodyInfos;
+    q3ContactInfoOcl *m_clContactInfos;
+
+    i32 m_clContactCount;
 };
 
 #endif // Q3CONTACTSOLVEROCL_H

@@ -26,6 +26,7 @@
 
 #include <CL/cl.hpp>
 #include <openCLUtilities.hpp>
+#include <iostream>
 
 #include "q3ContactSolver.h"
 #include "q3ContactSolverOcl.h"
@@ -36,12 +37,32 @@
 #include "../common/q3Geometry.h"
 #include "../common/q3Settings.h"
 
+#define assert_aligned(type) assert(sizeof(type) % 4 == 0)
+
+// Number of contacts needed for acceleration using OpenCL
+#define ACCELERATION_THRESHOLD 64
+#define PASSED_ACC_THRESHOLD (m_contactCount >= ACCELERATION_THRESHOLD)
+
+#define copyBodyInfo(dest, src, sel) do { \
+    dest[src->index ## sel].center = src->center ## sel; \
+    dest[src->index ## sel].i = src->i ## sel; \
+    dest[src->index ## sel].m = src->m ## sel; \
+} while(0)
+
 //--------------------------------------------------------------------------------------------------
 // q3ContactSolverOcl
 //--------------------------------------------------------------------------------------------------
 q3ContactSolverOcl::q3ContactSolverOcl()
 {
+    assert(sizeof(q3Vec3) == (sizeof(float) * 3));
+    assert_aligned(q3ContactStateOcl);
+    assert_aligned(q3ContactConstraintStateOcl);
+    assert_aligned(q3ContactInfoOcl);
+    assert_aligned(q3BodyInfoOcl);
+
 	m_clContext = createCLContext(CL_DEVICE_TYPE_CPU);
+    m_clQueue = cl::CommandQueue(m_clContext);
+    // TODO: Load program
 }
 //--------------------------------------------------------------------------------------------------
 void q3ContactSolverOcl::Initialize( q3Island *island )
@@ -51,6 +72,11 @@ void q3ContactSolverOcl::Initialize( q3Island *island )
 	m_contacts = island->m_contactStates;
 	m_velocities = m_island->m_velocities;
 	m_enableFriction = island->m_enableFriction;
+
+    m_clContactStates = NULL;
+    m_clContactInfos = NULL;
+    m_clBodyInfos = NULL;
+    m_clContactConstraints = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -70,6 +96,13 @@ void q3ContactSolverOcl::ShutDown( void )
 			oc->tangentImpulse[ 1 ] = cs->tangentImpulse[ 1 ];
 		}
 	}
+
+    delete[] m_clContactStates;
+    delete[] m_clContactInfos;
+    delete[] m_clBodyInfos;
+    delete[] m_clContactConstraints;
+
+    m_clGC.deleteAllMemObjects();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -137,80 +170,141 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
 		m_velocities[ cs->indexB ].v = vB;
 		m_velocities[ cs->indexB ].w = wB;
 	}
+
+    if(PASSED_ACC_THRESHOLD) {
+        // Reorganize data for OpenCL
+        //---------------------------
+        m_clContactCount = 0;
+
+        for(i32 i = 0; i < m_contactCount; i++) {
+            m_clContactCount += m_contacts[i].contactCount;
+        }
+
+        m_clContactStates = new q3ContactStateOcl[m_clContactCount];
+
+        m_clContactCount *= 2; // Contacts are duplicated for both bodies
+
+        m_clContactInfos = new q3ContactInfoOcl[m_clContactCount];
+        m_clBodyInfos = new q3BodyInfoOcl[m_island->m_bodyCount];
+        m_clContactConstraints = new q3ContactConstraintStateOcl[m_contactCount];
+
+        q3ContactStateOcl *s = m_clContactStates;
+        q3ContactInfoOcl *ci = m_clContactInfos;
+        i32 idx = 0;
+        for(i32 i = 0; i < m_contactCount; i++) {
+            q3ContactConstraintStateOcl *ccso = m_clContactConstraints+i;
+            q3ContactConstraintState *ccs = m_contacts + i;
+
+            copyBodyInfo(m_clBodyInfos, ccs, A);
+            copyBodyInfo(m_clBodyInfos, ccs, B);
+
+            ccso->friction = ccs->friction;
+            ccso->normal = ccs->normal;
+            ccso->restitution = ccs->restitution;
+            ccso->tangentVectors[0] = ccs->tangentVectors[0];
+            ccso->tangentVectors[1] = ccs->tangentVectors[1];
+
+            for(i32 j = 0; j < ccs->contactCount; j++)
+            {
+                m_clContactStates[idx] = ccs->contacts[j];
+
+                ci->contactConstraintStateIndex = i;
+                ci->contactStateIndex = idx;
+                ci->vIndex = ccs->indexA;
+                ci++;
+
+                ci->contactConstraintStateIndex = i;
+                ci->contactStateIndex = idx;
+                ci->vIndex = ccs->indexA;
+                ci++;
+            }
+        }
+
+        // TODO: Copy data to OpenCL buffers and prepare batches
+
+        // TODO: Copy batches to OpenCL
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3ContactSolverOcl::Solve( )
 {
-	for ( i32 i = 0; i < m_contactCount; ++i )
-	{
-		q3ContactConstraintState *cs = m_contacts + i;
+    if(PASSED_ACC_THRESHOLD) {
 
-		q3Vec3 vA = m_velocities[ cs->indexA ].v;
-		q3Vec3 wA = m_velocities[ cs->indexA ].w;
-		q3Vec3 vB = m_velocities[ cs->indexB ].v;
-		q3Vec3 wB = m_velocities[ cs->indexB ].w;
+    }
+    else
+    {
 
-		for ( i32 j = 0; j < cs->contactCount; ++j )
-		{
-			q3ContactState *c = cs->contacts + j;
+        for ( i32 i = 0; i < m_contactCount; ++i )
+        {
+            q3ContactConstraintState *cs = m_contacts + i;
 
-			// relative velocity at contact
-			q3Vec3 dv = vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra );
+            q3Vec3 vA = m_velocities[ cs->indexA ].v;
+            q3Vec3 wA = m_velocities[ cs->indexA ].w;
+            q3Vec3 vB = m_velocities[ cs->indexB ].v;
+            q3Vec3 wB = m_velocities[ cs->indexB ].w;
 
-			// Friction
-			if ( m_enableFriction )
-			{
-				for ( i32 i = 0; i < 2; ++i )
-				{
-					r32 lambda = -q3Dot( dv, cs->tangentVectors[ i ] ) * c->tangentMass[ i ];
+            for ( i32 j = 0; j < cs->contactCount; ++j )
+            {
+                q3ContactState *c = cs->contacts + j;
 
-					// Calculate frictional impulse
-					r32 maxLambda = cs->friction * c->normalImpulse;
+                // relative velocity at contact
+                q3Vec3 dv = vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra );
 
-					// Clamp frictional impulse
-					r32 oldPT = c->tangentImpulse[ i ];
-					c->tangentImpulse[ i ] = q3Clamp( -maxLambda, maxLambda, oldPT + lambda );
-					lambda = c->tangentImpulse[ i ] - oldPT;
+                // Friction
+                if ( m_enableFriction )
+                {
+                    for ( i32 i = 0; i < 2; ++i )
+                    {
+                        r32 lambda = -q3Dot( dv, cs->tangentVectors[ i ] ) * c->tangentMass[ i ];
 
-					// Apply friction impulse
-					q3Vec3 impulse = cs->tangentVectors[ i ] * lambda;
-					vA -= impulse * cs->mA;
-					wA -= cs->iA * q3Cross( c->ra, impulse );
+                        // Calculate frictional impulse
+                        r32 maxLambda = cs->friction * c->normalImpulse;
 
-					vB += impulse * cs->mB;
-					wB += cs->iB * q3Cross( c->rb, impulse );
-				}
-			}
+                        // Clamp frictional impulse
+                        r32 oldPT = c->tangentImpulse[ i ];
+                        c->tangentImpulse[ i ] = q3Clamp( -maxLambda, maxLambda, oldPT + lambda );
+                        lambda = c->tangentImpulse[ i ] - oldPT;
 
-			// Normal
-			{
-				dv = vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra );
+                        // Apply friction impulse
+                        q3Vec3 impulse = cs->tangentVectors[ i ] * lambda;
+                        vA -= impulse * cs->mA;
+                        wA -= cs->iA * q3Cross( c->ra, impulse );
 
-				// Normal impulse
-				r32 vn = q3Dot( dv, cs->normal );
+                        vB += impulse * cs->mB;
+                        wB += cs->iB * q3Cross( c->rb, impulse );
+                    }
+                }
 
-				// Factor in positional bias to calculate impulse scalar j
-				r32 lambda = c->normalMass * (-vn + c->bias);
+                // Normal
+                {
+                    dv = vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra );
 
-				// Clamp impulse
-				r32 tempPN = c->normalImpulse;
-				c->normalImpulse = q3Max( tempPN + lambda, r32( 0.0 ) );
-				lambda = c->normalImpulse - tempPN;
+                    // Normal impulse
+                    r32 vn = q3Dot( dv, cs->normal );
 
-				// Apply impulse
-				q3Vec3 impulse = cs->normal * lambda;
-				vA -= impulse * cs->mA;
-				wA -= cs->iA * q3Cross( c->ra, impulse );
+                    // Factor in positional bias to calculate impulse scalar j
+                    r32 lambda = c->normalMass * (-vn + c->bias);
 
-				vB += impulse * cs->mB;
-				wB += cs->iB * q3Cross( c->rb, impulse );
-			}
-		}
+                    // Clamp impulse
+                    r32 tempPN = c->normalImpulse;
+                    c->normalImpulse = q3Max( tempPN + lambda, r32( 0.0 ) );
+                    lambda = c->normalImpulse - tempPN;
 
-		m_velocities[ cs->indexA ].v = vA;
-		m_velocities[ cs->indexA ].w = wA;
-		m_velocities[ cs->indexB ].v = vB;
-		m_velocities[ cs->indexB ].w = wB;
-	}
+                    // Apply impulse
+                    q3Vec3 impulse = cs->normal * lambda;
+                    vA -= impulse * cs->mA;
+                    wA -= cs->iA * q3Cross( c->ra, impulse );
+
+                    vB += impulse * cs->mB;
+                    wB += cs->iB * q3Cross( c->rb, impulse );
+                }
+            }
+
+            m_velocities[ cs->indexA ].v = vA;
+            m_velocities[ cs->indexA ].w = wA;
+            m_velocities[ cs->indexB ].v = vB;
+            m_velocities[ cs->indexB ].w = wB;
+        }
+    }
 }
