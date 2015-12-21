@@ -27,6 +27,8 @@
 #include <CL/cl.hpp>
 #include <openCLUtilities.hpp>
 #include <iostream>
+#include <vector>
+#include <set>
 
 #include "q3ContactSolver.h"
 #include "q3ContactSolverOcl.h"
@@ -239,6 +241,45 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
         m_clQueue.enqueueWriteBuffer(*m_clBufferContactInfo, false, 0, sizeof(q3ContactInfoOcl) * m_clContactCount, m_clContactInfos, NULL, NULL);
         m_clQueue.enqueueWriteBuffer(*m_clBufferContactState, false, 0, sizeof(q3ContactStateOcl) * m_clContactStateCount, m_clContactStates, NULL, NULL);
         m_clQueue.enqueueWriteBuffer(*m_clBufferContactConstraintState, false, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_clContactConstraints, NULL, NULL);
+
+
+        std::vector<i32> bodyAllocationTable(m_island->m_bodyCount, -1);
+        std::set<i32> contactsToPlan;
+
+        for(i32 i = 0; i < m_clContactCount; i++) {
+            contactsToPlan.insert(i);
+        }
+
+        std::vector<i32> batches;
+        std::vector<i32> batchSizes;
+
+        batches.reserve(m_clContactCount);
+
+        i32 batchIndex = 0;
+        i32 batchOffset = 0;
+        do
+        {
+
+            for(i32 c : contactsToPlan) {
+                i32 idx = m_clContactInfos[c].vIndex;
+                if(bodyAllocationTable[idx] < batchIndex)
+                {
+                    bodyAllocationTable[idx] = batchIndex;
+                    contactsToPlan.erase(c);
+                    batches.push_back(c);
+                }
+            }
+
+            //std::cout << "Batch size:" << batches.size() - batchOffset << std::endl;
+            batchSizes.push_back(batches.size() - batchOffset);
+            batchOffset = batches.size();
+
+            batchIndex++;
+
+        } while(!contactsToPlan.empty());
+
+        //std::cout << "Batches:" << batchSizes.size() << std::endl;
+
 
         // TODO: Copy batches to OpenCL
     }
