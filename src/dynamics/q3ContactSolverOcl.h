@@ -99,6 +99,7 @@ struct q3ContactSolverOcl : q3ContactSolver
     q3ContactInfoOcl *m_clContactInfos;
 
     i32 m_clContactCount;
+    i32 m_clContactStateCount;
 };
 
 #endif // Q3CONTACTSOLVEROCL_H

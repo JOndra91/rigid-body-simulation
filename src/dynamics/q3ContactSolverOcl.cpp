@@ -174,15 +174,15 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
     if(PASSED_ACC_THRESHOLD) {
         // Reorganize data for OpenCL
         //---------------------------
-        m_clContactCount = 0;
+        m_clContactStateCount = 0;
 
         for(i32 i = 0; i < m_contactCount; i++) {
-            m_clContactCount += m_contacts[i].contactCount;
+            m_clContactStateCount += m_contacts[i].contactCount;
         }
 
-        m_clContactStates = new q3ContactStateOcl[m_clContactCount];
+        m_clContactStates = new q3ContactStateOcl[m_contactCount];
 
-        m_clContactCount *= 2; // Contacts are duplicated for both bodies
+        m_clContactCount = m_clContactStateCount * 2; // Contacts are duplicated for both bodies
 
         m_clContactInfos = new q3ContactInfoOcl[m_clContactCount];
         m_clBodyInfos = new q3BodyInfoOcl[m_island->m_bodyCount];
