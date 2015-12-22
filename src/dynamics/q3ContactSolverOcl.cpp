@@ -64,7 +64,8 @@ q3ContactSolverOcl::q3ContactSolverOcl()
 
 	m_clContext = createCLContext(CL_DEVICE_TYPE_CPU);
     m_clQueue = cl::CommandQueue(m_clContext);
-    // TODO: Load program
+
+    m_clProgram = buildProgramFromSource(m_clContext, "q3ContactSolverOcl.cl");
 }
 //--------------------------------------------------------------------------------------------------
 void q3ContactSolverOcl::Initialize( q3Island *island )
