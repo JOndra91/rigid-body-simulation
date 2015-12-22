@@ -92,7 +92,11 @@ struct q3ContactSolverOcl : q3ContactSolver
     cl::Buffer *m_clBufferContactInfo;
     cl::Buffer *m_clBufferContactState;
     cl::Buffer *m_clBufferContactConstraintState;
+    cl::Buffer *m_clBufferBatches;
     GarbageCollector m_clGC;
+
+    std::vector<i32> m_clBatches;
+    std::vector<i32> m_clBatchSizes;
 
     q3ContactConstraintStateOcl *m_clContactConstraints;
     q3ContactStateOcl *m_clContactStates;

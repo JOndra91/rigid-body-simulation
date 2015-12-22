@@ -105,6 +105,9 @@ void q3ContactSolverOcl::ShutDown( void )
     delete[] m_clContactConstraints;
 
     m_clGC.deleteAllMemObjects();
+
+    m_clBatches.clear();
+    m_clBatchSizes.clear();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -250,10 +253,7 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
             contactsToPlan.insert(i);
         }
 
-        std::vector<i32> batches;
-        std::vector<i32> batchSizes;
-
-        batches.reserve(m_clContactCount);
+        m_clBatches.reserve(m_clContactCount);
 
         i32 batchIndex = 0;
         i32 batchOffset = 0;
@@ -266,22 +266,26 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
                 {
                     bodyAllocationTable[idx] = batchIndex;
                     contactsToPlan.erase(c);
-                    batches.push_back(c);
+                    m_clBatches.push_back(c);
                 }
             }
 
-            //std::cout << "Batch size:" << batches.size() - batchOffset << std::endl;
-            batchSizes.push_back(batches.size() - batchOffset);
-            batchOffset = batches.size();
+            std::cout << "Batch size:" << m_clBatches.size() - batchOffset << std::endl;
+            m_clBatchSizes.push_back(m_clBatches.size() - batchOffset);
+            batchOffset = m_clBatches.size();
 
             batchIndex++;
 
         } while(!contactsToPlan.empty());
 
-        //std::cout << "Batches:" << batchSizes.size() << std::endl;
+        std::cout << "Batches:" << m_clBatchSizes.size() << std::endl;
 
 
-        // TODO: Copy batches to OpenCL
+        m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY, sizeof(i32) * m_clBatches.size(), NULL);
+
+        m_clGC.addMemObject(m_clBufferBatches);
+
+        m_clQueue.enqueueWriteBuffer(*m_clBufferBatches, false, 0, sizeof(i32) * m_clBatches.size(), m_clBatches.data(), NULL, NULL);
     }
 }
 
@@ -289,7 +293,7 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
 void q3ContactSolverOcl::Solve( )
 {
     if(PASSED_ACC_THRESHOLD) {
-
+        // TODO: Submit the batches
     }
     else
     {
