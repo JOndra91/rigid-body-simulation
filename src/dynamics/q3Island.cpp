@@ -24,6 +24,8 @@
 */
 //--------------------------------------------------------------------------------------------------
 #include <cassert>
+#include <iostream>
+#include <sys/time.h>
 
 #include "q3Island.h"
 #include "q3Body.h"
@@ -57,6 +59,10 @@ q3Island::~q3Island()
 void q3Island::Solve( )
 {
 	assert( m_solver != NULL );
+
+    struct timeval begin, end, diff;
+
+    gettimeofday(&begin,NULL);
 
 	// Apply gravity
 	// Integrate velocities and create state buffers, calculate world inertia
@@ -93,17 +99,52 @@ void q3Island::Solve( )
 		v->w = body->m_angularVelocity;
 	}
 
+
+
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &begin, &diff);
+
+    std::cout << "Integrate velocities: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+
 	// Create contact solver, pass in state buffers, create buffers for contacts
 	// Initialize velocity constraint for normal + friction and warm start
 	q3ContactSolver *contactSolver = m_solver;
 	contactSolver->Initialize( this );
+
+    gettimeofday(&begin,NULL);
+
 	contactSolver->PreSolve( m_dt );
 
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &begin, &diff);
+
+    std::cout << "Pre-Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+
 	// Solve contacts
+    gettimeofday(&begin,NULL);
 	for ( i32 i = 0; i < m_iterations; ++i )
 		contactSolver->Solve( );
 
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &begin, &diff);
+
+    std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+
+
+    gettimeofday(&begin,NULL);
+
 	contactSolver->ShutDown( );
+
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &begin, &diff);
+
+    std::cout << "ShutDown: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+
+    gettimeofday(&begin,NULL);
 
 	// Copy back state buffers
 	// Integrate positions
@@ -124,6 +165,12 @@ void q3Island::Solve( )
 		body->m_q = q3Normalize( body->m_q );
 		body->m_tx.rotation = body->m_q.ToMat3( );
 	}
+
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &begin, &diff);
+
+    std::cout << "Integrate positions: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 
 	if ( m_allowSleep )
 	{

@@ -25,6 +25,8 @@
 //--------------------------------------------------------------------------------------------------
 
 #include <stdlib.h>
+#include <iostream>
+#include <sys/time.h>
 
 #include "q3Scene.h"
 #include "../dynamics/q3Body.h"
@@ -67,7 +69,18 @@ void q3Scene::Step( )
 		m_newBox = false;
 	}
 
+    struct timeval begin, end, diff;
+    struct timeval beginS, endS, diffS;
+
+    gettimeofday(&begin,NULL);
+
 	m_contactManager.TestCollisions( );
+
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &begin, &diff);
+
+    std::cout << "Narrow phase: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 
 	for ( q3Body* body = m_bodyList; body; body = body->m_next )
 		body->m_flags &= ~q3Body::eIsland;
@@ -91,6 +104,7 @@ void q3Scene::Step( )
 	island->m_gravity = m_gravity;
 	island->m_iterations = m_iterations;
 
+    gettimeofday(&begin,NULL);
 	// Build each active island and then solve each built island
 	i32 stackSize = m_bodyCount;
 	q3Body** stack = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * stackSize );
@@ -116,6 +130,8 @@ void q3Scene::Step( )
 
 		// Mark seed as apart of island
 		seed->m_flags |= q3Body::eIsland;
+
+        gettimeofday(&beginS,NULL);
 
 		// Perform DFS on constraint graph
 		while( stackCount > 0 )
@@ -169,10 +185,40 @@ void q3Scene::Step( )
 			}
 		}
 
+
+        gettimeofday(&endS, NULL);
+
+        timersub(&endS, &beginS, &diffS);
+
+        std::cout << "DFS: " << (diffS.tv_sec * 1000.0 + diffS.tv_usec / 1000.0) << "ms" << std::endl;
+
 		assert( island->m_bodyCount != 0 );
 
+
+        gettimeofday(&beginS,NULL);
+
 		island->Initialize( );
+
+
+        gettimeofday(&endS, NULL);
+
+        timersub(&endS, &beginS, &diffS);
+
+        std::cout << "Island init: " << (diffS.tv_sec * 1000.0 + diffS.tv_usec / 1000.0) << "ms" << std::endl;
+
+		assert( island->m_bodyCount != 0 );
+
+        gettimeofday(&beginS,NULL);
+
 		island->Solve( );
+
+        gettimeofday(&endS, NULL);
+
+        timersub(&endS, &beginS, &diffS);
+
+        std::cout << "Island solve: " << (diffS.tv_sec * 1000.0 + diffS.tv_usec / 1000.0) << "ms" << std::endl;
+
+		assert( island->m_bodyCount != 0 );
 
 		// Reset all static island flags
 		// This allows static bodies to participate in other island formations
@@ -185,11 +231,19 @@ void q3Scene::Step( )
 		}
 	}
 
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &begin, &diff);
+
+    std::cout << "Solve total: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+
 	m_stack.Free( stack );
 	m_stack.Free( island->m_contactStates );
 	m_stack.Free( island->m_contacts );
 	m_stack.Free( island->m_velocities );
 	m_stack.Free( island->m_bodies );
+
+    gettimeofday(&begin,NULL);
 
 	// Update the broadphase AABBs
 	for ( q3Body* body = m_bodyList; body; body = body->m_next )
@@ -202,6 +256,12 @@ void q3Scene::Step( )
 
 	// Look for new contacts
 	m_contactManager.FindNewContacts( );
+
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &begin, &diff);
+
+    std::cout << "Broad phase: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 
 	// Clear all forces
 	for ( q3Body* body = m_bodyList; body; body = body->m_next )
