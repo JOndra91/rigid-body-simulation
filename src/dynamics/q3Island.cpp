@@ -30,7 +30,9 @@
 #include "../common/q3Memory.h"
 #include "q3ContactSolver.h"
 #include "q3ContactSolverCpu.h"
+#ifdef WITH_OCL
 #include "q3ContactSolverOcl.h"
+#endif // WITH_OCL
 #include "../common/q3Settings.h"
 #include "../broadphase/q3BroadPhase.h"
 #include "q3Contact.h"
