@@ -87,6 +87,7 @@ struct q3ContactSolverOcl : q3ContactSolver
     //-----------------------------------------------------------
     cl::Context m_clContext;
     cl::Program m_clProgram;
+    cl::Kernel m_clKernel;
     cl::CommandQueue m_clQueue;
     cl::Buffer *m_clBufferVelocity;
     cl::Buffer *m_clBufferBodyInfo;

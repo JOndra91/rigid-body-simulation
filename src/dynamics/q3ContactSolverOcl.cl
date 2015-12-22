@@ -179,4 +179,6 @@ kernel void solve(global q3BodyInfoOcl *bodyInfo, global q3VelocityState *veloci
   }
 
   velocityState[info.vIndex] = velA;
+  contactStates[csi] = c;
+
 }
