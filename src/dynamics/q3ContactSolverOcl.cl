@@ -73,6 +73,15 @@ r32 q3Max(r32 a, r32 b)
   return max(a, b);
 }
 
+q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
+{
+  return (float3)(
+    m.ex.x * v.x + m.ey.x * v.y + m.ez.x * v.z,
+    m.ex.y * v.x + m.ey.y * v.y + m.ez.y * v.z,
+    m.ex.z * v.x + m.ey.z * v.y + m.ez.z * v.z
+    );
+}
+
 // TODO: Matrix multiplications
 kernel void solve(global q3BodyInfoOcl *bodyInfo, global q3VelocityState *velocityState,
     global q3ContactInfoOcl *contactInfo, global q3ContactStateOcl *contactStates,
@@ -131,10 +140,10 @@ kernel void solve(global q3BodyInfoOcl *bodyInfo, global q3VelocityState *veloci
       q3Vec3 impulse = cs.tangentVectors[ i ] * lambda;
 
       velA.v -= impulse * bodyA.m;
-      velA.w -= bodyA.i * q3Cross( c.ra, impulse );
+      velA.w -= mvMul(bodyA.i, q3Cross( c.ra, impulse ));
 
       velB.v += impulse * bodyB.m;
-      velB.w += bodyB.i * q3Cross( c.rb, impulse );
+      velB.w += mvMul(bodyB.i, q3Cross( c.rb, impulse ));
     }
   }
 
@@ -156,10 +165,10 @@ kernel void solve(global q3BodyInfoOcl *bodyInfo, global q3VelocityState *veloci
     // Apply impulse
     q3Vec3 impulse = cs.normal * lambda;
     velA.v -= impulse * bodyA.m;
-    velA.w -= bodyA.i * q3Cross( c.ra, impulse );
+    velA.w -= mvMul(bodyA.i, q3Cross( c.ra, impulse ));
 
     velB.v += impulse * bodyB.m;
-    velB.w += bodyB.i * q3Cross( c.rb, impulse );
+    velB.w += mvMul(bodyB.i, q3Cross( c.rb, impulse ));
   }
 
   // NOTE: It's possible to compute both bodies of contact at once,
