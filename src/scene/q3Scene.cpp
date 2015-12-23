@@ -70,17 +70,8 @@ void q3Scene::Step( )
 	}
 
     struct timeval begin, end, diff;
-    struct timeval beginS, endS, diffS;
-
-    gettimeofday(&begin,NULL);
 
 	m_contactManager.TestCollisions( );
-
-    gettimeofday(&end, NULL);
-
-    timersub(&end, &begin, &diff);
-
-    std::cout << "Narrow phase: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 
 	for ( q3Body* body = m_bodyList; body; body = body->m_next )
 		body->m_flags &= ~q3Body::eIsland;
@@ -130,8 +121,6 @@ void q3Scene::Step( )
 
 		// Mark seed as apart of island
 		seed->m_flags |= q3Body::eIsland;
-
-        gettimeofday(&beginS,NULL);
 
 		// Perform DFS on constraint graph
 		while( stackCount > 0 )
@@ -185,38 +174,13 @@ void q3Scene::Step( )
 			}
 		}
 
-
-        gettimeofday(&endS, NULL);
-
-        timersub(&endS, &beginS, &diffS);
-
-        std::cout << "DFS: " << (diffS.tv_sec * 1000.0 + diffS.tv_usec / 1000.0) << "ms" << std::endl;
-
 		assert( island->m_bodyCount != 0 );
-
-
-        gettimeofday(&beginS,NULL);
 
 		island->Initialize( );
 
-
-        gettimeofday(&endS, NULL);
-
-        timersub(&endS, &beginS, &diffS);
-
-        std::cout << "Island init: " << (diffS.tv_sec * 1000.0 + diffS.tv_usec / 1000.0) << "ms" << std::endl;
-
 		assert( island->m_bodyCount != 0 );
 
-        gettimeofday(&beginS,NULL);
-
 		island->Solve( );
-
-        gettimeofday(&endS, NULL);
-
-        timersub(&endS, &beginS, &diffS);
-
-        std::cout << "Island solve: " << (diffS.tv_sec * 1000.0 + diffS.tv_usec / 1000.0) << "ms" << std::endl;
 
 		assert( island->m_bodyCount != 0 );
 
@@ -243,8 +207,6 @@ void q3Scene::Step( )
 	m_stack.Free( island->m_velocities );
 	m_stack.Free( island->m_bodies );
 
-    gettimeofday(&begin,NULL);
-
 	// Update the broadphase AABBs
 	for ( q3Body* body = m_bodyList; body; body = body->m_next )
 	{
@@ -256,12 +218,6 @@ void q3Scene::Step( )
 
 	// Look for new contacts
 	m_contactManager.FindNewContacts( );
-
-    gettimeofday(&end, NULL);
-
-    timersub(&end, &begin, &diff);
-
-    std::cout << "Broad phase: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 
 	// Clear all forces
 	for ( q3Body* body = m_bodyList; body; body = body->m_next )
@@ -497,7 +453,7 @@ void q3Scene::RayCast( q3QueryCallback *cb, q3RaycastData& rayCast ) const
 void q3Scene::Dump( FILE* file ) const
 {
 	fprintf( file, "// Ensure 64/32-bit memory compatability with the dump contents\n" );
-	fprintf( file, "assert( sizeof( int* ) == %d );\n", sizeof( int* ) );
+	fprintf( file, "assert( sizeof( int* ) == %lu );\n", sizeof( int* ) );
 	fprintf( file, "scene.SetGravity( q3Vec3( %.15lf, %.15lf, %.15lf ) );\n", m_gravity.x, m_gravity.y, m_gravity.z );
 	fprintf( file, "scene.SetAllowSleep( %s );\n", m_allowSleep ? "true" : "false" );
 	fprintf( file, "scene.SetEnableFriction( %s );\n", m_enableFriction ? "true" : "false" );
