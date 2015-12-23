@@ -1,26 +1,26 @@
 //--------------------------------------------------------------------------------------------------
 /**
-@file	q3ContactSolverOcl.cpp
+@file  q3ContactSolverOcl.cpp
 
-@author	Randy Gaul
-@date	10/10/2014
+@author  Randy Gaul
+@date  10/10/2014
 
-	Copyright (c) 2014 Randy Gaul http://www.randygaul.net
+  Copyright (c) 2014 Randy Gaul http://www.randygaul.net
 
-	This software is provided 'as-is', without any express or implied
-	warranty. In no event will the authors be held liable for any damages
-	arising from the use of this software.
+  This software is provided 'as-is', without any express or implied
+  warranty. In no event will the authors be held liable for any damages
+  arising from the use of this software.
 
-	Permission is granted to anyone to use this software for any purpose,
-	including commercial applications, and to alter it and redistribute it
-	freely, subject to the following restrictions:
-	  1. The origin of this software must not be misrepresented; you must not
-	     claim that you wrote the original software. If you use this software
-	     in a product, an acknowledgment in the product documentation would be
-	     appreciated but is not required.
-	  2. Altered source versions must be plainly marked as such, and must not
-	     be misrepresented as being the original software.
-	  3. This notice may not be removed or altered from any source distribution.
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+    1. The origin of this software must not be misrepresented; you must not
+       claim that you wrote the original software. If you use this software
+       in a product, an acknowledgment in the product documentation would be
+       appreciated but is not required.
+    2. Altered source versions must be plainly marked as such, and must not
+       be misrepresented as being the original software.
+    3. This notice may not be removed or altered from any source distribution.
 */
 //--------------------------------------------------------------------------------------------------
 
@@ -29,6 +29,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <iomanip>
 
 #include "q3ContactSolver.h"
 #include "q3ContactSolverOcl.h"
@@ -39,7 +40,8 @@
 #include "../common/q3Geometry.h"
 #include "../common/q3Settings.h"
 
-#define assert_aligned(type) assert(sizeof(type) % 4 == 0)
+#define assert_size(type, size) assert(sizeof(type) == size)
+//#define assert_size(type, size) do { std::cout << "sizeof(" << # type << ") = " << sizeof(type) << std::endl; assert(sizeof(type) == size); } while(0)
 
 // Number of contacts needed for acceleration using OpenCL
 #define ACCELERATION_THRESHOLD 64
@@ -66,13 +68,17 @@ cl_int clErr;
 //--------------------------------------------------------------------------------------------------
 q3ContactSolverOcl::q3ContactSolverOcl()
 {
-    assert(sizeof(q3Vec3) == (sizeof(float) * 3));
-    assert_aligned(q3ContactStateOcl);
-    assert_aligned(q3ContactConstraintStateOcl);
-    assert_aligned(q3ContactInfoOcl);
-    assert_aligned(q3BodyInfoOcl);
+    assert_size(q3Vec3, sizeof(cl_float3));
+    assert_size(cl_vec3, sizeof(cl_float3));
+    assert_size(cl_vec3x3, 48);
+    assert_size(q3Mat3, sizeof(cl_vec3x3));
+    assert_size(q3BodyInfoOcl, 80);
+    assert_size(q3VelocityState, 32);
+    assert_size(q3ContactInfoOcl, 12);
+    assert_size(q3ContactStateOcl, 64);
+    assert_size(q3ContactConstraintStateOcl, 64);
 
-	m_clContext = createCLContext(CL_DEVICE_TYPE_CPU);
+    m_clContext = createCLContext(CL_DEVICE_TYPE_CPU);
     m_clQueue = cl::CommandQueue(m_clContext);
 
     m_clProgram = buildProgramFromSource(m_clContext, "q3ContactSolverOcl.cl");
@@ -86,11 +92,11 @@ q3ContactSolverOcl::q3ContactSolverOcl()
 //--------------------------------------------------------------------------------------------------
 void q3ContactSolverOcl::Initialize( q3Island *island )
 {
-	m_island = island;
-	m_contactCount = island->m_contactCount;
-	m_contacts = island->m_contactStates;
-	m_velocities = m_island->m_velocities;
-	m_enableFriction = island->m_enableFriction;
+    m_island = island;
+    m_contactCount = island->m_contactCount;
+    m_contacts = island->m_contactStates;
+    m_velocities = m_island->m_velocities;
+    m_enableFriction = island->m_enableFriction;
 
     m_clContactStates = NULL;
     m_clContactInfos = NULL;
@@ -121,20 +127,20 @@ void q3ContactSolverOcl::ShutDown( void )
         }
     }
 
-	for ( i32 i = 0; i < m_contactCount; ++i )
-	{
-		q3ContactConstraintState *c = m_contacts + i;
-		q3ContactConstraint *cc = m_island->m_contacts[ i ];
+  for ( i32 i = 0; i < m_contactCount; ++i )
+  {
+    q3ContactConstraintState *c = m_contacts + i;
+    q3ContactConstraint *cc = m_island->m_contacts[ i ];
 
-		for ( i32 j = 0; j < c->contactCount; ++j )
-		{
-			q3Contact *oc = cc->manifold.contacts + j;
-			q3ContactState *cs = c->contacts + j;
-			oc->normalImpulse = cs->normalImpulse;
-			oc->tangentImpulse[ 0 ] = cs->tangentImpulse[ 0 ];
-			oc->tangentImpulse[ 1 ] = cs->tangentImpulse[ 1 ];
-		}
-	}
+    for ( i32 j = 0; j < c->contactCount; ++j )
+    {
+      q3Contact *oc = cc->manifold.contacts + j;
+      q3ContactState *cs = c->contacts + j;
+      oc->normalImpulse = cs->normalImpulse;
+      oc->tangentImpulse[ 0 ] = cs->tangentImpulse[ 0 ];
+      oc->tangentImpulse[ 1 ] = cs->tangentImpulse[ 1 ];
+    }
+  }
 
     delete[] m_clContactStates;
     delete[] m_clContactInfos;
@@ -150,68 +156,68 @@ void q3ContactSolverOcl::ShutDown( void )
 //--------------------------------------------------------------------------------------------------
 void q3ContactSolverOcl::PreSolve( r32 dt )
 {
-	for ( i32 i = 0; i < m_contactCount; ++i )
-	{
-		q3ContactConstraintState *cs = m_contacts + i;
+  for ( i32 i = 0; i < m_contactCount; ++i )
+  {
+    q3ContactConstraintState *cs = m_contacts + i;
 
-		q3Vec3 vA = m_velocities[ cs->indexA ].v;
-		q3Vec3 wA = m_velocities[ cs->indexA ].w;
-		q3Vec3 vB = m_velocities[ cs->indexB ].v;
-		q3Vec3 wB = m_velocities[ cs->indexB ].w;
+    q3Vec3 vA = m_velocities[ cs->indexA ].v;
+    q3Vec3 wA = m_velocities[ cs->indexA ].w;
+    q3Vec3 vB = m_velocities[ cs->indexB ].v;
+    q3Vec3 wB = m_velocities[ cs->indexB ].w;
 
-		for ( i32 j = 0; j < cs->contactCount; ++j )
-		{
-			q3ContactState *c = cs->contacts + j;
+    for ( i32 j = 0; j < cs->contactCount; ++j )
+    {
+      q3ContactState *c = cs->contacts + j;
 
-			// Precalculate JM^-1JT for contact and friction constraints
-			q3Vec3 raCn = q3Cross( c->ra, cs->normal );
-			q3Vec3 rbCn = q3Cross( c->rb, cs->normal );
-			r32 nm = cs->mA + cs->mB;
-			r32 tm[ 2 ];
-			tm[ 0 ] = nm;
-			tm[ 1 ] = nm;
+      // Precalculate JM^-1JT for contact and friction constraints
+      q3Vec3 raCn = q3Cross( c->ra, cs->normal );
+      q3Vec3 rbCn = q3Cross( c->rb, cs->normal );
+      r32 nm = cs->mA + cs->mB;
+      r32 tm[ 2 ];
+      tm[ 0 ] = nm;
+      tm[ 1 ] = nm;
 
-			nm += q3Dot( raCn, cs->iA * raCn ) + q3Dot( rbCn, cs->iB * rbCn );
-			c->normalMass = q3Invert( nm );
+      nm += q3Dot( raCn, cs->iA * raCn ) + q3Dot( rbCn, cs->iB * rbCn );
+      c->normalMass = q3Invert( nm );
 
-			for ( i32 i = 0; i < 2; ++i )
-			{
-				q3Vec3 raCt = q3Cross( cs->tangentVectors[ i ], c->ra );
-				q3Vec3 rbCt = q3Cross( cs->tangentVectors[ i ], c->rb );
-				tm[ i ] += q3Dot( raCt, cs->iA * raCt ) + q3Dot( rbCt, cs->iB * rbCt );
-				c->tangentMass[ i ] = q3Invert( tm[ i ] );
-			}
+      for ( i32 i = 0; i < 2; ++i )
+      {
+        q3Vec3 raCt = q3Cross( cs->tangentVectors[ i ], c->ra );
+        q3Vec3 rbCt = q3Cross( cs->tangentVectors[ i ], c->rb );
+        tm[ i ] += q3Dot( raCt, cs->iA * raCt ) + q3Dot( rbCt, cs->iB * rbCt );
+        c->tangentMass[ i ] = q3Invert( tm[ i ] );
+      }
 
-			// Precalculate bias factor
-			c->bias = -Q3_BAUMGARTE * (r32( 1.0 ) / dt) * q3Min( r32( 0.0 ), c->penetration + Q3_PENETRATION_SLOP );
+      // Precalculate bias factor
+      c->bias = -Q3_BAUMGARTE * (r32( 1.0 ) / dt) * q3Min( r32( 0.0 ), c->penetration + Q3_PENETRATION_SLOP );
 
-			// Warm start contact
-			q3Vec3 P = cs->normal * c->normalImpulse;
+      // Warm start contact
+      q3Vec3 P = cs->normal * c->normalImpulse;
 
-			if ( m_enableFriction )
-			{
-				P += cs->tangentVectors[ 0 ] * c->tangentImpulse[ 0 ];
-				P += cs->tangentVectors[ 1 ] * c->tangentImpulse[ 1 ];
-			}
+      if ( m_enableFriction )
+      {
+        P += cs->tangentVectors[ 0 ] * c->tangentImpulse[ 0 ];
+        P += cs->tangentVectors[ 1 ] * c->tangentImpulse[ 1 ];
+      }
 
-			vA -= P * cs->mA;
-			wA -= cs->iA * q3Cross( c->ra, P );
+      vA -= P * cs->mA;
+      wA -= cs->iA * q3Cross( c->ra, P );
 
-			vB += P * cs->mB;
-			wB += cs->iB * q3Cross( c->rb, P );
+      vB += P * cs->mB;
+      wB += cs->iB * q3Cross( c->rb, P );
 
-			// Add in restitution bias
-			r32 dv = q3Dot( vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra ), cs->normal );
+      // Add in restitution bias
+      r32 dv = q3Dot( vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra ), cs->normal );
 
-			if ( dv < -r32( 1.0 ) )
-				c->bias += -(cs->restitution) * dv;
-		}
+      if ( dv < -r32( 1.0 ) )
+        c->bias += -(cs->restitution) * dv;
+    }
 
-		m_velocities[ cs->indexA ].v = vA;
-		m_velocities[ cs->indexA ].w = wA;
-		m_velocities[ cs->indexB ].v = vB;
-		m_velocities[ cs->indexB ].w = wB;
-	}
+    m_velocities[ cs->indexA ].v = vA;
+    m_velocities[ cs->indexA ].w = wA;
+    m_velocities[ cs->indexB ].v = vB;
+    m_velocities[ cs->indexB ].w = wB;
+  }
 
     if(PASSED_ACC_THRESHOLD) {
         // Reorganize data for OpenCL
@@ -293,7 +299,7 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
         CHECK_CL_ERROR("Write buffer q3ContactConstraintStateOcl");
 
 
-        std::vector<i32> bodyAllocationTable(m_island->m_bodyCount, -1);
+        std::vector<i32> bodyAllocationTable(m_island->m_bodyCount, 0);
         std::set<i32> contactsToPlan;
 
         for(i32 i = 0; i < m_clContactCount; i++) {
@@ -302,16 +308,17 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
 
         m_clBatches.reserve(m_clContactCount);
 
-        i32 batchIndex = 0;
-        i32 batchOffset = 0;
+        cl_uint batchIndex = 1;
+        cl_uint batchOffset = 0;
         do
         {
             auto it = contactsToPlan.begin();
             auto end = contactsToPlan.end();
             while(it != end) {
-                i32 idx = m_clContactInfos[*it].vIndex;
+                cl_uint idx = m_clContactInfos[*it].vIndex;
                 if(bodyAllocationTable[idx] < batchIndex)
                 {
+//                    std::cout << "Planning body " << std::setw(6) << idx << " with contact " << *it << std::endl;
                     bodyAllocationTable[idx] = batchIndex;
                     it = contactsToPlan.erase(it);
                     m_clBatches.push_back(*it);
@@ -362,11 +369,10 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
 void q3ContactSolverOcl::Solve( )
 {
     if(PASSED_ACC_THRESHOLD) {
-        // TODO: Submit the batches
 
-        i32 offset = 0;
+        cl_uint offset = 0;
         cl::NDRange local(64);
-        for(i32 batchSize : m_clBatchSizes)
+        for(cl_uint batchSize : m_clBatchSizes)
         {
             clErr = m_clKernel.setArg(6, offset);
             CHECK_CL_ERROR("Set kernel param 6");
@@ -382,7 +388,7 @@ void q3ContactSolverOcl::Solve( )
         }
 
         clErr = m_clQueue.finish();
-        CHECK_CL_ERROR("Finish");
+        CHECK_CL_ERROR("Finish batches");
     }
     else
     {

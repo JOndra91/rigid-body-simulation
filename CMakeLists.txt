@@ -12,6 +12,7 @@ option(qu3e_use_gpu "Build qu3e with OpenCL solver" OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 if(qu3e_use_gpu)
+  add_definitions(-DWITH_OCL)
   add_subdirectory(oclUtils)
   set(OCL-Utilities_DIR ${CMAKE_BINARY_DIR}/oclUtils)
   find_package(OCL-Utilities REQUIRED)

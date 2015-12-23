@@ -86,7 +86,6 @@ set(qu3e_hdr
 
 if(qu3e_use_gpu)
 	include_directories(${OPENCL_INCLUDE_DIR} ${OCL-Utilities_INCLUDE_DIRS})
-	add_definitions(-DWITH_OCL)
 
 	set(qu3e_dynamics_hdrs
 		${qu3e_dynamics_hdrs}

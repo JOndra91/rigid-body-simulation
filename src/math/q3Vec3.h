@@ -29,6 +29,13 @@
 
 #include "../common/q3Types.h"
 
+#ifdef WITH_OCL
+#include <CL/cl.hpp>
+#define CL_PADDING r32 padding;
+#else
+#define CL_PADDING
+#endif // WITH_OCL
+
 r32 q3Abs( r32 a );
 r32 q3Min( r32 a, r32 b );
 r32 q3Max( r32 a, r32 b );
@@ -49,6 +56,8 @@ struct q3Vec3
 			r32 z;
 		};
 	};
+
+    CL_PADDING
 
 	q3Vec3( );
 	q3Vec3( r32 _x, r32 _y, r32 _z );

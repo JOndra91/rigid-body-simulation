@@ -35,29 +35,54 @@
 #include "q3ContactSolver.h"
 #include "q3Island.h"
 
-
 typedef q3ContactState q3ContactStateOcl;
+
+struct cl_vec3
+{
+    cl_float3 cl;
+
+    cl_vec3& operator=( const q3Vec3& vec)
+    {
+        cl.s[0] = vec.v[0];
+        cl.s[1] = vec.v[1];
+        cl.s[2] = vec.v[2];
+    }
+};
+
+struct cl_vec3x3
+{
+    cl_vec3 ex;
+	cl_vec3 ey;
+	cl_vec3 ez;
+
+    cl_vec3x3& operator=( const q3Mat3& mat )
+    {
+        ex = mat.ex;
+        ey = mat.ey;
+        ez = mat.ez;
+    }
+};
 
 struct q3BodyInfoOcl
 {
-    q3Vec3 center;
-	q3Mat3 i;                   // Inverse inertia tensor
-	r32 m;                      // Inverse mass
+    cl_vec3 center;
+	cl_vec3x3 i;      // Inverse inertia tensor
+	cl_float m;         // Inverse mass
 };
 
 struct q3ContactConstraintStateOcl
 {
-	q3Vec3 tangentVectors[ 2 ];	// Tangent vectors
-	q3Vec3 normal;              // From A to B
-	r32 restitution;
-	r32 friction;
+	cl_vec3 tangentVectors[ 2 ];	// Tangent vectors
+	cl_vec3 normal;               // From A to B
+	cl_float restitution;
+	cl_float friction;
 };
 
 struct q3ContactInfoOcl
 {
-    i32 contactStateIndex;
-    i32 contactConstraintStateIndex;
-    i32 vIndex;                 // Index to velocity and bodyInfo arrays
+    cl_uint contactStateIndex;
+    cl_uint contactConstraintStateIndex;
+    cl_uint vIndex;                 // Index to velocity and bodyInfo arrays
     // It's possible to determine according to index (starting with 0: even - A, odd - B)
     //i32 isA;                   // Whether it's A or B, so we can use correct normal
 };
@@ -77,7 +102,7 @@ struct q3ContactSolverOcl : q3ContactSolver
 
 	q3Island *m_island;
 	q3ContactConstraintState *m_contacts;
-	i32 m_contactCount;
+	u32 m_contactCount;
 	q3VelocityState *m_velocities;
 
 	bool m_enableFriction;
@@ -97,16 +122,16 @@ struct q3ContactSolverOcl : q3ContactSolver
     cl::Buffer *m_clBufferBatches;
     GarbageCollector m_clGC;
 
-    std::vector<i32> m_clBatches;
-    std::vector<i32> m_clBatchSizes;
+    std::vector<cl_uint> m_clBatches;
+    std::vector<cl_uint> m_clBatchSizes;
 
     q3ContactConstraintStateOcl *m_clContactConstraints;
     q3ContactStateOcl *m_clContactStates;
     q3BodyInfoOcl *m_clBodyInfos;
     q3ContactInfoOcl *m_clContactInfos;
 
-    i32 m_clContactCount;
-    i32 m_clContactStateCount;
+    u32 m_clContactCount;
+    u32 m_clContactStateCount;
 };
 
 #endif // Q3CONTACTSOLVEROCL_H
