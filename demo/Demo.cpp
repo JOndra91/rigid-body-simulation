@@ -360,7 +360,7 @@ void UpdateImGui( float dt )
 	io.MousePos = ImVec2( (float)mouseX, (float)mouseY + 8 );
 	io.MouseDown[0] = mouseLeftDown;
 	io.MouseDown[1] = mouseRightDown;
-	
+
 	// Start the frame
 	ImGui::NewFrame();
 }
@@ -538,7 +538,7 @@ int InitApp( int argc, char** argv )
 	demos[ 2 ] = new BoxStack( );
 	demos[ 3 ] = new Test( );
 	demoCount = 4;
-	currentDemo = 3;
+	currentDemo = 2;
 	demos[ currentDemo ]->Init( );
 	sprintf( sceneFileName, "q3dump.txt" );
 
