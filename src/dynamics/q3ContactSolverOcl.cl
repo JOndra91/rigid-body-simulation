@@ -1,9 +1,13 @@
+typedef int    i32;
+typedef float  r32;
+typedef float3 q3Vec3;
+
 typedef struct
 {
   float3 ex;
   float3 ey;
   float3 ez;
-} float3x3;
+} q3Mat3;
 
 typedef struct
 {
@@ -23,70 +27,64 @@ typedef struct
   float tangentMass[ 2 ];    // Tangent constraint mass
 } q3ContactState;
 
-typedef q3ContactState q3ContactStateOcl;
+typedef struct
+{
+  q3ContactState contacts[ 8 ];
+  q3Vec3 tangentVectors[ 2 ];  // Tangent vectors
+  q3Vec3 normal;        // From A to B
+  q3Vec3 centerA;
+  q3Vec3 centerB;
+  q3Mat3 iA;
+  q3Mat3 iB;
+  i32 contactCount;
+  r32 mA;
+  r32 mB;
+  r32 restitution;
+  r32 friction;
+  i32 indexA;
+  i32 indexB;
+} q3ContactConstraintState;
 
 typedef struct
 {
-  float3 center;
-  float3x3 i;                   // Inverse inertia tensor
-  float3 m;                      // Inverse mass
-} q3BodyInfoOcl;
-
-typedef struct
-{
-  float3 tangentVectors[ 2 ];  // Tangent vectors
-  float3 normal;              // From A to B
-  float restitution;
-  float friction;
-} q3ContactConstraintStateOcl;
-
-typedef struct
-{
-  uint contactStateIndex;
   uint contactConstraintStateIndex;
-  uint vIndex;                 // Index to velocity and bodyInfo arrays
-  // It's possible to determine according to index (starting with 0: even - A, odd - B)
-  //i32 isA;                   // Whether it's A or B, so we can use correct normal
-} q3ContactInfoOcl;
+  uint contactStateIndex;
+} q3ContactPlan;
 
-float3 q3Cross(float3 a, float3 b)
+q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
 {
   return cross(a, b);
 }
 
-float q3Dot(float3 a, float3 b)
+r32 q3Dot(q3Vec3 a, q3Vec3 b)
 {
   return dot(a, b);
 }
 
-float q3Clamp(float minval, float maxval, float x)
+r32 q3Clamp(r32 minval, r32 maxval, r32 x)
 {
   return clamp(x, minval, maxval);
 }
 
-float q3Max(float a, float b)
+r32 q3Max(r32 a, r32 b)
 {
   return max(a, b);
 }
 
-float3 mvMul(float3x3 m, float3 v)
+q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
 {
-  return (float3)(
+  return (q3Vec3)(
     m.ex.x * v.x + m.ey.x * v.y + m.ez.x * v.z,
     m.ex.y * v.x + m.ey.y * v.y + m.ez.y * v.z,
     m.ex.z * v.x + m.ey.z * v.y + m.ez.z * v.z
   );
 }
 
-// TODO: Matrix multiplications
-kernel void solve(constant q3BodyInfoOcl *bodyInfo, global q3VelocityState *velocityState,
-    constant q3ContactInfoOcl *contactInfo, global q3ContactStateOcl *contactStates,
-    constant q3ContactConstraintStateOcl *contactConstraintState, constant uint *batches,
-    uint batchOffset, uint batchSize, int frictionEnabled)
+// m_contacts, m_velocities
+kernel void solve(global q3VelocityState *m_velocities, global q3ContactConstraintState *m_contacts,
+    constant q3ContactPlan *batches, uint batchOffset, uint batchSize, int m_enableFriction)
 {
   uint global_x = (uint)get_global_id(0);
-  uint local_x = (uint)get_local_id(0);
-  uint size_x = (uint)get_global_size(0);
 
   if(global_x > batchSize)
   {
@@ -95,89 +93,84 @@ kernel void solve(constant q3BodyInfoOcl *bodyInfo, global q3VelocityState *velo
 
   uint totalOffset = global_x + batchOffset;
 
-  uint idx = batches[totalOffset];
+  // if(totalOffset == 0) {
+  //   printf("sizeof(i32) = %u\n", sizeof(i32));
+  //   printf("sizeof(r32) = %u\n", sizeof(r32));
+  //   printf("sizeof(q3Vec3) = %u\n", sizeof(q3Vec3));
+  //   printf("sizeof(q3Mat3) = %u\n", sizeof(q3Mat3));
+  //   printf("sizeof(q3VelocityState) = %u\n", sizeof(q3VelocityState));
+  //   printf("sizeof(q3ContactState) = %u\n", sizeof(q3ContactState));
+  //   printf("sizeof(q3ContactConstraintState) = %u\n", sizeof(q3ContactConstraintState));
+  //   printf("sizeof(q3ContactPlan) = %u\n", sizeof(q3ContactPlan));
+  // }
+  //
+  // return;
 
+  const constant q3ContactPlan *plan = batches + totalOffset;
 
-  bool isA = ((idx % 2) == 0);
-  int offsetA = -(idx % 2);
-  int offsetB = ((idx + 1) % 2);
-  float modSign = ((float)isA) * -2.0 + 1.0; // -1.0 for A, 1.0 for B
+  global q3ContactConstraintState *cs = m_contacts + plan->contactConstraintStateIndex;
 
-  q3ContactInfoOcl info = contactInfo[idx];
-  int csi = contactInfo[idx].contactStateIndex;
-  int ccsi = contactInfo[idx].contactConstraintStateIndex;
+  q3Vec3 vA = m_velocities[ cs->indexA ].v;
+  q3Vec3 wA = m_velocities[ cs->indexA ].w;
+  q3Vec3 vB = m_velocities[ cs->indexB ].v;
+  q3Vec3 wB = m_velocities[ cs->indexB ].w;
 
-  int vIndexA = contactInfo[idx+offsetA].vIndex;
-  int vIndexB = contactInfo[idx+offsetB].vIndex;
-
-  q3VelocityState velA = velocityState[vIndexA];
-  q3VelocityState velB = velocityState[vIndexB];
-  q3BodyInfoOcl bodyA = bodyInfo[vIndexA];
-  q3BodyInfoOcl bodyB = bodyInfo[vIndexB];
-  q3ContactStateOcl c = contactStates[csi];
-  q3ContactConstraintStateOcl cs = contactConstraintState[ccsi];
+  global q3ContactState *c = cs->contacts + plan->contactStateIndex;
 
   // relative velocity at contact
-  float3 dv = velB.v + q3Cross( velB.w, c.rb ) - velA.v - q3Cross( velA.w, c.ra );
+  q3Vec3 dv = vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra );
 
   // Friction
-  if ( frictionEnabled )
+  if ( m_enableFriction )
   {
-    for ( int i = 0; i < 2; ++i )
+    for ( i32 i = 0; i < 2; ++i )
     {
-      float lambda = -q3Dot( dv, cs.tangentVectors[ i ] ) * c.tangentMass[ i ];
+      r32 lambda = -q3Dot( dv, cs->tangentVectors[ i ] ) * c->tangentMass[ i ];
 
       // Calculate frictional impulse
-      float maxLambda = cs.friction * c.normalImpulse;
+      r32 maxLambda = cs->friction * c->normalImpulse;
 
       // Clamp frictional impulse
-      float oldPT = c.tangentImpulse[ i ];
-      c.tangentImpulse[ i ] = q3Clamp( -maxLambda, maxLambda, oldPT + lambda );
-      lambda = c.tangentImpulse[ i ] - oldPT;
+      r32 oldPT = c->tangentImpulse[ i ];
+      c->tangentImpulse[ i ] = q3Clamp( -maxLambda, maxLambda, oldPT + lambda );
+      lambda = c->tangentImpulse[ i ] - oldPT;
 
       // Apply friction impulse
-      float3 impulse = cs.tangentVectors[ i ] * lambda;
+      q3Vec3 impulse = cs->tangentVectors[ i ] * lambda;
+      vA -= impulse * cs->mA;
+      wA -= mvMul(cs->iA, q3Cross( c->ra, impulse ));
 
-      velA.v -= impulse * bodyA.m;
-      velA.w -= mvMul(bodyA.i, q3Cross( c.ra, impulse ));
-
-      velB.v += impulse * bodyB.m;
-      velB.w += mvMul(bodyB.i, q3Cross( c.rb, impulse ));
+      vB += impulse * cs->mB;
+      wB += mvMul(cs->iB, q3Cross( c->rb, impulse ));
     }
   }
 
   // Normal
   {
-    dv = velB.v + q3Cross( velB.w, c.rb ) - velA.v - q3Cross( velA.w, c.ra );
+    dv = vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra );
 
     // Normal impulse
-    float vn = q3Dot( dv, cs.normal );
+    r32 vn = q3Dot( dv, cs->normal );
 
     // Factor in positional bias to calculate impulse scalar j
-    float lambda = c.normalMass * (-vn + c.bias);
+    r32 lambda = c->normalMass * (-vn + c->bias);
 
     // Clamp impulse
-    float tempPN = c.normalImpulse;
-    c.normalImpulse = q3Max( tempPN + lambda, 0.0f );
-    lambda = c.normalImpulse - tempPN;
+    r32 tempPN = c->normalImpulse;
+    c->normalImpulse = q3Max( tempPN + lambda, 0.0f );
+    lambda = c->normalImpulse - tempPN;
 
     // Apply impulse
-    float3 impulse = cs.normal * lambda;
-    velA.v -= impulse * bodyA.m;
-    velA.w -= mvMul(bodyA.i, q3Cross( c.ra, impulse ));
+    q3Vec3 impulse = cs->normal * lambda;
+    vA -= impulse * cs->mA;
+    wA -= mvMul(cs->iA, q3Cross( c->ra, impulse ));
 
-    velB.v += impulse * bodyB.m;
-    velB.w += mvMul(bodyB.i, q3Cross( c.rb, impulse ));
+    vB += impulse * cs->mB;
+    wB += mvMul(cs->iB, q3Cross( c->rb, impulse ));
   }
 
-  // NOTE: It's possible to compute both bodies of contact at once,
-  // but it would require change in batch planning.
-  if(!isA)
-  {
-    velA = velB;
-  }
-
-  velocityState[info.vIndex] = velA;
-  contactStates[csi] = c;
-
+  m_velocities[ cs->indexA ].v = vA;
+  m_velocities[ cs->indexA ].w = wA;
+  m_velocities[ cs->indexB ].v = vB;
+  m_velocities[ cs->indexB ].w = wB;
 }

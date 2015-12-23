@@ -105,8 +105,6 @@ void q3Island::Solve( )
 
     timersub(&end, &begin, &diff);
 
-    std::cout << "Integrate velocities: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-
 	// Create contact solver, pass in state buffers, create buffers for contacts
 	// Initialize velocity constraint for normal + friction and warm start
 	q3ContactSolver *contactSolver = m_solver;
@@ -169,8 +167,6 @@ void q3Island::Solve( )
     gettimeofday(&end, NULL);
 
     timersub(&end, &begin, &diff);
-
-    std::cout << "Integrate positions: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 
 	if ( m_allowSleep )
 	{

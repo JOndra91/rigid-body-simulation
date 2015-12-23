@@ -35,56 +35,21 @@
 #include "q3ContactSolver.h"
 #include "q3Island.h"
 
-typedef q3ContactState q3ContactStateOcl;
-
-struct cl_vec3
+struct q3ContactPlan
 {
-    cl_float3 cl;
-
-    cl_vec3& operator=( const q3Vec3& vec)
-    {
-        cl.s[0] = vec.v[0];
-        cl.s[1] = vec.v[1];
-        cl.s[2] = vec.v[2];
-    }
-};
-
-struct cl_vec3x3
-{
-    cl_vec3 ex;
-	cl_vec3 ey;
-	cl_vec3 ez;
-
-    cl_vec3x3& operator=( const q3Mat3& mat )
-    {
-        ex = mat.ex;
-        ey = mat.ey;
-        ez = mat.ez;
-    }
-};
-
-struct q3BodyInfoOcl
-{
-    cl_vec3 center;
-	cl_vec3x3 i;      // Inverse inertia tensor
-	cl_float m;         // Inverse mass
-};
-
-struct q3ContactConstraintStateOcl
-{
-	cl_vec3 tangentVectors[ 2 ];	// Tangent vectors
-	cl_vec3 normal;               // From A to B
-	cl_float restitution;
-	cl_float friction;
-};
-
-struct q3ContactInfoOcl
-{
-    cl_uint contactStateIndex;
     cl_uint contactConstraintStateIndex;
-    cl_uint vIndex;                 // Index to velocity and bodyInfo arrays
-    // It's possible to determine according to index (starting with 0: even - A, odd - B)
-    //i32 isA;                   // Whether it's A or B, so we can use correct normal
+    cl_uint contactStateIndex;
+
+    bool operator< (const q3ContactPlan &b) const
+    {
+        if(contactConstraintStateIndex < b.contactConstraintStateIndex)
+        {
+            return true;
+        }
+
+        return contactConstraintStateIndex == b.contactConstraintStateIndex
+                && contactStateIndex < b.contactStateIndex;
+    }
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -115,20 +80,12 @@ struct q3ContactSolverOcl : q3ContactSolver
     cl::Kernel m_clKernel;
     cl::CommandQueue m_clQueue;
     cl::Buffer *m_clBufferVelocity;
-    cl::Buffer *m_clBufferBodyInfo;
-    cl::Buffer *m_clBufferContactInfo;
-    cl::Buffer *m_clBufferContactState;
     cl::Buffer *m_clBufferContactConstraintState;
     cl::Buffer *m_clBufferBatches;
     GarbageCollector m_clGC;
 
-    std::vector<cl_uint> m_clBatches;
+    std::vector<q3ContactPlan> m_clBatches;
     std::vector<cl_uint> m_clBatchSizes;
-
-    q3ContactConstraintStateOcl *m_clContactConstraints;
-    q3ContactStateOcl *m_clContactStates;
-    q3BodyInfoOcl *m_clBodyInfos;
-    q3ContactInfoOcl *m_clContactInfos;
 
     u32 m_clContactCount;
     u32 m_clContactStateCount;

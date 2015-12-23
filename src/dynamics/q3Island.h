@@ -60,19 +60,22 @@ struct q3ContactState
 struct q3ContactConstraintState
 {
 	q3ContactState contacts[ 8 ];
-	i32 contactCount;
 	q3Vec3 tangentVectors[ 2 ];	// Tangent vectors
 	q3Vec3 normal;				// From A to B
 	q3Vec3 centerA;
 	q3Vec3 centerB;
 	q3Mat3 iA;
 	q3Mat3 iB;
+	i32 contactCount;
 	r32 mA;
 	r32 mB;
 	r32 restitution;
 	r32 friction;
 	i32 indexA;
 	i32 indexB;
+#ifdef WITH_OCL
+    i32 _padding;
+#endif // WITH_OCL
 };
 
 struct q3Island

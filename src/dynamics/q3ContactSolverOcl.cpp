@@ -68,15 +68,16 @@ cl_int clErr;
 //--------------------------------------------------------------------------------------------------
 q3ContactSolverOcl::q3ContactSolverOcl()
 {
+
+    assert_size(i32, sizeof(cl_int));
+    assert_size(r32, sizeof(cl_float));
     assert_size(q3Vec3, sizeof(cl_float3));
-    assert_size(cl_vec3, sizeof(cl_float3));
-    assert_size(cl_vec3x3, 48);
-    assert_size(q3Mat3, sizeof(cl_vec3x3));
-    assert_size(q3BodyInfoOcl, 80);
-    assert_size(q3VelocityState, 32);
-    assert_size(q3ContactInfoOcl, 12);
-    assert_size(q3ContactStateOcl, 64);
-    assert_size(q3ContactConstraintStateOcl, 64);
+    assert_size(q3Mat3, sizeof(cl_float3) * 3);
+    assert_size(q3VelocityState, sizeof(cl_float3) * 2);
+    assert_size(q3ContactState, 64);
+    assert_size(q3ContactConstraintState, 720);
+    assert_size(q3ContactPlan, sizeof(cl_int) * 2);
+
 
     m_clContext = createCLContext(CL_DEVICE_TYPE_CPU);
     m_clQueue = cl::CommandQueue(m_clContext);
@@ -98,10 +99,6 @@ void q3ContactSolverOcl::Initialize( q3Island *island )
     m_velocities = m_island->m_velocities;
     m_enableFriction = island->m_enableFriction;
 
-    m_clContactStates = NULL;
-    m_clContactInfos = NULL;
-    m_clBodyInfos = NULL;
-    m_clContactConstraints = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -111,41 +108,25 @@ void q3ContactSolverOcl::ShutDown( void )
     {
         clErr = m_clQueue.enqueueReadBuffer(*m_clBufferVelocity, true, 0, sizeof(q3VelocityState) * m_island->m_bodyCount, m_velocities);
         CHECK_CL_ERROR("Read buffer q3VelocityState");
-        clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, true, 0, sizeof(q3ContactStateOcl) * m_clContactStateCount, m_clContactStates);
-        CHECK_CL_ERROR("Read buffer q3ContactStateOcl");
+        clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactConstraintState, true, 0, sizeof(q3ContactConstraintState) * m_contactCount, m_contacts);
+        CHECK_CL_ERROR("Read buffer q3ContactConstraintState");
+    }
 
-        q3ContactStateOcl *s = m_clContactStates;
-        for(i32 i = 0; i < m_contactCount; i++) {
-            q3ContactConstraintState *ccs = m_contacts + i;
+    for ( i32 i = 0; i < m_contactCount; ++i )
+    {
+        q3ContactConstraintState *c = m_contacts + i;
+        q3ContactConstraint *cc = m_island->m_contacts[ i ];
 
-            for(i32 j = 0; j < ccs->contactCount; j++)
-            {
-                ccs->contacts[j] = *s;
-
-                s++;
-            }
+        for ( i32 j = 0; j < c->contactCount; ++j )
+        {
+            q3Contact *oc = cc->manifold.contacts + j;
+            q3ContactState *cs = c->contacts + j;
+            oc->normalImpulse = cs->normalImpulse;
+            oc->tangentImpulse[ 0 ] = cs->tangentImpulse[ 0 ];
+            oc->tangentImpulse[ 1 ] = cs->tangentImpulse[ 1 ];
         }
     }
 
-  for ( i32 i = 0; i < m_contactCount; ++i )
-  {
-    q3ContactConstraintState *c = m_contacts + i;
-    q3ContactConstraint *cc = m_island->m_contacts[ i ];
-
-    for ( i32 j = 0; j < c->contactCount; ++j )
-    {
-      q3Contact *oc = cc->manifold.contacts + j;
-      q3ContactState *cs = c->contacts + j;
-      oc->normalImpulse = cs->normalImpulse;
-      oc->tangentImpulse[ 0 ] = cs->tangentImpulse[ 0 ];
-      oc->tangentImpulse[ 1 ] = cs->tangentImpulse[ 1 ];
-    }
-  }
-
-    delete[] m_clContactStates;
-    delete[] m_clContactInfos;
-    delete[] m_clBodyInfos;
-    delete[] m_clContactConstraints;
 
     m_clGC.deleteAllMemObjects();
 
@@ -219,150 +200,83 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
     m_velocities[ cs->indexB ].w = wB;
   }
 
-    if(PASSED_ACC_THRESHOLD) {
-        // Reorganize data for OpenCL
-        //---------------------------
-        m_clContactStateCount = 0;
+  if(PASSED_ACC_THRESHOLD)
+  {
+    m_clBufferVelocity = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3VelocityState) * m_island->m_bodyCount, m_velocities, &clErr);
+    CHECK_CL_ERROR("Buffer q3VelocityState");
+    m_clBufferContactConstraintState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactConstraintState) * m_contactCount, m_contacts, &clErr);
+    CHECK_CL_ERROR("Buffer q3ContactConstraintStateOcl");
 
-        for(i32 i = 0; i < m_contactCount; i++) {
-            m_clContactStateCount += m_contacts[i].contactCount;
-        }
+    m_clGC.addMemObject(m_clBufferVelocity);
+    m_clGC.addMemObject(m_clBufferContactConstraintState);
 
-        m_clContactStates = new q3ContactStateOcl[m_clContactStateCount];
+    std::vector<unsigned> bodyAllocationTable(m_island->m_bodyCount, 0);
 
-        m_clContactCount = m_clContactStateCount * 2; // Contacts are duplicated for both bodies
+    unsigned contactCount = 0;
+    std::set<q3ContactPlan> contactsToPlan;
+    q3ContactPlan plan;
+    for(cl_uint i = 0; i < m_contactCount; i++)
+    {
+        contactCount += m_contacts[i].contactCount;
 
-        m_clContactInfos = new q3ContactInfoOcl[m_clContactCount];
-        m_clBodyInfos = new q3BodyInfoOcl[m_island->m_bodyCount];
-        m_clContactConstraints = new q3ContactConstraintStateOcl[m_contactCount];
-
-        q3ContactInfoOcl *ci = m_clContactInfos;
-        i32 idx = 0;
-        for(i32 i = 0; i < m_contactCount; i++) {
-
-            q3ContactConstraintStateOcl *ccso = m_clContactConstraints + i;
-            q3ContactConstraintState *ccs = m_contacts + i;
-
-            copyBodyInfo(m_clBodyInfos, ccs, A);
-            copyBodyInfo(m_clBodyInfos, ccs, B);
-
-            ccso->friction = ccs->friction;
-            ccso->normal = ccs->normal;
-            ccso->restitution = ccs->restitution;
-            ccso->tangentVectors[0] = ccs->tangentVectors[0];
-            ccso->tangentVectors[1] = ccs->tangentVectors[1];
-
-            for(i32 j = 0; j < ccs->contactCount; j++)
-            {
-                m_clContactStates[idx] = ccs->contacts[j];
-
-                ci->contactConstraintStateIndex = i;
-                ci->contactStateIndex = idx;
-                ci->vIndex = ccs->indexA;
-                ci++;
-
-                ci->contactConstraintStateIndex = i;
-                ci->contactStateIndex = idx;
-                ci->vIndex = ccs->indexB;
-                ci++;
-
-                idx++;
-            }
-        }
-
-        m_clBufferBodyInfo = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY, sizeof(q3BodyInfoOcl) * m_island->m_bodyCount, NULL, &clErr);
-        CHECK_CL_ERROR("Buffer q3BodyInfoOcl");
-        m_clBufferVelocity = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityState) * m_island->m_bodyCount, NULL, &clErr);
-        CHECK_CL_ERROR("Buffer q3VelocityState");
-        m_clBufferContactInfo = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY, sizeof(q3ContactInfoOcl) * m_clContactCount, NULL, &clErr);
-        CHECK_CL_ERROR("Buffer q3ContactInfoOcl");
-        m_clBufferContactState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE, sizeof(q3ContactStateOcl) * m_clContactStateCount, NULL, &clErr);
-        CHECK_CL_ERROR("Buffer q3ContactStateOcl");
-        m_clBufferContactConstraintState = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY, sizeof(q3ContactConstraintStateOcl) * m_contactCount, NULL, &clErr);
-        CHECK_CL_ERROR("Buffer q3ContactConstraintStateOcl");
-
-        m_clGC.addMemObject(m_clBufferBodyInfo);
-        m_clGC.addMemObject(m_clBufferVelocity);
-        m_clGC.addMemObject(m_clBufferContactInfo);
-        m_clGC.addMemObject(m_clBufferContactState);
-        m_clGC.addMemObject(m_clBufferContactConstraintState);
-
-        clErr = m_clQueue.enqueueWriteBuffer(*m_clBufferBodyInfo, false, 0, sizeof(q3BodyInfoOcl) * m_island->m_bodyCount, m_clBodyInfos, NULL, NULL);
-        CHECK_CL_ERROR("Write buffer q3BodyInfoOcl");
-        clErr = m_clQueue.enqueueWriteBuffer(*m_clBufferVelocity, false, 0, sizeof(q3VelocityState) * m_island->m_bodyCount, m_velocities, NULL, NULL);
-        CHECK_CL_ERROR("Write buffer q3VelocityState");
-        clErr = m_clQueue.enqueueWriteBuffer(*m_clBufferContactInfo, false, 0, sizeof(q3ContactInfoOcl) * m_clContactCount, m_clContactInfos, NULL, NULL);
-        CHECK_CL_ERROR("Write buffer q3ContactInfoOcl");
-        clErr = m_clQueue.enqueueWriteBuffer(*m_clBufferContactState, false, 0, sizeof(q3ContactStateOcl) * m_clContactStateCount, m_clContactStates, NULL, NULL);
-        CHECK_CL_ERROR("Write buffer q3ContactStateOcl");
-        clErr = m_clQueue.enqueueWriteBuffer(*m_clBufferContactConstraintState, false, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_clContactConstraints, NULL, NULL);
-        CHECK_CL_ERROR("Write buffer q3ContactConstraintStateOcl");
-
-
-        std::vector<i32> bodyAllocationTable(m_island->m_bodyCount, 0);
-        std::set<i32> contactsToPlan;
-
-        for(i32 i = 0; i < m_clContactCount; i++) {
-            contactsToPlan.insert(i);
-        }
-
-        m_clBatches.reserve(m_clContactCount);
-
-        cl_uint batchIndex = 1;
-        cl_uint batchOffset = 0;
-        do
+        plan.contactConstraintStateIndex = i;
+        for(cl_uint j = 0; j < m_contacts[i].contactCount; j++)
         {
-            auto it = contactsToPlan.begin();
-            auto end = contactsToPlan.end();
-            while(it != end) {
-                cl_uint idx = m_clContactInfos[*it].vIndex;
-                if(bodyAllocationTable[idx] < batchIndex)
-                {
-//                    std::cout << "Planning body " << std::setw(6) << idx << " with contact " << *it << std::endl;
-                    bodyAllocationTable[idx] = batchIndex;
-                    it = contactsToPlan.erase(it);
-                    m_clBatches.push_back(*it);
-                }
-                else
-                {
-                    ++it;
-                }
-            }
-
-//            std::cout << "Batch size:" << m_clBatches.size() - batchOffset << std::endl;
-            m_clBatchSizes.push_back(m_clBatches.size() - batchOffset);
-            batchOffset = m_clBatches.size();
-
-            batchIndex++;
-
-        } while(!contactsToPlan.empty());
-
-//        std::cout << "Batches:" << m_clBatchSizes.size() << std::endl;
-
-
-        m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY, sizeof(i32) * m_clBatches.size(), NULL, &clErr);
-        CHECK_CL_ERROR("Buffer batches");
-
-        m_clGC.addMemObject(m_clBufferBatches);
-
-        clErr = m_clQueue.enqueueWriteBuffer(*m_clBufferBatches, false, 0, sizeof(i32) * m_clBatches.size(), m_clBatches.data());
-        CHECK_CL_ERROR("Write buffer batches");
-
-        clErr = m_clKernel.setArg(0, *m_clBufferBodyInfo);
-        CHECK_CL_ERROR("Set kernel param 0");
-        clErr = m_clKernel.setArg(1, *m_clBufferVelocity);
-        CHECK_CL_ERROR("Set kernel param 1");
-        clErr = m_clKernel.setArg(2, *m_clBufferContactInfo);
-        CHECK_CL_ERROR("Set kernel param 2");
-        clErr = m_clKernel.setArg(3, *m_clBufferContactState);
-        CHECK_CL_ERROR("Set kernel param 3");
-        clErr = m_clKernel.setArg(4, *m_clBufferContactConstraintState);
-        CHECK_CL_ERROR("Set kernel param 4");
-        clErr = m_clKernel.setArg(5, *m_clBufferBatches);
-        CHECK_CL_ERROR("Set kernel param 5");
-        clErr = m_clKernel.setArg(8, (cl_int)m_enableFriction);
-        CHECK_CL_ERROR("Set kernel param 8");
+            plan.contactStateIndex = j;
+            contactsToPlan.insert(plan);
+        }
     }
+
+    m_clBatches.reserve(m_clContactCount);
+
+    cl_uint batchIndex = 1;
+    cl_uint batchOffset = 0;
+    do
+    {
+        auto it = contactsToPlan.begin();
+        auto end = contactsToPlan.end();
+        q3ContactConstraintState *cc;
+        while(it != end) {
+            cc = m_contacts + it->contactConstraintStateIndex;
+
+            if(bodyAllocationTable[cc->indexA] < batchIndex && bodyAllocationTable[cc->indexB] < batchIndex)
+            {
+                bodyAllocationTable[cc->indexA] = batchIndex;
+                bodyAllocationTable[cc->indexB] = batchIndex;
+
+                m_clBatches.push_back(*it);
+
+                it = contactsToPlan.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+
+    //            std::cout << "Batch size:" << m_clBatches.size() - batchOffset << std::endl;
+        m_clBatchSizes.push_back(m_clBatches.size() - batchOffset);
+        batchOffset = m_clBatches.size();
+
+        batchIndex++;
+
+    } while(!contactsToPlan.empty());
+
+    m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactPlan) * m_clBatches.size(), m_clBatches.data(), &clErr);
+    CHECK_CL_ERROR("Buffer batches");
+
+    m_clGC.addMemObject(m_clBufferBatches);
+
+    clErr = m_clKernel.setArg(0, *m_clBufferVelocity);
+    CHECK_CL_ERROR("Set kernel param 0");
+    clErr = m_clKernel.setArg(1, *m_clBufferContactConstraintState);
+    CHECK_CL_ERROR("Set kernel param 1");
+    clErr = m_clKernel.setArg(2, *m_clBufferBatches);
+    CHECK_CL_ERROR("Set kernel param 2");
+    clErr = m_clKernel.setArg(5, (cl_int)m_enableFriction);
+    CHECK_CL_ERROR("Set kernel param 5");
+
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -374,10 +288,10 @@ void q3ContactSolverOcl::Solve( )
         cl::NDRange local(64);
         for(cl_uint batchSize : m_clBatchSizes)
         {
-            clErr = m_clKernel.setArg(6, offset);
-            CHECK_CL_ERROR("Set kernel param 6");
-            clErr = m_clKernel.setArg(7, batchSize);
-            CHECK_CL_ERROR("Set kernel param 7");
+            clErr = m_clKernel.setArg(3, offset);
+            CHECK_CL_ERROR("Set kernel param 3");
+            clErr = m_clKernel.setArg(4, batchSize);
+            CHECK_CL_ERROR("Set kernel param 4");
 
             offset += batchSize;
 
