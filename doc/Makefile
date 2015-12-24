@@ -1,10 +1,10 @@
 IMAGES=$(patsubst %.svg,%.pdf, $(wildcard img/*.svg))
 
 doc: $(IMAGES)
-	$(MAKE) -B dokumentace.pdf
-	$(MAKE) -B dokumentace.bbl
-	$(MAKE) -B dokumentace.pdf
-	$(MAKE) -B dokumentace.pdf
+	$(MAKE) -B gmu.pdf
+	# $(MAKE) -B gmu.bbl
+	# $(MAKE) -B gmu.pdf
+	# $(MAKE) -B gmu.pdf
 
 pres:
 	$(MAKE) -B prezentace.pdf
