@@ -32,8 +32,8 @@
 
 #include "../math/q3Math.h"
 #include "../common/q3Settings.h"
-#include "q3ContactSolver.h"
 #include "q3Island.h"
+#include "q3ContactSolverCpu.h"
 
 struct q3ContactPlan
 {
@@ -55,11 +55,10 @@ struct q3ContactPlan
 //--------------------------------------------------------------------------------------------------
 // q3ContactSolverOcl
 //--------------------------------------------------------------------------------------------------
-struct q3ContactSolverOcl : q3ContactSolver
+struct q3ContactSolverOcl : q3ContactSolverCpu
 {
 	q3ContactSolverOcl();
 
-	void Initialize( q3Island *island ) override;
 	void ShutDown( void ) override;
 
 	void PreSolve( r32 dt ) override;
