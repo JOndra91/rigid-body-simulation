@@ -46,7 +46,7 @@ bool paused = false;
 bool singleStep = false;
 bool enableSleep = true;
 bool enableFriction = true;
-int velocityIterations = 10;
+int velocityIterations = 50;
 i32 mouseX;
 i32 mouseY;
 bool mouseLeftDown;
