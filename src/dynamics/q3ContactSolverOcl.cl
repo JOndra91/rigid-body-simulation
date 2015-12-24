@@ -4,27 +4,27 @@ typedef float3 q3Vec3;
 
 typedef struct
 {
-  float3 ex;
-  float3 ey;
-  float3 ez;
+  q3Vec3 ex;
+  q3Vec3 ey;
+  q3Vec3 ez;
 } q3Mat3;
 
 typedef struct
 {
-  float3 w;
-  float3 v;
+  q3Vec3 w;
+  q3Vec3 v;
 } q3VelocityState;
 
 typedef struct
 {
-  float3 ra;          // Vector from C.O.M to contact position
-  float3 rb;          // Vector from C.O.M to contact position
-  float penetration;      // Depth of penetration from collision
-  float normalImpulse;      // Accumulated normal impulse
-  float tangentImpulse[ 2 ];  // Accumulated friction impulse
-  float bias;          // Restitution + baumgarte
-  float normalMass;        // Normal constraint mass
-  float tangentMass[ 2 ];    // Tangent constraint mass
+  q3Vec3 ra;          // Vector from C.O.M to contact position
+  q3Vec3 rb;          // Vector from C.O.M to contact position
+  r32 penetration;      // Depth of penetration from collision
+  r32 normalImpulse;      // Accumulated normal impulse
+  r32 tangentImpulse[ 2 ];  // Accumulated friction impulse
+  r32 bias;          // Restitution + baumgarte
+  r32 normalMass;        // Normal constraint mass
+  r32 tangentMass[ 2 ];    // Tangent constraint mass
 } q3ContactState;
 
 typedef struct
