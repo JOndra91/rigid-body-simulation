@@ -86,9 +86,6 @@ struct q3ContactSolverOcl : q3ContactSolver
 
     std::vector<q3ContactPlan> m_clBatches;
     std::vector<cl_uint> m_clBatchSizes;
-
-    u32 m_clContactCount;
-    u32 m_clContactStateCount;
 };
 
 #endif // Q3CONTACTSOLVEROCL_H

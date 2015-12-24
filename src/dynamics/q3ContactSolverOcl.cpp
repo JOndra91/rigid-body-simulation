@@ -212,12 +212,12 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
 
     std::vector<unsigned> bodyAllocationTable(m_island->m_bodyCount, 0);
 
-    unsigned contactCount = 0;
+    unsigned contactCountTotal = 0;
     std::set<q3ContactPlan> contactsToPlan;
     q3ContactPlan plan;
     for(cl_uint i = 0; i < m_contactCount; i++)
     {
-        contactCount += m_contacts[i].contactCount;
+        contactCountTotal += m_contacts[i].contactCount;
 
         plan.contactConstraintStateIndex = i;
         for(cl_uint j = 0; j < m_contacts[i].contactCount; j++)
@@ -227,7 +227,7 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
         }
     }
 
-    m_clBatches.reserve(m_clContactCount);
+    m_clBatches.reserve(contactCountTotal);
 
     cl_uint batchIndex = 1;
     cl_uint batchOffset = 0;
@@ -262,7 +262,7 @@ void q3ContactSolverOcl::PreSolve( r32 dt )
 
     } while(!contactsToPlan.empty());
 
-    m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactPlan) * m_clBatches.size(), m_clBatches.data(), &clErr);
+    m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactPlan) * contactCountTotal, m_clBatches.data(), &clErr);
     CHECK_CL_ERROR("Buffer batches");
 
     m_clGC.addMemObject(m_clBufferBatches);
