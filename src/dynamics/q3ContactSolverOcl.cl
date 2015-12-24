@@ -86,7 +86,7 @@ kernel void solve(global q3VelocityState *m_velocities, global q3ContactConstrai
 {
   uint global_x = (uint)get_global_id(0);
 
-  if(global_x > batchSize)
+  if(global_x >= batchSize)
   {
     return;
   }
