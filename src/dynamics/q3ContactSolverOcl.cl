@@ -117,56 +117,72 @@ kernel void solve(global q3VelocityState *m_velocities, global q3ContactConstrai
 
   global q3ContactState *c = cs->contacts + plan->contactStateIndex;
 
+  r32 c_normalImpulse = c->normalImpulse;
+  r32 cs_mA = cs->mA;
+  r32 cs_mB = cs->mB;
+
+  q3Mat3 cs_iA = cs->iA;
+  q3Mat3 cs_iB = cs->iB;
+
+  q3Vec3 cs_normal = cs->normal;
+  q3Vec3 c_ra = c->ra;
+  q3Vec3 c_rb = c->rb;
+
   // relative velocity at contact
-  q3Vec3 dv = vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra );
+  q3Vec3 dv = vB + q3Cross( wB, c_rb ) - vA - q3Cross( wA, c_ra );
 
   // Friction
   if ( m_enableFriction )
   {
     for ( i32 i = 0; i < 2; ++i )
     {
-      r32 lambda = -q3Dot( dv, cs->tangentVectors[ i ] ) * c->tangentMass[ i ];
+      q3Vec3 cs_tangentVectorsI = cs->tangentVectors[ i ];
+      r32 c_tangentImpulseI = c->tangentImpulse[ i ];
+
+      r32 lambda = -q3Dot( dv, cs_tangentVectorsI ) * c->tangentMass[ i ];
 
       // Calculate frictional impulse
-      r32 maxLambda = cs->friction * c->normalImpulse;
+      r32 maxLambda = cs->friction * c_normalImpulse;
 
       // Clamp frictional impulse
-      r32 oldPT = c->tangentImpulse[ i ];
-      c->tangentImpulse[ i ] = q3Clamp( -maxLambda, maxLambda, oldPT + lambda );
-      lambda = c->tangentImpulse[ i ] - oldPT;
+      r32 oldPT = c_tangentImpulseI;
+      c_tangentImpulseI = q3Clamp( -maxLambda, maxLambda, oldPT + lambda );
+      c->tangentImpulse[ i ] = c_tangentImpulseI;
+      lambda = c_tangentImpulseI - oldPT;
 
       // Apply friction impulse
-      q3Vec3 impulse = cs->tangentVectors[ i ] * lambda;
-      vA -= impulse * cs->mA;
-      wA -= mvMul(cs->iA, q3Cross( c->ra, impulse ));
+      q3Vec3 impulse = cs_tangentVectorsI * lambda;
+      vA -= impulse * cs_mA;
+      wA -= mvMul(cs_iA, q3Cross( c_ra, impulse ));
 
-      vB += impulse * cs->mB;
-      wB += mvMul(cs->iB, q3Cross( c->rb, impulse ));
+      vB += impulse * cs_mB;
+      wB += mvMul(cs_iB, q3Cross( c_rb, impulse ));
     }
   }
 
   // Normal
   {
-    dv = vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra );
+    dv = vB + q3Cross( wB, c_rb ) - vA - q3Cross( wA, c_ra );
 
     // Normal impulse
-    r32 vn = q3Dot( dv, cs->normal );
+    r32 vn = q3Dot( dv, cs_normal );
 
     // Factor in positional bias to calculate impulse scalar j
     r32 lambda = c->normalMass * (-vn + c->bias);
 
     // Clamp impulse
-    r32 tempPN = c->normalImpulse;
-    c->normalImpulse = q3Max( tempPN + lambda, 0.0f );
-    lambda = c->normalImpulse - tempPN;
+    r32 tempPN = c_normalImpulse;
+    c_normalImpulse = q3Max( tempPN + lambda, 0.0f );
+    c->normalImpulse = c_normalImpulse;
+    lambda = c_normalImpulse - tempPN;
 
     // Apply impulse
-    q3Vec3 impulse = cs->normal * lambda;
-    vA -= impulse * cs->mA;
-    wA -= mvMul(cs->iA, q3Cross( c->ra, impulse ));
+    q3Vec3 impulse = cs_normal * lambda;
+    vA -= impulse * cs_mA;
+    wA -= mvMul(cs_iA, q3Cross( c_ra, impulse ));
 
-    vB += impulse * cs->mB;
-    wB += mvMul(cs->iB, q3Cross( c->rb, impulse ));
+    vB += impulse * cs_mB;
+    wB += mvMul(cs_iB, q3Cross( c_rb, impulse ));
   }
 
   m_velocities[ cs->indexA ].v = vA;
