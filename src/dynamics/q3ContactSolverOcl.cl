@@ -80,9 +80,9 @@ q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
   );
 }
 
-// m_contacts, m_velocities
+// constant modifier doesn't work on nVidia
 kernel void solve(global q3VelocityState *m_velocities, global q3ContactConstraintState *m_contacts,
-    constant q3ContactPlan *batches, uint batchOffset, uint batchSize, int m_enableFriction)
+    global q3ContactPlan *batches, uint batchOffset, uint batchSize, int m_enableFriction)
 {
   uint global_x = (uint)get_global_id(0);
 
@@ -106,7 +106,7 @@ kernel void solve(global q3VelocityState *m_velocities, global q3ContactConstrai
   //
   // return;
 
-  const constant q3ContactPlan *plan = batches + totalOffset;
+  global q3ContactPlan *plan = batches + totalOffset;
 
   global q3ContactConstraintState *cs = m_contacts + plan->contactConstraintStateIndex;
 
