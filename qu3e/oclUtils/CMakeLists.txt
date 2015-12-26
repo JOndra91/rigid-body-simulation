@@ -43,16 +43,16 @@ add_library (OCL-Utilities OpenCL/cl.hpp openCLUtilities.hpp openCLUtilities.cpp
 target_link_libraries(OCL-Utilities ${OCL-Utilities_LINK_LIBRARIES})
 
 #------------------------------------------------------------------------------
-# Configure file for find_package module 
+# Configure file for find_package module
 #------------------------------------------------------------------------------
 
 set( OCL-Utilities_INCLUDE_DIRS
     ${OCL-Utilities_SOURCE_DIR}
-    ) 
+    )
 
 set(OCL-Utilities_LIBRARY_DIRS
     ${OCL-Utilities_BINARY_DIR}
-    )    
+    )
 
 configure_file (
     "${PROJECT_SOURCE_DIR}/CMake/OCL-UtilitiesConfig.cmake.in"

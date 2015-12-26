@@ -43,3 +43,4 @@ nbproject/
 build_*/
 
 !cmake/**
+!FindOpenCL.cmake
