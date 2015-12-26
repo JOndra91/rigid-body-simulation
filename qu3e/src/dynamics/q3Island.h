@@ -78,9 +78,21 @@ struct q3ContactConstraintState
 #endif // WITH_OCL
 };
 
+#ifdef WITH_OCL
+	enum class q3OpenCLDevice {
+		NONE,
+		CPU,
+		GPU,
+	};
+#endif // WITH_OCL
+
 struct q3Island
 {
+#ifdef WITH_OCL
+	q3Island(q3OpenCLDevice dev = q3OpenCLDevice::NONE);
+#else
 	q3Island();
+#endif // WITH_OCL
 	~q3Island();
 
 	void Solve( );

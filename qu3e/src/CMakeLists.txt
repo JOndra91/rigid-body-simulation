@@ -96,6 +96,29 @@ if(qu3e_use_gpu)
 		${qu3e_dynamics_srcs}
 		dynamics/q3ContactSolverOcl.cpp
 	)
+
+	find_program(PYTHON_3 python3)
+	find_program(PYTHON_4 python4)
+
+	message(${PYTHON_3})
+
+	if(NOT PYTHON_3)
+		message(FATAL_ERROR "Python3 is required.")
+	endif()
+
+	set(KERNELS_BINARY_DIR "${qu3e_BINARY_DIR}/kernels")
+	file(MAKE_DIRECTORY "${KERNELS_BINARY_DIR}")
+
+	add_custom_command(
+		OUTPUT "${KERNELS_BINARY_DIR}/q3ContactSolverOcl.cl.str"
+		COMMAND "${qu3e_SOURCE_DIR}/scripts/fileToString"
+			"${qu3e_SOURCE_DIR}/kernels/q3ContactSolverOcl.cl" "${KERNELS_BINARY_DIR}/q3ContactSolverOcl.cl.str"
+		MAIN_DEPENDENCY "${qu3e_SOURCE_DIR}/kernels/q3ContactSolverOcl.cl"
+	)
+
+	add_custom_target(kernels
+		DEPENDS "${KERNELS_BINARY_DIR}/q3ContactSolverOcl.cl.str"
+	)
 endif()
 
 if(qu3e_build_shared)
@@ -123,6 +146,8 @@ if(qu3e_build_shared)
 	)
 
 	if(qu3e_use_gpu)
+		add_dependencies(qu3e_shared kernels)
+		include_directories("${KERNELS_BINARY_DIR}")
 		target_link_libraries(qu3e_shared OCL-Utilities)
 	endif()
 endif()
@@ -152,6 +177,8 @@ if(qu3e_build_static)
 	)
 
 	if(qu3e_use_gpu)
+		add_dependencies(qu3e kernels)
+		include_directories("${KERNELS_BINARY_DIR}")
 		target_link_libraries(qu3e OCL-Utilities)
 	endif()
 

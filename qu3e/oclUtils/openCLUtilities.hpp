@@ -47,9 +47,11 @@ cl::Context createCLContextFromArguments(int argc, char ** argv);
 
 cl::Context createCLContext(cl_device_type type = CL_DEVICE_TYPE_ALL, cl_vendor vendor = VENDOR_ANY);
 
-cl::Platform getPlatform(cl_device_type = CL_DEVICE_TYPE_ALL, cl_vendor vendor = VENDOR_ANY); 
+cl::Platform getPlatform(cl_device_type = CL_DEVICE_TYPE_ALL, cl_vendor vendor = VENDOR_ANY);
 
 cl::Program buildProgramFromSource(cl::Context context, std::string filename, std::string buildOptions = "");
+
+cl::Program buildProgramFromSourceString(cl::Context context, std::string filename, std::string buildOptions = "");
 
 cl::Program buildProgramFromBinary(cl::Context context, std::string filename, std::string buildOptions = "");
 

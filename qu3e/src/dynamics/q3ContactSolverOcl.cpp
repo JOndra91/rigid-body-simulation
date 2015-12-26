@@ -39,12 +39,15 @@ cl_int clErr;
         } \
     } while(0)
 
+std::string kernelSource =
+#include "q3ContactSolverOcl.cl.str"
+;
+
 //--------------------------------------------------------------------------------------------------
 // q3ContactSolverOcl
 //--------------------------------------------------------------------------------------------------
-q3ContactSolverOcl::q3ContactSolverOcl()
+q3ContactSolverOcl::q3ContactSolverOcl(cl_device_type dev)
 {
-
     assert_size(i32, sizeof(cl_int));
     assert_size(r32, sizeof(cl_float));
     assert_size(q3Vec3, sizeof(cl_float3));
@@ -55,10 +58,10 @@ q3ContactSolverOcl::q3ContactSolverOcl()
     assert_size(q3ContactPlan, sizeof(cl_int) * 2);
 
 
-    m_clContext = createCLContext(CL_DEVICE_TYPE_CPU);
+    m_clContext = createCLContext(dev);
     m_clQueue = cl::CommandQueue(m_clContext);
 
-    m_clProgram = buildProgramFromSource(m_clContext, "q3ContactSolverOcl.cl");
+    m_clProgram = buildProgramFromSourceString(m_clContext, kernelSource);
 
     std::vector<cl::Kernel> kernels;
     m_clProgram.createKernels(&kernels);

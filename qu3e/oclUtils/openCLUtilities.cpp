@@ -39,7 +39,7 @@ cl::Platform getPlatform(cl_device_type type, cl_vendor vendor) {
                     platformID = i;
                     break;
                 } catch(cl::Error e) {
-                   continue; 
+                   continue;
                 }
             }
         }
@@ -51,12 +51,12 @@ cl::Platform getPlatform(cl_device_type type, cl_vendor vendor) {
                 platformID = i;
                 break;
             } catch(cl::Error e) {
-               continue; 
+               continue;
             }
         }
     }
 
-    if(platformID == -1) 
+    if(platformID == -1)
         throw cl::Error(1, "No compatible OpenCL platform found");
 
     cl::Platform platform = platforms[platformID];
@@ -97,7 +97,7 @@ cl::Context createCLContext(cl_device_type type, cl_vendor vendor) {
 
     // Use the preferred platform and create a context
     cl_context_properties cps[] = {
-        CL_CONTEXT_PLATFORM, 
+        CL_CONTEXT_PLATFORM,
         (cl_context_properties)(platform)(),
         0
     };
@@ -217,29 +217,34 @@ cl::Program buildProgramFromBinary(cl::Context context, std::string filename, st
 cl::Program buildProgramFromSource(cl::Context context, std::string filename, std::string buildOptions) {
         // Read source file
         std::ifstream sourceFile(filename.c_str());
-        if(sourceFile.fail()) 
+        if(sourceFile.fail())
             throw cl::Error(1, "Failed to open OpenCL source file");
         std::string sourceCode(
             std::istreambuf_iterator<char>(sourceFile),
             (std::istreambuf_iterator<char>()));
-        cl::Program::Sources source(1, std::make_pair(sourceCode.c_str(), sourceCode.length()+1));
 
-        // Make program of the source code in the context
-        cl::Program program = cl::Program(context, source);
+        buildProgramFromSourceString(context, sourceCode, buildOptions);
 
-        VECTOR_CLASS<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
-    
-        // Build program for these specific devices
-        try{
-            program.build(devices, buildOptions.c_str());
-        } catch(cl::Error error) {
-            if(error.err() == CL_BUILD_PROGRAM_FAILURE) {
-                std::cout << "Build log:" << std::endl << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[0]) << std::endl;
-            }
-            throw error;
-        } 
-        return program;
+}
 
+cl::Program buildProgramFromSourceString(cl::Context context, std::string &sourceCode, std::string buildOptions) {
+  cl::Program::Sources source(1, std::make_pair(sourceCode.c_str(), sourceCode.length()+1));
+
+  // Make program of the source code in the context
+  cl::Program program = cl::Program(context, source);
+
+  VECTOR_CLASS<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
+
+  // Build program for these specific devices
+  try{
+      program.build(devices, buildOptions.c_str());
+  } catch(cl::Error error) {
+      if(error.err() == CL_BUILD_PROGRAM_FAILURE) {
+          std::cout << "Build log:" << std::endl << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[0]) << std::endl;
+      }
+      throw error;
+  }
+  return program;
 }
 
 char *getCLErrorString(cl_int err) {

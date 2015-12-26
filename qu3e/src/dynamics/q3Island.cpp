@@ -15,11 +15,11 @@
 	including commercial applications, and to alter it and redistribute it
 	freely, subject to the following restrictions:
 	  1. The origin of this software must not be misrepresented; you must not
-	     claim that you wrote the original software. If you use this software
-	     in a product, an acknowledgment in the product documentation would be
-	     appreciated but is not required.
+		 claim that you wrote the original software. If you use this software
+		 in a product, an acknowledgment in the product documentation would be
+		 appreciated but is not required.
 	  2. Altered source versions must be plainly marked as such, and must not
-	     be misrepresented as being the original software.
+		 be misrepresented as being the original software.
 	  3. This notice may not be removed or altered from any source distribution.
 */
 //--------------------------------------------------------------------------------------------------
@@ -42,14 +42,32 @@
 //--------------------------------------------------------------------------------------------------
 // q3Island
 //--------------------------------------------------------------------------------------------------
+#ifndef WITH_OCL
+
 q3Island::q3Island()
 {
-#ifndef WITH_OCL
 	m_solver = new q3ContactSolverCpu;
-#else // WITH_OCL
-	m_solver = new q3ContactSolverOcl;
-#endif // WITH_OCL
 }
+
+#else // WITH_OCL
+
+q3Island::q3Island(q3OpenCLDevice dev)
+{
+	switch(dev)
+	{
+		case q3OpenCLDevice::NONE:
+			m_solver = new q3ContactSolverCpu;
+			break;
+		case q3OpenCLDevice::CPU:
+			m_solver = new q3ContactSolverOcl(CL_DEVICE_TYPE_CPU);
+			break;
+		case q3OpenCLDevice::GPU:
+			m_solver = new q3ContactSolverOcl(CL_DEVICE_TYPE_GPU);
+			break;
+	}
+}
+
+#endif // WITH_OCL
 //--------------------------------------------------------------------------------------------------
 q3Island::~q3Island()
 {
@@ -60,9 +78,9 @@ void q3Island::Solve( )
 {
 	assert( m_solver != NULL );
 
-    struct timeval begin, end, diff;
+	struct timeval begin, end, diff;
 
-    gettimeofday(&begin,NULL);
+	gettimeofday(&begin,NULL);
 
 	// Apply gravity
 	// Integrate velocities and create state buffers, calculate world inertia
@@ -101,48 +119,48 @@ void q3Island::Solve( )
 
 
 
-    gettimeofday(&end, NULL);
+	gettimeofday(&end, NULL);
 
-    timersub(&end, &begin, &diff);
+	timersub(&end, &begin, &diff);
 
 	// Create contact solver, pass in state buffers, create buffers for contacts
 	// Initialize velocity constraint for normal + friction and warm start
 	q3ContactSolver *contactSolver = m_solver;
 	contactSolver->Initialize( this );
 
-    gettimeofday(&begin,NULL);
+	gettimeofday(&begin,NULL);
 
 	contactSolver->PreSolve( m_dt );
 
-    gettimeofday(&end, NULL);
+	gettimeofday(&end, NULL);
 
-    timersub(&end, &begin, &diff);
+	timersub(&end, &begin, &diff);
 
-    std::cout << "Pre-Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+	std::cout << "Pre-Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 
 	// Solve contacts
-    gettimeofday(&begin,NULL);
+	gettimeofday(&begin,NULL);
 	for ( i32 i = 0; i < m_iterations; ++i )
 		contactSolver->Solve( );
 
-    gettimeofday(&end, NULL);
+	gettimeofday(&end, NULL);
 
-    timersub(&end, &begin, &diff);
+	timersub(&end, &begin, &diff);
 
-    std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+	std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 
 
-    gettimeofday(&begin,NULL);
+	gettimeofday(&begin,NULL);
 
 	contactSolver->ShutDown( );
 
-    gettimeofday(&end, NULL);
+	gettimeofday(&end, NULL);
 
-    timersub(&end, &begin, &diff);
+	timersub(&end, &begin, &diff);
 
-    std::cout << "ShutDown: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+	std::cout << "ShutDown: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 
-    gettimeofday(&begin,NULL);
+	gettimeofday(&begin,NULL);
 
 	// Copy back state buffers
 	// Integrate positions
@@ -164,9 +182,9 @@ void q3Island::Solve( )
 		body->m_tx.rotation = body->m_q.ToMat3( );
 	}
 
-    gettimeofday(&end, NULL);
+	gettimeofday(&end, NULL);
 
-    timersub(&end, &begin, &diff);
+	timersub(&end, &begin, &diff);
 
 	if ( m_allowSleep )
 	{

@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------------------------------
 /**
-@file	q3ContactSolverOcl.h
+@file  q3ContactSolverOcl.h
 
 @author Ondřej Janošík
 @date   24/12/2015
@@ -41,19 +41,19 @@ struct q3ContactPlan
 //--------------------------------------------------------------------------------------------------
 struct q3ContactSolverOcl : q3ContactSolverCpu
 {
-	q3ContactSolverOcl();
+    q3ContactSolverOcl(cl_device_type dev = CL_DEVICE_TYPE_DEFAULT);
 
-	void ShutDown( void ) override;
+    void ShutDown( void ) override;
 
-	void PreSolve( r32 dt ) override;
-	void Solve( void ) override;
+    void PreSolve( r32 dt ) override;
+    void Solve( void ) override;
 
-	q3Island *m_island;
-	q3ContactConstraintState *m_contacts;
-	u32 m_contactCount;
-	q3VelocityState *m_velocities;
+    q3Island *m_island;
+    q3ContactConstraintState *m_contacts;
+    u32 m_contactCount;
+    q3VelocityState *m_velocities;
 
-	bool m_enableFriction;
+    bool m_enableFriction;
 
     //-----------------------------------------------------------
     // Properties for OpenCL acceleration
