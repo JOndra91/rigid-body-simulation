@@ -98,9 +98,6 @@ if(qu3e_use_gpu)
 	)
 
 	find_program(PYTHON_3 python3)
-	find_program(PYTHON_4 python4)
-
-	message(${PYTHON_3})
 
 	if(NOT PYTHON_3)
 		message(FATAL_ERROR "Python3 is required.")
