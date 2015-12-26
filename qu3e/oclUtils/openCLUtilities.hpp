@@ -51,7 +51,7 @@ cl::Platform getPlatform(cl_device_type = CL_DEVICE_TYPE_ALL, cl_vendor vendor =
 
 cl::Program buildProgramFromSource(cl::Context context, std::string filename, std::string buildOptions = "");
 
-cl::Program buildProgramFromSourceString(cl::Context context, std::string filename, std::string buildOptions = "");
+cl::Program buildProgramFromSourceString(cl::Context context, std::string &sourceCode, std::string buildOptions = "");
 
 cl::Program buildProgramFromBinary(cl::Context context, std::string filename, std::string buildOptions = "");
 
