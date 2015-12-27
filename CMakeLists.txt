@@ -21,5 +21,4 @@ endif()
 
 add_subdirectory(qu3e)
 add_subdirectory(imgui)
-add_subdirectory(freeglut)
 add_subdirectory(src)
