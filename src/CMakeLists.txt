@@ -14,7 +14,10 @@ find_package(GLEW REQUIRED)
 
 source_group(src FILES ${gmu_srcs} ${gmu_hdrs})
 
-include_directories(${SDL2_INCLUDE_DIR})
+include_directories(
+	${SDL2_INCLUDE_DIR}
+	${qu3e_SOURCE_DIR}/src
+)
 
 add_executable(gmu ${gmu_srcs} ${gmu_hdrs})
 

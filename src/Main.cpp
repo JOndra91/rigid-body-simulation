@@ -16,6 +16,18 @@ void sigintHandler(int signal) {
 int main(int argc, char **argv) {
     signal(SIGINT, sigintHandler);
 
+    for(int i = 1; i < argc; i++) {
+        string arg(argv[i]);
+
+        if(arg == "--none") {
+            program.setDevice(q3OpenCLDevice::NONE);
+        } else if(arg == "--cpu") {
+            program.setDevice(q3OpenCLDevice::CPU);
+        } else if(arg == "--gpu") {
+            program.setDevice(q3OpenCLDevice::GPU);
+        }
+    }
+
     try {
         program.init();
 
@@ -144,11 +156,14 @@ void Main::init() {
     glDebugMessageCallback((GLDEBUGPROC) glDebugCallback, NULL);
 
     camera = new Camera(sdlWindow);
+    scene = new Scene(camera, clDev);
 
     registerEventListener(this);
 
     registerEventListener(camera);
     registerProcessor(camera);
+
+    autoregister(scene);
 }
 
 void Main::onQuit() {

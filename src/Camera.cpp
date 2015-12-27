@@ -8,7 +8,7 @@
 using namespace gmu;
 using namespace glm;
 
-Camera::Camera(SDL_Window *_window) : position(0.0, 35.0, 0.0), rotation(0, 0) {
+Camera::Camera(SDL_Window *_window) : position(0.0, 20.0, -25.0), rotation(0, 0) {
     window = _window;
     SDL_GetWindowSize(window, &(windowSize.x), &(windowSize.y));
 }

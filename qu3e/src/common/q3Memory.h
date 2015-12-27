@@ -51,7 +51,7 @@ inline void q3Free( void* memory )
 // q3Stack
 //--------------------------------------------------------------------------------------------------
 // 20MB stack size, change as necessary
-const i32 q3k_stackSize = 1024 * 1024 * 20;
+const i32 q3k_stackSize = 1024 * 1024 * 100;
 
 class q3Stack
 {
@@ -84,7 +84,7 @@ private:
 // q3Heap
 //--------------------------------------------------------------------------------------------------
 // 20 MB heap size, change as necessary
-const i32 q3k_heapSize = 1024 * 1024 * 20;
+const i32 q3k_heapSize = 1024 * 1024 * 100;
 const i32 q3k_heapInitialCapacity = 1024;
 
 // Operates on first fit basis in attempt to improve cache coherency

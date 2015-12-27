@@ -7,6 +7,9 @@
 
 #include "RegistrablesContainer.hpp"
 #include "Camera.hpp"
+#include "Scene.hpp"
+
+#include <q3.h>
 
 namespace gmu {
 
@@ -16,6 +19,8 @@ namespace gmu {
         SDL_GLContext context;
         bool quitFlag = false;
         Camera *camera;
+        Scene *scene;
+        q3OpenCLDevice clDev;
 
     public:
         Main();
@@ -24,6 +29,10 @@ namespace gmu {
         void init();
         void onQuit();
         void release();
+
+        inline void setDevice(q3OpenCLDevice device) {
+            clDev = device;
+        };
 
         inline void quit() {
             quitFlag = true;

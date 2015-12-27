@@ -2,26 +2,40 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 #include "Scene.hpp"
-
-#define LANDSCAPE_SIZE 350
-#define LANDSCAPE_SIZEF float(LANDSCAPE_SIZE)
-#define INDEX_COUNT (2 * (LANDSCAPE_SIZE + 1) * LANDSCAPE_SIZE + LANDSCAPE_SIZE)
-#define BASE_FREQUENCY 100
-#define RESOLUTION 0.85
 
 using namespace gmu;
 
 using glm::u8vec3;
 using glm::vec3;
 
-typedef struct {
-    vec3 position;
-    vec3 normal;
-} Vertex;
+const u8vec3 Scene::colors[] = {
+    u8vec3(170,153, 57),
+    u8vec3(130,110,  0),
+    u8vec3(150,130, 21),
+    u8vec3(190,177,101),
+    u8vec3(210,202,153),
 
-Scene::Scene(Camera *_camera) : camera(_camera), vao(0), vbo(0), ebo(0), polygonMode(GL_FILL) {
+    u8vec3( 94,151, 50),
+    u8vec3( 50,115,  0),
+    u8vec3( 68,133, 18),
+    u8vec3(124,169, 89),
+    u8vec3(158,187,135),
+
+    u8vec3(170, 99, 57),
+    u8vec3(130, 48,  0),
+    u8vec3(150, 69, 21),
+    u8vec3(190,134,101),
+    u8vec3(210,174,153),
+    u8vec3(128,128,128), // Static box color
+};
+
+Scene::Scene(Camera *_camera, q3OpenCLDevice device) :
+    camera(_camera), vao(0), vbo(0), ebo(0), polygonMode(GL_FILL),
+    scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 50) {
+
     string vertexShaderFile("./shaders/shader.vert");
     string fragmentShaderFile("./shaders/shader.frag");
 
@@ -35,18 +49,16 @@ Scene::Scene(Camera *_camera) : camera(_camera), vao(0), vbo(0), ebo(0), polygon
         throw string("Could not compile render program.");
     }
 
-
     uProjection = glGetUniformLocation(program, "projection");
     uView = glGetUniformLocation(program, "view");
     uModel = glGetUniformLocation(program, "model");
-
-    uColor = glGetUniformLocation(program, "color");
 
     uSunPosition = glGetUniformLocation(program, "sunPosition");
     uSunColor = glGetUniformLocation(program, "sunColor");
 
     aPosition = glGetAttribLocation(program, "position");
     aNormal = glGetAttribLocation(program, "normal");
+    aColor = glGetAttribLocation(program, "color");
 
 
     glGenVertexArrays(1, &vao);
@@ -61,8 +73,16 @@ Scene::Scene(Camera *_camera) : camera(_camera), vao(0), vbo(0), ebo(0), polygon
     glEnableVertexAttribArray(aNormal);
     glVertexAttribPointer(aNormal, 3, GL_FLOAT, GL_FALSE, sizeof (Vertex), (GLvoid*) offsetof(Vertex, normal));
 
+    glEnableVertexAttribArray(aColor);
+    glVertexAttribPointer(aColor, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (Vertex), (GLvoid*) offsetof(Vertex, color));
+
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+    prepareScene();
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * boxes.size() * 6 * 4, NULL, GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * boxes.size() * 6 * 5, NULL, GL_STREAM_DRAW);
 
     glBindVertexArray(0);
 }
@@ -74,6 +94,51 @@ Scene::~Scene() {
 
     glDeleteVertexArrays(1, &vao);
 
+}
+
+void Scene::prepareScene() {
+    const q3Box *box;
+    int numColors = (sizeof(Scene::colors) / sizeof(u8vec3)) - 1;
+    int colorIndex = 0;
+
+    boxes.clear();
+    boxes.reserve(16*16*10 + 1);
+
+    q3BodyDef bodyDef;
+
+    q3Body *b = scene.CreateBody(bodyDef);
+
+    q3BoxDef boxDef;
+    boxDef.SetRestitution(0.0f);
+    q3Transform tx;
+    q3Identity(tx);
+    boxDef.Set(tx, q3Vec3(50.0f, 1.0f, 50.0f));
+    box = b->AddBox(boxDef);
+    box->SetUserdata((void*)(Scene::colors + numColors));
+
+    boxes.push_back(box);
+
+    bodyDef.bodyType = eDynamicBody;
+    boxDef.Set( tx, q3Vec3( 1.0f, 1.0f, 1.0f ) );
+
+    for ( int i = 0; i < 10; ++i )
+    {
+        for ( int j = 0; j < 16; ++j )
+        {
+            for ( int k = 0; k < 16; ++k )
+            {
+                bodyDef.position.Set( 1.0f * j - 8.0f, 1.0f * i + 5.0f, 1.0f * k - 8.0f );
+                b = scene.CreateBody( bodyDef );
+                box = b->AddBox( boxDef );
+
+                box->SetUserdata((void*)(Scene::colors + colorIndex));
+
+                boxes.push_back(box);
+
+                colorIndex = (colorIndex + 59) % numColors;
+            }
+        }
+    }
 }
 
 mat4 Scene::getProjectionMatrix() {
@@ -104,34 +169,111 @@ void Scene::render() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    glClearColor(0.0, 0.7, 0.8, 1.0);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     mat4 viewMat = getViewMatrix();
     mat4 projMat = getProjectionMatrix();
 
-    vec3 camPos = camera->getPosition();
-
-    // std::cout << "Eye: (" << camPos.x << ", " << camPos.y << ", " << camPos.z << ")" << std::endl;
-    // std::cout << "At: (" << atPosition.x << ", " << atPosition.y << ", " << atPosition.z << ")" << std::endl;
+//    vec3 camPos = camera->getPosition();
+//    vec3 atPosition = camera->getViewVector();
+//    std::cout << "Eye: (" << camPos.x << ", " << camPos.y << ", " << camPos.z << ")" << std::endl;
+//    std::cout << "At: (" << atPosition.x << ", " << atPosition.y << ", " << atPosition.z << ")" << std::endl;
 
     glUniformMatrix4fv(uView, 1, GL_FALSE, (GLfloat*) & viewMat);
     glUniformMatrix4fv(uProjection, 1, GL_FALSE, (GLfloat*) & projMat);
 
     glBindVertexArray(vao);
 
-    glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+    glPolygonMode(GL_FRONT, polygonMode);
+
+    Vertex *vert = (Vertex*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+    GLuint *elem = (GLuint*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+
+    unsigned index = 0;
+    for(auto b : boxes) {
+        prepareBuffers(index, b, vert, elem);
+    }
+
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
     glEnable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
-    glDrawElements(GL_TRIANGLE_STRIP, INDEX_COUNT, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLE_STRIP, boxes.size() * 6 * 5, GL_UNSIGNED_INT, 0);
     glDisable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
 
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Scene::step(float time, float delta) {
+void Scene::prepareBuffers(unsigned &index, const q3Box* box, Vertex* vert, GLuint* elem) {
+    Vertex *boxVerticies = vert + (index * 6 * 4);
+    GLuint *boxElements = elem + (index * 6 * 5);
+    GLuint eOffset = index * 6 * 4;
+    index++;
 
+    q3Body *body = box->body;
+
+    q3Transform tx = body->GetTransform();
+    q3Transform local = box->local;
+    q3Vec3 e = box->e;
+
+    q3Transform world = q3Mul( tx, local );
+
+	q3Vec3 vertices[ 8 ] = {
+		q3Vec3( -e.x, -e.y, -e.z ),
+		q3Vec3( -e.x, -e.y,  e.z ),
+		q3Vec3( -e.x,  e.y, -e.z ),
+		q3Vec3( -e.x,  e.y,  e.z ),
+		q3Vec3(  e.x, -e.y, -e.z ),
+		q3Vec3(  e.x, -e.y,  e.z ),
+		q3Vec3(  e.x,  e.y, -e.z ),
+		q3Vec3(  e.x,  e.y,  e.z )
+	};
+
+    unsigned elements[] = {
+        0, 1, 2, 3,
+        1, 5, 3, 7,
+        5, 4, 7, 6,
+        4, 0, 6, 2,
+        2, 3, 6, 7,
+        4, 5, 0, 1,
+    };
+
+    q3Vec3 face[4];
+    q3Vec3 *a = face + 0;
+    q3Vec3 *b = face + 1;
+    q3Vec3 *c = face + 2;
+
+	for (int i = 0; i < 24; i += 4)
+	{
+        for(int j = 0; j < 4; j++) {
+            face[j] = q3Mul( world, vertices[ elements[ i + j ] ] );
+        }
+
+		q3Vec3 n = q3Normalize( q3Cross( *b - *a, *c - *a ) );
+
+        for(int j = 0; j < 4; j++) {
+            Vertex *v = boxVerticies + i + j;
+            q3Vec3 *q = face + j;
+
+            v->position = vec3(q->x, q->y, q->z);
+            v->normal = vec3(n.x, n.y, n.z);
+            u8vec3 *c = (u8vec3*)box->GetUserdata();
+            v->color = *c;
+
+            *boxElements = eOffset + i + j;
+            boxElements++;
+        }
+
+        *boxElements = UINT32_MAX;
+        boxElements++;
+	}
+}
+
+
+void Scene::step(float time, float delta) {
+    scene.Step();
 }
 
 IEventListener::EventResponse Scene::onEvent(SDL_Event* evt) {

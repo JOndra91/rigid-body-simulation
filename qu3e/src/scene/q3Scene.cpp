@@ -40,7 +40,7 @@
 //--------------------------------------------------------------------------------------------------
 // q3Scene
 //--------------------------------------------------------------------------------------------------
-q3Scene::q3Scene( r32 dt, const q3Vec3& gravity, i32 iterations )
+q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iterations )
 	: m_contactManager( &m_stack )
 	, m_boxAllocator( sizeof( q3Box ), 256 )
 	, m_bodyCount( 0 )
@@ -52,12 +52,15 @@ q3Scene::q3Scene( r32 dt, const q3Vec3& gravity, i32 iterations )
 	, m_allowSleep( true )
 	, m_enableFriction( true )
 {
+    m_island = new q3Island(device);
 }
 
 //--------------------------------------------------------------------------------------------------
 q3Scene::~q3Scene( )
 {
 	Shutdown( );
+
+    delete m_island;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -78,7 +81,8 @@ void q3Scene::Step( )
 		c->m_flags &= ~q3ContactConstraint::eIsland;
 
 	// Size the stack island, pick worst case size
-	q3Island *island = &m_island;
+	assert(m_island != NULL);
+	q3Island *island = m_island;
 	island->m_bodyCapacity = m_bodyCount;
 	island->m_contactCapacity = m_contactManager.m_contactCount;
 	island->m_bodies = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * m_bodyCount );
