@@ -23,7 +23,7 @@ add_executable(gmu ${gmu_srcs} ${gmu_hdrs})
 
 target_link_libraries(gmu
 	qu3e
-	imgui
+	# imgui
 	${OPENGL_LIBRARIES}
 	${SDL2_LIBRARY}
 	${GLEW_LIBRARY}

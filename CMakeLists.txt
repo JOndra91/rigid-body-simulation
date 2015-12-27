@@ -20,5 +20,5 @@ if(timers_enabled)
 endif()
 
 add_subdirectory(qu3e)
-add_subdirectory(imgui)
+# add_subdirectory(imgui)
 add_subdirectory(src)
