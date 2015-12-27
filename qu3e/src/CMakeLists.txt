@@ -111,6 +111,7 @@ if(qu3e_use_gpu)
 		COMMAND "${qu3e_SOURCE_DIR}/scripts/fileToString"
 			"${qu3e_SOURCE_DIR}/kernels/q3ContactSolverOcl.cl" "${KERNELS_BINARY_DIR}/q3ContactSolverOcl.cl.str"
 		MAIN_DEPENDENCY "${qu3e_SOURCE_DIR}/kernels/q3ContactSolverOcl.cl"
+		DEPENDS "${qu3e_SOURCE_DIR}/scripts/fileToString"
 	)
 
 	add_custom_target(kernels
