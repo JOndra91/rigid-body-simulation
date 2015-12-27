@@ -11,6 +11,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 option(qu3e_use_gpu "Build qu3e with OpenCL solver" ON)
 option(timers_enabled "Enable timers output" ON)
+add_definitions(-DWITH_OCL)
 
 if(timers_enabled)
   add_definitions(-DTIMERS_ENABLED)
