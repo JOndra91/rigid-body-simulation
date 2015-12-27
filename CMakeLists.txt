@@ -13,6 +13,8 @@ option(qu3e_use_gpu "Build qu3e with OpenCL solver" ON)
 option(timers_enabled "Enable timers output" ON)
 add_definitions(-DWITH_OCL)
 
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+
 if(timers_enabled)
   add_definitions(-DTIMERS_ENABLED)
 endif()

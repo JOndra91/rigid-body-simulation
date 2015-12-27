@@ -1,31 +1,17 @@
-CXX=g++
-LIBS=gl sdl2 glew
-LDLIBS=$(shell pkg-config --libs-only-l $(LIBS))
-LDFLAGS=$(shell pkg-config --libs-only-L --libs-only-other $(LIBS))
-CXXFLAGS=--std=c++11 -g -Wall -DGLM_FORCE_RADIANS $(shell pkg-config --cflags $(LIBS))
 BUILDDIR=build
 BINDIR=bin
-OBJ=$(patsubst src/%.cpp,$(BUILDDIR)/%.o,$(wildcard src/*.cpp))
 
 RM=rm -rf
 MKDIR=mkdir
 
-first: $(BINDIR)/rigid-body .clang_complete
+first: $(BINDIR)/gmu
 
-$(BINDIR)/rigid-body: $(OBJ) | $(BINDIR)
-	$(CXX) $(LDFLAGS) $(CXXFLAGS) $(OBJ) $(LDLIBS) -o $@
-
-$(BUILDDIR)/%.o: src/%.cpp | $(BUILDDIR)
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
+$(BINDIR)/gmu: | $(BUILDDIR)
+	cd $(BUILDDIR); make
 
 $(BUILDDIR):
 	$(MKDIR) $@
-
-$(BINDIR):
-	$(MKDIR) $@
-
-.clang_complete: Makefile
-	$(shell pkg-config --cflags $(LIBS) | tr ' ' '\n' > $@)
+	cd $@; cmake ..
 
 clean:
-	$(RM) $(BUILDDIR) $(BINDIR) .clang_complete
+	$(RM) $(BUILDDIR) $(BINDIR)
