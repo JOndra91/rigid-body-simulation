@@ -69,8 +69,6 @@ void q3Scene::Step( )
 		m_newBox = false;
 	}
 
-    struct timeval begin, end, diff;
-
 	m_contactManager.TestCollisions( );
 
 	for ( q3Body* body = m_bodyList; body; body = body->m_next )
@@ -95,7 +93,12 @@ void q3Scene::Step( )
 	island->m_gravity = m_gravity;
 	island->m_iterations = m_iterations;
 
+
+#ifdef TIMERS_ENABLED
+    struct timeval begin, end, diff;
     gettimeofday(&begin,NULL);
+#endif // TIMERS_ENABLED
+
 	// Build each active island and then solve each built island
 	i32 stackSize = m_bodyCount;
 	q3Body** stack = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * stackSize );
@@ -195,11 +198,14 @@ void q3Scene::Step( )
 		}
 	}
 
+#ifdef TIMERS_ENABLED
     gettimeofday(&end, NULL);
 
     timersub(&end, &begin, &diff);
 
     std::cout << "Solve total: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+    std::cout << "====================================" << std::endl;
+#endif // TIMERS_ENABLED
 
 	m_stack.Free( stack );
 	m_stack.Free( island->m_contactStates );

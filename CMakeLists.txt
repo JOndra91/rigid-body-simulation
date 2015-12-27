@@ -10,6 +10,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 option(qu3e_use_gpu "Build qu3e with OpenCL solver" ON)
+option(timers_enabled "Enable timers output" ON)
+
+if(timers_enabled)
+  add_definitions(-DTIMERS_ENABLED)
+endif()
 
 add_subdirectory(qu3e)
 add_subdirectory(imgui)
