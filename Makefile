@@ -6,7 +6,7 @@ MKDIR=mkdir
 
 first: $(BINDIR)/gmu
 
-$(BINDIR)/gmu: | $(BUILDDIR)
+$(BINDIR)/gmu: CMakeLists.txt qu3e src | $(BUILDDIR)
 	cd $(BUILDDIR); make
 
 $(BUILDDIR):
