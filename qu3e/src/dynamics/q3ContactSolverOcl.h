@@ -48,13 +48,6 @@ struct q3ContactSolverOcl : q3ContactSolverCpu
     void PreSolve( r32 dt ) override;
     void Solve( void ) override;
 
-    q3Island *m_island;
-    q3ContactConstraintState *m_contacts;
-    u32 m_contactCount;
-    q3VelocityState *m_velocities;
-
-    bool m_enableFriction;
-
     //-----------------------------------------------------------
     // Properties for OpenCL acceleration
     //-----------------------------------------------------------
