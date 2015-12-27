@@ -22,6 +22,10 @@ vec3 Camera::getViewVector() {
     return normalize(direction);
 }
 
+void Camera::setRotation(vec2 r) {
+    rotation = r;
+}
+
 IEventListener::EventResponse Camera::onEvent(SDL_Event* evt) {
     if (evt->type == SDL_WINDOWEVENT) {
         SDL_WindowEvent *e = &evt->window;

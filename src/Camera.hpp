@@ -30,6 +30,8 @@ namespace gmu {
             return windowSize;
         }
 
+        void setRotation(vec2);
+
         vec3 getViewVector();
 
         virtual IEventListener::EventResponse onEvent(SDL_Event* evt);

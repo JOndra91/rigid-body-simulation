@@ -41,6 +41,8 @@ Scene::Scene(Camera *_camera, q3OpenCLDevice device) :
 
     registerRenderer(camera);
 
+    camera->setRotation(vec2(0.86, 0.00));
+
     renderProgram.setVertexShaderFromFile(vertexShaderFile);
     renderProgram.setFragmenShaderFromFile(fragmentShaderFile);
 
