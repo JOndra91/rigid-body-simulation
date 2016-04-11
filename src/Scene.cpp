@@ -34,7 +34,7 @@ const u8vec3 Scene::colors[] = {
 
 Scene::Scene(Camera *_camera, q3OpenCLDevice device) :
     camera(_camera), vao(0), vbo(0), ebo(0), polygonMode(GL_FILL),
-    scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 50) {
+    scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 20), loop(0) {
 
     string vertexShaderFile("./shaders/shader.vert");
     string fragmentShaderFile("./shaders/shader.frag");
@@ -123,13 +123,15 @@ void Scene::prepareScene() {
     bodyDef.bodyType = eDynamicBody;
     boxDef.Set( tx, q3Vec3( 1.0f, 1.0f, 1.0f ) );
 
-    for ( int i = 0; i < 10; ++i )
+    int width = 8, height = 8, depth = 8;
+
+    for ( int i = 0; i < height; ++i )
     {
-        for ( int j = 0; j < 16; ++j )
+        for ( int j = -width/2; j < width/2; ++j )
         {
-            for ( int k = 0; k < 16; ++k )
+            for ( int k = -depth/2; k < depth/2; ++k )
             {
-                bodyDef.position.Set( 1.0f * j - 8.0f, 1.0f * i + 5.0f, 1.0f * k - 8.0f );
+                bodyDef.position.Set( 1.0f * j, 1.0f * i + 5.0f, 1.0f * k );
                 b = scene.CreateBody( bodyDef );
                 box = b->AddBox( boxDef );
 
@@ -275,7 +277,10 @@ void Scene::prepareBuffers(unsigned &index, const q3Box* box, Vertex* vert, GLui
 
 
 void Scene::step(float time, float delta) {
+    std::cout << "Loop: " << loop << std::endl;
     scene.Step();
+
+    ++loop;
 }
 
 IEventListener::EventResponse Scene::onEvent(SDL_Event* evt) {

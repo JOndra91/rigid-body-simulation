@@ -60,12 +60,17 @@ q3Scene::~q3Scene( )
 {
 	Shutdown( );
 
-    delete m_island;
+  delete m_island;
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::Step( )
 {
+	#ifdef TIMERS_ENABLED
+	    struct timeval begin_step;
+	    gettimeofday(&begin_step,NULL);
+	#endif // TIMERS_ENABLED
+
 	if ( m_newBox )
 	{
 		m_contactManager.m_broadphase.UpdatePairs( );
@@ -207,8 +212,7 @@ void q3Scene::Step( )
 
     timersub(&end, &begin, &diff);
 
-    std::cout << "Solve total: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-    std::cout << "====================================" << std::endl;
+    std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 #endif // TIMERS_ENABLED
 
 	m_stack.Free( stack );
@@ -235,6 +239,15 @@ void q3Scene::Step( )
 		q3Identity( body->m_force );
 		q3Identity( body->m_torque );
 	}
+
+	#ifdef TIMERS_ENABLED
+	    gettimeofday(&end, NULL);
+
+	    timersub(&end, &begin_step, &diff);
+
+	    std::cout << "Step: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+	    std::cout << "====================================" << std::endl;
+	#endif // TIMERS_ENABLED
 }
 
 //--------------------------------------------------------------------------------------------------

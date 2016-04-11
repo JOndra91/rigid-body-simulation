@@ -78,12 +78,6 @@ void q3Island::Solve( )
 {
 	assert( m_solver != NULL );
 
-#ifdef TIMERS_ENABLED
-	struct timeval begin, end, diff;
-
-	gettimeofday(&begin,NULL);
-#endif // TIMERS_ENABLED
-
 	// Apply gravity
 	// Integrate velocities and create state buffers, calculate world inertia
 	for ( i32 i = 0 ; i < m_bodyCount; ++i )
@@ -120,55 +114,18 @@ void q3Island::Solve( )
 	}
 
 
-#ifdef TIMERS_ENABLED
-	gettimeofday(&end, NULL);
-
-	timersub(&end, &begin, &diff);
-#endif // TIMERS_ENABLED
 	// Create contact solver, pass in state buffers, create buffers for contacts
 	// Initialize velocity constraint for normal + friction and warm start
 	q3ContactSolver *contactSolver = m_solver;
 	contactSolver->Initialize( this );
 
-#ifdef TIMERS_ENABLED
-	gettimeofday(&begin,NULL);
-#endif // TIMERS_ENABLED
-
 	contactSolver->PreSolve( m_dt );
 
-#ifdef TIMERS_ENABLED
-	gettimeofday(&end, NULL);
-
-	timersub(&end, &begin, &diff);
-
-	std::cout << "Pre-Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-
-	// Solve contacts
-	gettimeofday(&begin,NULL);
-#endif // TIMERS_ENABLED
 	for ( i32 i = 0; i < m_iterations; ++i )
 		contactSolver->Solve( );
 
-#ifdef TIMERS_ENABLED
-	gettimeofday(&end, NULL);
-
-	timersub(&end, &begin, &diff);
-
-	std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-
-
-	gettimeofday(&begin,NULL);
-#endif // TIMERS_ENABLED
 	contactSolver->ShutDown( );
 
-#ifdef TIMERS_ENABLED
-	gettimeofday(&end, NULL);
-
-	timersub(&end, &begin, &diff);
-
-	std::cout << "ShutDown: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-
-#endif // TIMERS_ENABLED
 
 	// Copy back state buffers
 	// Integrate positions
