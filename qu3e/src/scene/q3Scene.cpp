@@ -67,7 +67,7 @@ q3Scene::~q3Scene( )
 void q3Scene::Step( )
 {
 	#ifdef TIMERS_ENABLED
-	    struct timeval begin_step;
+	    struct timeval begin_step, end, diff;
 	    gettimeofday(&begin_step,NULL);
 	#endif // TIMERS_ENABLED
 
@@ -102,124 +102,7 @@ void q3Scene::Step( )
 	island->m_gravity = m_gravity;
 	island->m_iterations = m_iterations;
 
-
-#ifdef TIMERS_ENABLED
-    struct timeval begin, end, diff;
-    gettimeofday(&begin,NULL);
-#endif // TIMERS_ENABLED
-
-	// Build each active island and then solve each built island
-	i32 stackSize = m_bodyCount;
-	q3Body** stack = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * stackSize );
-	for ( q3Body* seed = m_bodyList; seed; seed = seed->m_next )
-	{
-		// Seed cannot be apart of an island already
-		if ( seed->m_flags & q3Body::eIsland )
-			continue;
-
-		// Seed must be awake
-		if ( !(seed->m_flags & q3Body::eAwake) )
-			continue;
-
-		// Seed cannot be a static body in order to keep islands
-		// as small as possible
-		if ( seed->m_flags & q3Body::eStatic )
-			continue;
-
-		i32 stackCount = 0;
-		stack[ stackCount++ ] = seed;
-		island->m_bodyCount = 0;
-		island->m_contactCount = 0;
-
-		// Mark seed as apart of island
-		seed->m_flags |= q3Body::eIsland;
-
-		// Perform DFS on constraint graph
-		while( stackCount > 0 )
-		{
-			// Decrement stack to implement iterative backtracking
-			q3Body *body = stack[ --stackCount ];
-			island->Add( body );
-
-			// Awaken all bodies connected to the island
-			body->SetToAwake( );
-
-			// Do not search across static bodies to keep island
-			// formations as small as possible, however the static
-			// body itself should be apart of the island in order
-			// to properly represent a full contact
-			if ( body->m_flags & q3Body::eStatic )
-				continue;
-
-			// Search all contacts connected to this body
-			q3ContactEdge* contacts = body->m_contactList;
-			for ( q3ContactEdge* edge = contacts; edge; edge = edge->next )
-			{
-				q3ContactConstraint *contact = edge->constraint;
-
-				// Skip contacts that have been added to an island already
-				if ( contact->m_flags & q3ContactConstraint::eIsland )
-					continue;
-
-				// Can safely skip this contact if it didn't actually collide with anything
-				if ( !(contact->m_flags & q3ContactConstraint::eColliding) )
-					continue;
-
-				// Skip sensors
-				if ( contact->A->sensor || contact->B->sensor )
-					continue;
-
-				// Mark island flag and add to island
-				contact->m_flags |= q3ContactConstraint::eIsland;
-				island->Add( contact );
-
-				// Attempt to add the other body in the contact to the island
-				// to simulate contact awakening propogation
-				q3Body* other = edge->other;
-				if ( other->m_flags & q3Body::eIsland )
-					continue;
-
-				assert( stackCount < stackSize );
-
-				stack[ stackCount++ ] = other;
-				other->m_flags |= q3Body::eIsland;
-			}
-		}
-
-		assert( island->m_bodyCount != 0 );
-
-		island->Initialize( );
-
-		assert( island->m_bodyCount != 0 );
-
-		island->Solve( );
-
-		assert( island->m_bodyCount != 0 );
-
-		// Reset all static island flags
-		// This allows static bodies to participate in other island formations
-		for ( i32 i = 0; i < island->m_bodyCount; i++ )
-		{
-			q3Body *body = island->m_bodies[ i ];
-
-			if ( body->m_flags & q3Body::eStatic )
-				body->m_flags &= ~q3Body::eIsland;
-		}
-	}
-
-#ifdef TIMERS_ENABLED
-    gettimeofday(&end, NULL);
-
-    timersub(&end, &begin, &diff);
-
-    std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-#endif // TIMERS_ENABLED
-
-	m_stack.Free( stack );
-	m_stack.Free( island->m_contactStates );
-	m_stack.Free( island->m_contacts );
-	m_stack.Free( island->m_velocities );
-	m_stack.Free( island->m_bodies );
+    SolveIslands(island);
 
 	// Update the broadphase AABBs
 	for ( q3Body* body = m_bodyList; body; body = body->m_next )
@@ -248,6 +131,233 @@ void q3Scene::Step( )
 	    std::cout << "Step: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 	    std::cout << "====================================" << std::endl;
 	#endif // TIMERS_ENABLED
+}
+//--------------------------------------------------------------------------------------------------
+
+void q3Scene::SolveIslands(q3Island* island) {
+
+    // Build each active island and then solve each built island
+	i32 stackSize = m_bodyCount;
+	q3Body** stack = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * stackSize );
+
+
+#ifdef TIMERS_ENABLED
+    struct timeval begin, end, diff;
+    gettimeofday(&begin,NULL);
+#endif // TIMERS_ENABLED
+
+    if(island->UsesOpenCL())
+    {
+        std::cout << "Bla" << std::endl;
+        for ( q3Body* seed = m_bodyList; seed; seed = seed->m_next )
+        {
+            // Seed cannot be apart of an island already
+            if ( seed->m_flags & q3Body::eIsland )
+                continue;
+
+            // Seed must be awake
+            if ( !(seed->m_flags & q3Body::eAwake) )
+                continue;
+
+            // Seed cannot be a static body in order to keep islands
+            // as small as possible
+            if ( seed->m_flags & q3Body::eStatic )
+                continue;
+
+            i32 stackCount = 0;
+            stack[ stackCount++ ] = seed;
+            island->m_bodyCount = 0;
+            island->m_contactCount = 0;
+
+            // Mark seed as apart of island
+            seed->m_flags |= q3Body::eIsland;
+
+            // Perform DFS on constraint graph
+            while( stackCount > 0 )
+            {
+                // Decrement stack to implement iterative backtracking
+                q3Body *body = stack[ --stackCount ];
+                island->Add( body );
+
+                // Awaken all bodies connected to the island
+                body->SetToAwake( );
+
+                // Do not search across static bodies to keep island
+                // formations as small as possible, however the static
+                // body itself should be apart of the island in order
+                // to properly represent a full contact
+                if ( body->m_flags & q3Body::eStatic )
+                    continue;
+
+                // Search all contacts connected to this body
+                q3ContactEdge* contacts = body->m_contactList;
+                for ( q3ContactEdge* edge = contacts; edge; edge = edge->next )
+                {
+                    q3ContactConstraint *contact = edge->constraint;
+
+                    // Skip contacts that have been added to an island already
+                    if ( contact->m_flags & q3ContactConstraint::eIsland )
+                        continue;
+
+                    // Can safely skip this contact if it didn't actually collide with anything
+                    if ( !(contact->m_flags & q3ContactConstraint::eColliding) )
+                        continue;
+
+                    // Skip sensors
+                    if ( contact->A->sensor || contact->B->sensor )
+                        continue;
+
+                    // Mark island flag and add to island
+                    contact->m_flags |= q3ContactConstraint::eIsland;
+                    island->Add( contact );
+
+                    // Attempt to add the other body in the contact to the island
+                    // to simulate contact awakening propogation
+                    q3Body* other = edge->other;
+                    if ( other->m_flags & q3Body::eIsland )
+                        continue;
+
+                    assert( stackCount < stackSize );
+
+                    stack[ stackCount++ ] = other;
+                    other->m_flags |= q3Body::eIsland;
+                }
+            }
+
+            // Reset all static island flags
+            // This allows static bodies to participate in other island formations
+            for ( i32 i = 0; i < island->m_bodyCount; i++ )
+            {
+                q3Body *body = island->m_bodies[ i ];
+
+                if ( body->m_flags & q3Body::eStatic )
+                    body->m_flags &= ~q3Body::eIsland;
+            }
+        }
+
+        assert( island->m_bodyCount != 0 );
+
+        island->Initialize( );
+
+        assert( island->m_bodyCount != 0 );
+
+        island->Solve( );
+
+        assert( island->m_bodyCount != 0 );
+    }
+    else
+    {
+        for ( q3Body* seed = m_bodyList; seed; seed = seed->m_next )
+        {
+            // Seed cannot be apart of an island already
+            if ( seed->m_flags & q3Body::eIsland )
+                continue;
+
+            // Seed must be awake
+            if ( !(seed->m_flags & q3Body::eAwake) )
+                continue;
+
+            // Seed cannot be a static body in order to keep islands
+            // as small as possible
+            if ( seed->m_flags & q3Body::eStatic )
+                continue;
+
+            i32 stackCount = 0;
+            stack[ stackCount++ ] = seed;
+            island->m_bodyCount = 0;
+            island->m_contactCount = 0;
+
+            // Mark seed as apart of island
+            seed->m_flags |= q3Body::eIsland;
+
+            // Perform DFS on constraint graph
+            while( stackCount > 0 )
+            {
+                // Decrement stack to implement iterative backtracking
+                q3Body *body = stack[ --stackCount ];
+                island->Add( body );
+
+                // Awaken all bodies connected to the island
+                body->SetToAwake( );
+
+                // Do not search across static bodies to keep island
+                // formations as small as possible, however the static
+                // body itself should be apart of the island in order
+                // to properly represent a full contact
+                if ( body->m_flags & q3Body::eStatic )
+                    continue;
+
+                // Search all contacts connected to this body
+                q3ContactEdge* contacts = body->m_contactList;
+                for ( q3ContactEdge* edge = contacts; edge; edge = edge->next )
+                {
+                    q3ContactConstraint *contact = edge->constraint;
+
+                    // Skip contacts that have been added to an island already
+                    if ( contact->m_flags & q3ContactConstraint::eIsland )
+                        continue;
+
+                    // Can safely skip this contact if it didn't actually collide with anything
+                    if ( !(contact->m_flags & q3ContactConstraint::eColliding) )
+                        continue;
+
+                    // Skip sensors
+                    if ( contact->A->sensor || contact->B->sensor )
+                        continue;
+
+                    // Mark island flag and add to island
+                    contact->m_flags |= q3ContactConstraint::eIsland;
+                    island->Add( contact );
+
+                    // Attempt to add the other body in the contact to the island
+                    // to simulate contact awakening propogation
+                    q3Body* other = edge->other;
+                    if ( other->m_flags & q3Body::eIsland )
+                        continue;
+
+                    assert( stackCount < stackSize );
+
+                    stack[ stackCount++ ] = other;
+                    other->m_flags |= q3Body::eIsland;
+                }
+            }
+
+            assert( island->m_bodyCount != 0 );
+
+            island->Initialize( );
+
+            assert( island->m_bodyCount != 0 );
+
+            island->Solve( );
+
+            assert( island->m_bodyCount != 0 );
+
+            // Reset all static island flags
+            // This allows static bodies to participate in other island formations
+            for ( i32 i = 0; i < island->m_bodyCount; i++ )
+            {
+                q3Body *body = island->m_bodies[ i ];
+
+                if ( body->m_flags & q3Body::eStatic )
+                    body->m_flags &= ~q3Body::eIsland;
+            }
+        }
+    }
+
+
+#ifdef TIMERS_ENABLED
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &begin, &diff);
+
+    std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+#endif // TIMERS_ENABLED
+
+	m_stack.Free( stack );
+	m_stack.Free( island->m_contactStates );
+	m_stack.Free( island->m_contacts );
+	m_stack.Free( island->m_velocities );
+	m_stack.Free( island->m_bodies );
 }
 
 //--------------------------------------------------------------------------------------------------

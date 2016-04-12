@@ -78,20 +78,29 @@ struct q3ContactConstraintState
 #endif // WITH_OCL
 };
 
-#ifdef WITH_OCL
-	enum class q3OpenCLDevice {
+enum class q3OpenCLDevice {
 		NONE,
+#ifdef WITH_OCL
 		CPU,
 		GPU,
-	};
 #endif // WITH_OCL
+	};
 
 struct q3Island
 {
 #ifdef WITH_OCL
 	q3Island(q3OpenCLDevice dev = q3OpenCLDevice::NONE);
+
+    q3OpenCLDevice m_dev;
+    inline bool UsesOpenCL() {
+        return m_dev != q3OpenCLDevice::NONE;
+    }
 #else
 	q3Island();
+
+    inline bool UsesOpenCL() {
+        return false;
+    }
 #endif // WITH_OCL
 	~q3Island();
 

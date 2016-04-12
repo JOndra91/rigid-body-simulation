@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project("gmu")
+project("rigid-body-simulation")
 
 set(qu3e_version 0.1)
 

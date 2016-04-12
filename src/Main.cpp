@@ -119,9 +119,9 @@ drop:
         }
 #endif
 
-        if(scene->loop > 500) {
-          quit();
-        }
+//        if(scene->loop > 500) {
+//          quit();
+//        }
 
     }
 quit:

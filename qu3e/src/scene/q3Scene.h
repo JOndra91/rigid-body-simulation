@@ -148,6 +148,9 @@ public:
 	void Dump( FILE* file ) const;
 
 private:
+    void SolveIslands( q3Island* island );
+
+private:
 	q3ContactManager m_contactManager;
 	q3PagedAllocator m_boxAllocator;
 	q3Island *m_island;

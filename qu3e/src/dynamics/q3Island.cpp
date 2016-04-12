@@ -65,6 +65,8 @@ q3Island::q3Island(q3OpenCLDevice dev)
 			m_solver = new q3ContactSolverOcl(CL_DEVICE_TYPE_GPU);
 			break;
 	}
+
+    m_dev = dev;
 }
 
 #endif // WITH_OCL
