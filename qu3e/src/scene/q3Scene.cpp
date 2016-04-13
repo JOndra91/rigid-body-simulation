@@ -1,26 +1,26 @@
 //--------------------------------------------------------------------------------------------------
 /**
-@file	q3Scene.h
+@file    q3Scene.h
 
-@author	Randy Gaul
-@date	10/10/2014
+@author    Randy Gaul
+@date    10/10/2014
 
-	Copyright (c) 2014 Randy Gaul http://www.randygaul.net
+    Copyright (c) 2014 Randy Gaul http://www.randygaul.net
 
-	This software is provided 'as-is', without any express or implied
-	warranty. In no event will the authors be held liable for any damages
-	arising from the use of this software.
+    This software is provided 'as-is', without any express or implied
+    warranty. In no event will the authors be held liable for any damages
+    arising from the use of this software.
 
-	Permission is granted to anyone to use this software for any purpose,
-	including commercial applications, and to alter it and redistribute it
-	freely, subject to the following restrictions:
-	  1. The origin of this software must not be misrepresented; you must not
-	     claim that you wrote the original software. If you use this software
-	     in a product, an acknowledgment in the product documentation would be
-	     appreciated but is not required.
-	  2. Altered source versions must be plainly marked as such, and must not
-	     be misrepresented as being the original software.
-	  3. This notice may not be removed or altered from any source distribution.
+    Permission is granted to anyone to use this software for any purpose,
+    including commercial applications, and to alter it and redistribute it
+    freely, subject to the following restrictions:
+      1. The origin of this software must not be misrepresented; you must not
+         claim that you wrote the original software. If you use this software
+         in a product, an acknowledgment in the product documentation would be
+         appreciated but is not required.
+      2. Altered source versions must be plainly marked as such, and must not
+         be misrepresented as being the original software.
+      3. This notice may not be removed or altered from any source distribution.
 */
 //--------------------------------------------------------------------------------------------------
 
@@ -41,16 +41,16 @@
 // q3Scene
 //--------------------------------------------------------------------------------------------------
 q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iterations )
-	: m_contactManager( &m_stack )
-	, m_boxAllocator( sizeof( q3Box ), 256 )
-	, m_bodyCount( 0 )
-	, m_bodyList( NULL )
-	, m_gravity( gravity )
-	, m_dt( dt )
-	, m_iterations( iterations )
-	, m_newBox( false )
-	, m_allowSleep( true )
-	, m_enableFriction( true )
+    : m_contactManager( &m_stack )
+    , m_boxAllocator( sizeof( q3Box ), 256 )
+    , m_bodyCount( 0 )
+    , m_bodyList( NULL )
+    , m_gravity( gravity )
+    , m_dt( dt )
+    , m_iterations( iterations )
+    , m_newBox( false )
+    , m_allowSleep( true )
+    , m_enableFriction( true )
 {
     m_island = new q3Island(device);
 }
@@ -58,7 +58,7 @@ q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iter
 //--------------------------------------------------------------------------------------------------
 q3Scene::~q3Scene( )
 {
-	Shutdown( );
+    Shutdown( );
 
   delete m_island;
 }
@@ -66,79 +66,79 @@ q3Scene::~q3Scene( )
 //--------------------------------------------------------------------------------------------------
 void q3Scene::Step( )
 {
-	#ifdef TIMERS_ENABLED
-	    struct timeval begin_step, end, diff;
-	    gettimeofday(&begin_step,NULL);
-	#endif // TIMERS_ENABLED
+    #ifdef TIMERS_ENABLED
+        struct timeval begin_step, end, diff;
+        gettimeofday(&begin_step,NULL);
+    #endif // TIMERS_ENABLED
 
-	if ( m_newBox )
-	{
-		m_contactManager.m_broadphase.UpdatePairs( );
-		m_newBox = false;
-	}
+    if ( m_newBox )
+    {
+        m_contactManager.m_broadphase.UpdatePairs( );
+        m_newBox = false;
+    }
 
-	m_contactManager.TestCollisions( );
+    m_contactManager.TestCollisions( );
 
-	for ( q3Body* body = m_bodyList; body; body = body->m_next )
-		body->m_flags &= ~q3Body::eIsland;
+    for ( q3Body* body = m_bodyList; body; body = body->m_next )
+        body->m_flags &= ~q3Body::eIsland;
 
-	for ( q3ContactConstraint* c = m_contactManager.m_contactList; c; c = c->next )
-		c->m_flags &= ~q3ContactConstraint::eIsland;
+    for ( q3ContactConstraint* c = m_contactManager.m_contactList; c; c = c->next )
+        c->m_flags &= ~q3ContactConstraint::eIsland;
 
-	// Size the stack island, pick worst case size
-	assert(m_island != NULL);
-	q3Island *island = m_island;
-	island->m_bodyCapacity = m_bodyCount;
-	island->m_contactCapacity = m_contactManager.m_contactCount;
-	island->m_bodies = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * m_bodyCount );
-	island->m_velocities = (q3VelocityState *)m_stack.Allocate( sizeof( q3VelocityState ) * m_bodyCount );
-	island->m_contacts = (q3ContactConstraint **)m_stack.Allocate( sizeof( q3ContactConstraint* ) * island->m_contactCapacity );
-	island->m_contactStates = (q3ContactConstraintState *)m_stack.Allocate( sizeof( q3ContactConstraintState ) * island->m_contactCapacity );
-	island->m_allowSleep = m_allowSleep;
-	island->m_enableFriction = m_enableFriction;
-	island->m_bodyCount = 0;
-	island->m_contactCount = 0;
-	island->m_dt = m_dt;
-	island->m_gravity = m_gravity;
-	island->m_iterations = m_iterations;
+    // Size the stack island, pick worst case size
+    assert(m_island != NULL);
+    q3Island *island = m_island;
+    island->m_bodyCapacity = m_bodyCount;
+    island->m_contactCapacity = m_contactManager.m_contactCount;
+    island->m_bodies = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * m_bodyCount );
+    island->m_velocities = (q3VelocityState *)m_stack.Allocate( sizeof( q3VelocityState ) * m_bodyCount );
+    island->m_contacts = (q3ContactConstraint **)m_stack.Allocate( sizeof( q3ContactConstraint* ) * island->m_contactCapacity );
+    island->m_contactStates = (q3ContactConstraintState *)m_stack.Allocate( sizeof( q3ContactConstraintState ) * island->m_contactCapacity );
+    island->m_allowSleep = m_allowSleep;
+    island->m_enableFriction = m_enableFriction;
+    island->m_bodyCount = 0;
+    island->m_contactCount = 0;
+    island->m_dt = m_dt;
+    island->m_gravity = m_gravity;
+    island->m_iterations = m_iterations;
 
     SolveIslands(island);
 
-	// Update the broadphase AABBs
-	for ( q3Body* body = m_bodyList; body; body = body->m_next )
-	{
-		if ( body->m_flags & q3Body::eStatic )
-			continue;
+    // Update the broadphase AABBs
+    for ( q3Body* body = m_bodyList; body; body = body->m_next )
+    {
+        if ( body->m_flags & q3Body::eStatic )
+            continue;
 
-		body->SynchronizeProxies( );
-	}
+        body->SynchronizeProxies( );
+    }
 
-	// Look for new contacts
-	m_contactManager.FindNewContacts( );
+    // Look for new contacts
+    m_contactManager.FindNewContacts( );
 
-	// Clear all forces
-	for ( q3Body* body = m_bodyList; body; body = body->m_next )
-	{
-		q3Identity( body->m_force );
-		q3Identity( body->m_torque );
-	}
+    // Clear all forces
+    for ( q3Body* body = m_bodyList; body; body = body->m_next )
+    {
+        q3Identity( body->m_force );
+        q3Identity( body->m_torque );
+    }
 
-	#ifdef TIMERS_ENABLED
-	    gettimeofday(&end, NULL);
+    #ifdef TIMERS_ENABLED
+        gettimeofday(&end, NULL);
 
-	    timersub(&end, &begin_step, &diff);
+        timersub(&end, &begin_step, &diff);
 
-	    std::cout << "Step: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-	    std::cout << "====================================" << std::endl;
-	#endif // TIMERS_ENABLED
+        std::cout << "Step: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+        std::cout << "====================================" << std::endl;
+    #endif // TIMERS_ENABLED
 }
 //--------------------------------------------------------------------------------------------------
 
 void q3Scene::SolveIslands(q3Island* island) {
 
     // Build each active island and then solve each built island
-	i32 stackSize = m_bodyCount;
-	q3Body** stack = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * stackSize );
+    i32 stackSize = m_bodyCount;
+    q3Body** stack = (q3Body**)m_stack.Allocate( sizeof( q3Body* ) * stackSize );
 
 
 #ifdef TIMERS_ENABLED
@@ -353,251 +353,251 @@ void q3Scene::SolveIslands(q3Island* island) {
     std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
 #endif // TIMERS_ENABLED
 
-	m_stack.Free( stack );
-	m_stack.Free( island->m_contactStates );
-	m_stack.Free( island->m_contacts );
-	m_stack.Free( island->m_velocities );
-	m_stack.Free( island->m_bodies );
+    m_stack.Free( stack );
+    m_stack.Free( island->m_contactStates );
+    m_stack.Free( island->m_contacts );
+    m_stack.Free( island->m_velocities );
+    m_stack.Free( island->m_bodies );
 }
 
 //--------------------------------------------------------------------------------------------------
 q3Body* q3Scene::CreateBody( const q3BodyDef& def )
 {
-	q3Body* body = (q3Body*)m_heap.Allocate( sizeof( q3Body ) );
-	new (body) q3Body( def, this );
+    q3Body* body = (q3Body*)m_heap.Allocate( sizeof( q3Body ) );
+    new (body) q3Body( def, this );
 
-	// Add body to scene bodyList
-	body->m_prev = NULL;
-	body->m_next = m_bodyList;
+    // Add body to scene bodyList
+    body->m_prev = NULL;
+    body->m_next = m_bodyList;
 
-	if ( m_bodyList )
-		m_bodyList->m_prev = body;
+    if ( m_bodyList )
+        m_bodyList->m_prev = body;
 
-	m_bodyList = body;
-	++m_bodyCount;
+    m_bodyList = body;
+    ++m_bodyCount;
 
-	return body;
+    return body;
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::RemoveBody( q3Body* body )
 {
-	assert( m_bodyCount > 0 );
+    assert( m_bodyCount > 0 );
 
-	m_contactManager.RemoveContactsFromBody( body );
+    m_contactManager.RemoveContactsFromBody( body );
 
-	body->RemoveAllBoxes( );
+    body->RemoveAllBoxes( );
 
-	// Remove body from scene bodyList
-	if ( body->m_next )
-		body->m_next->m_prev = body->m_prev;
+    // Remove body from scene bodyList
+    if ( body->m_next )
+        body->m_next->m_prev = body->m_prev;
 
-	if ( body->m_prev )
-		body->m_prev->m_next = body->m_next;
+    if ( body->m_prev )
+        body->m_prev->m_next = body->m_next;
 
-	if ( body == m_bodyList )
-		m_bodyList = body->m_next;
+    if ( body == m_bodyList )
+        m_bodyList = body->m_next;
 
-	--m_bodyCount;
+    --m_bodyCount;
 
-	m_heap.Free( body );
+    m_heap.Free( body );
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::RemoveAllBodies( )
 {
-	q3Body* body = m_bodyList;
+    q3Body* body = m_bodyList;
 
-	while ( body )
-	{
-		q3Body* next = body->m_next;
+    while ( body )
+    {
+        q3Body* next = body->m_next;
 
-		body->RemoveAllBoxes( );
+        body->RemoveAllBoxes( );
 
-		m_heap.Free( body );
+        m_heap.Free( body );
 
-		body = next;
-	}
+        body = next;
+    }
 
-	m_bodyList = NULL;
+    m_bodyList = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::SetAllowSleep( bool allowSleep )
 {
-	m_allowSleep = allowSleep;
+    m_allowSleep = allowSleep;
 
-	if ( !allowSleep )
-	{
-		for ( q3Body* body = m_bodyList; body; body = body->m_next )
-			body->SetToAwake( );
-	}
+    if ( !allowSleep )
+    {
+        for ( q3Body* body = m_bodyList; body; body = body->m_next )
+            body->SetToAwake( );
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::SetIterations( i32 iterations )
 {
-	m_iterations = q3Max( 1, iterations );
+    m_iterations = q3Max( 1, iterations );
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::SetEnableFriction( bool enabled )
 {
-	m_enableFriction = enabled;
+    m_enableFriction = enabled;
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::Render( q3Render* render ) const
 {
-	q3Body* body = m_bodyList;
+    q3Body* body = m_bodyList;
 
-	while ( body )
-	{
-		body->Render( render );
-		body = body->m_next;
-	}
+    while ( body )
+    {
+        body->Render( render );
+        body = body->m_next;
+    }
 
-	m_contactManager.RenderContacts( render );
-	//m_contactManager.m_broadphase.m_tree.Render( render );
+    m_contactManager.RenderContacts( render );
+    //m_contactManager.m_broadphase.m_tree.Render( render );
 }
 
 //--------------------------------------------------------------------------------------------------
 const q3Vec3 q3Scene::GetGravity( ) const
 {
-	return m_gravity;
+    return m_gravity;
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::SetGravity( const q3Vec3& gravity )
 {
-	m_gravity = gravity;
+    m_gravity = gravity;
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::Shutdown( )
 {
-	RemoveAllBodies( );
+    RemoveAllBodies( );
 
-	m_boxAllocator.Clear( );
+    m_boxAllocator.Clear( );
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::SetContactListener( q3ContactListener* listener )
 {
-	m_contactManager.m_contactListener = listener;
+    m_contactManager.m_contactListener = listener;
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::QueryAABB( q3QueryCallback *cb, const q3AABB& aabb ) const
 {
-	struct SceneQueryWrapper
-	{
-		bool TreeCallBack( i32 id )
-		{
-			q3AABB aabb;
-			q3Box *box = (q3Box *)broadPhase->m_tree.GetUserData( id );
+    struct SceneQueryWrapper
+    {
+        bool TreeCallBack( i32 id )
+        {
+            q3AABB aabb;
+            q3Box *box = (q3Box *)broadPhase->m_tree.GetUserData( id );
 
-			box->ComputeAABB( box->body->GetTransform( ), &aabb );
+            box->ComputeAABB( box->body->GetTransform( ), &aabb );
 
-			if ( q3AABBtoAABB( m_aabb, aabb ) )
-			{
-				return cb->ReportShape( box );
-			}
+            if ( q3AABBtoAABB( m_aabb, aabb ) )
+            {
+                return cb->ReportShape( box );
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		q3QueryCallback *cb;
-		const q3BroadPhase *broadPhase;
-		q3AABB m_aabb;
-	};
+        q3QueryCallback *cb;
+        const q3BroadPhase *broadPhase;
+        q3AABB m_aabb;
+    };
 
-	SceneQueryWrapper wrapper;
-	wrapper.m_aabb = aabb;
-	wrapper.broadPhase = &m_contactManager.m_broadphase;
-	wrapper.cb = cb;
-	m_contactManager.m_broadphase.m_tree.Query( &wrapper, aabb );
+    SceneQueryWrapper wrapper;
+    wrapper.m_aabb = aabb;
+    wrapper.broadPhase = &m_contactManager.m_broadphase;
+    wrapper.cb = cb;
+    m_contactManager.m_broadphase.m_tree.Query( &wrapper, aabb );
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::QueryPoint( q3QueryCallback *cb, const q3Vec3& point ) const
 {
-	struct SceneQueryWrapper
-	{
-		bool TreeCallBack( i32 id )
-		{
-			q3Box *box = (q3Box *)broadPhase->m_tree.GetUserData( id );
+    struct SceneQueryWrapper
+    {
+        bool TreeCallBack( i32 id )
+        {
+            q3Box *box = (q3Box *)broadPhase->m_tree.GetUserData( id );
 
-			if ( box->TestPoint( box->body->GetTransform( ), m_point ) )
-			{
-				cb->ReportShape( box );
-			}
+            if ( box->TestPoint( box->body->GetTransform( ), m_point ) )
+            {
+                cb->ReportShape( box );
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		q3QueryCallback *cb;
-		const q3BroadPhase *broadPhase;
-		q3Vec3 m_point;
-	};
+        q3QueryCallback *cb;
+        const q3BroadPhase *broadPhase;
+        q3Vec3 m_point;
+    };
 
-	SceneQueryWrapper wrapper;
-	wrapper.m_point = point;
-	wrapper.broadPhase = &m_contactManager.m_broadphase;
-	wrapper.cb = cb;
-	const r32 k_fattener = r32( 0.5 );
-	q3Vec3 v( k_fattener, k_fattener, k_fattener );
-	q3AABB aabb;
-	aabb.min = point - v;
-	aabb.max = point + v;
-	m_contactManager.m_broadphase.m_tree.Query( &wrapper, aabb );
+    SceneQueryWrapper wrapper;
+    wrapper.m_point = point;
+    wrapper.broadPhase = &m_contactManager.m_broadphase;
+    wrapper.cb = cb;
+    const r32 k_fattener = r32( 0.5 );
+    q3Vec3 v( k_fattener, k_fattener, k_fattener );
+    q3AABB aabb;
+    aabb.min = point - v;
+    aabb.max = point + v;
+    m_contactManager.m_broadphase.m_tree.Query( &wrapper, aabb );
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::RayCast( q3QueryCallback *cb, q3RaycastData& rayCast ) const
 {
-	struct SceneQueryWrapper
-	{
-		bool TreeCallBack( i32 id )
-		{
-			q3Box *box = (q3Box *)broadPhase->m_tree.GetUserData( id );
+    struct SceneQueryWrapper
+    {
+        bool TreeCallBack( i32 id )
+        {
+            q3Box *box = (q3Box *)broadPhase->m_tree.GetUserData( id );
 
-			if ( box->Raycast( box->body->GetTransform( ), m_rayCast ) )
-			{
-				return cb->ReportShape( box );
-			}
+            if ( box->Raycast( box->body->GetTransform( ), m_rayCast ) )
+            {
+                return cb->ReportShape( box );
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		q3QueryCallback *cb;
-		const q3BroadPhase *broadPhase;
-		q3RaycastData *m_rayCast;
-	};
+        q3QueryCallback *cb;
+        const q3BroadPhase *broadPhase;
+        q3RaycastData *m_rayCast;
+    };
 
-	SceneQueryWrapper wrapper;
-	wrapper.m_rayCast = &rayCast;
-	wrapper.broadPhase = &m_contactManager.m_broadphase;
-	wrapper.cb = cb;
-	m_contactManager.m_broadphase.m_tree.Query( &wrapper, rayCast );
+    SceneQueryWrapper wrapper;
+    wrapper.m_rayCast = &rayCast;
+    wrapper.broadPhase = &m_contactManager.m_broadphase;
+    wrapper.cb = cb;
+    m_contactManager.m_broadphase.m_tree.Query( &wrapper, rayCast );
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::Dump( FILE* file ) const
 {
-	fprintf( file, "// Ensure 64/32-bit memory compatability with the dump contents\n" );
-	fprintf( file, "assert( sizeof( int* ) == %lu );\n", sizeof( int* ) );
-	fprintf( file, "scene.SetGravity( q3Vec3( %.15lf, %.15lf, %.15lf ) );\n", m_gravity.x, m_gravity.y, m_gravity.z );
-	fprintf( file, "scene.SetAllowSleep( %s );\n", m_allowSleep ? "true" : "false" );
-	fprintf( file, "scene.SetEnableFriction( %s );\n", m_enableFriction ? "true" : "false" );
+    fprintf( file, "// Ensure 64/32-bit memory compatability with the dump contents\n" );
+    fprintf( file, "assert( sizeof( int* ) == %lu );\n", sizeof( int* ) );
+    fprintf( file, "scene.SetGravity( q3Vec3( %.15lf, %.15lf, %.15lf ) );\n", m_gravity.x, m_gravity.y, m_gravity.z );
+    fprintf( file, "scene.SetAllowSleep( %s );\n", m_allowSleep ? "true" : "false" );
+    fprintf( file, "scene.SetEnableFriction( %s );\n", m_enableFriction ? "true" : "false" );
 
-	fprintf( file, "q3Body** bodies = (q3Body**)q3Alloc( sizeof( q3Body* ) * %d );\n", m_bodyCount );
+    fprintf( file, "q3Body** bodies = (q3Body**)q3Alloc( sizeof( q3Body* ) * %d );\n", m_bodyCount );
 
-	i32 i = 0;
-	for ( q3Body* body = m_bodyList; body; body = body->m_next, ++i )
-	{
-		body->Dump( file, i );
-	}
+    i32 i = 0;
+    for ( q3Body* body = m_bodyList; body; body = body->m_next, ++i )
+    {
+        body->Dump( file, i );
+    }
 
-	fprintf( file, "q3Free( bodies );\n" );
+    fprintf( file, "q3Free( bodies );\n" );
 }
