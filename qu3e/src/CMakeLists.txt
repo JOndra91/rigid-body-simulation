@@ -29,6 +29,7 @@ set(qu3e_common_hdrs
 	common/q3Geometry.h
 	common/q3Geometry.inl
 	common/q3Memory.h
+	common/q3OpenCL.h
 	common/q3Settings.h
 	common/q3Types.h
 )
@@ -43,6 +44,8 @@ set(qu3e_dynamics_srcs
 	dynamics/q3ContactManager.cpp
 	dynamics/q3ContactSolverCpu.cpp
 	dynamics/q3Island.cpp
+	dynamics/q3IslandSolverCpu.cpp
+	dynamics/q3IslandSolverOcl.cpp
 )
 
 set(qu3e_dynamics_hdrs
@@ -52,6 +55,9 @@ set(qu3e_dynamics_hdrs
 	dynamics/q3ContactSolver.h
 	dynamics/q3ContactSolverCpu.h
 	dynamics/q3Island.h
+	dynamics/q3IslandSolver.h
+	dynamics/q3IslandSolverCpu.h
+	dynamics/q3IslandSolverOcl.h
 )
 
 set(qu3e_math_srcs

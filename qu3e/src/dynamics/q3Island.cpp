@@ -42,34 +42,11 @@
 //--------------------------------------------------------------------------------------------------
 // q3Island
 //--------------------------------------------------------------------------------------------------
-#ifndef WITH_OCL
-
 q3Island::q3Island()
 {
     m_solver = new q3ContactSolverCpu;
 }
 
-#else // WITH_OCL
-
-q3Island::q3Island(q3OpenCLDevice dev)
-{
-    switch(dev)
-    {
-        case q3OpenCLDevice::NONE:
-            m_solver = new q3ContactSolverCpu;
-            break;
-        case q3OpenCLDevice::CPU:
-            m_solver = new q3ContactSolverOcl(CL_DEVICE_TYPE_CPU);
-            break;
-        case q3OpenCLDevice::GPU:
-            m_solver = new q3ContactSolverOcl(CL_DEVICE_TYPE_GPU);
-            break;
-    }
-
-    m_dev = dev;
-}
-
-#endif // WITH_OCL
 //--------------------------------------------------------------------------------------------------
 q3Island::~q3Island()
 {

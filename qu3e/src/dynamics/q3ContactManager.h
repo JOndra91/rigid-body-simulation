@@ -80,6 +80,7 @@ private:
     friend class q3Scene;
     friend struct q3Box;
     friend class q3Body;
+    friend struct q3IslandSolverCpu;
 };
 
 #endif // Q3CONTACTMANAGER_H

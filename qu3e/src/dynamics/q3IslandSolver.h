@@ -1,11 +1,11 @@
 //--------------------------------------------------------------------------------------------------
 /**
-@file    q3ContactSolver.h
+@file    q3IslandSolver.h
 
-@author    Randy Gaul
-@date    10/10/2014
+@author  Ondřej Janošík
+@date    13/4/2016
 
-    Copyright (c) 2014 Randy Gaul http://www.randygaul.net
+    Copyright (c) 2016 Ondřej Janošík
 
     This software is provided 'as-is', without any express or implied
     warranty. In no event will the authors be held liable for any damages
@@ -24,26 +24,19 @@
 */
 //--------------------------------------------------------------------------------------------------
 
-#ifndef Q3CONTACTSOLVER_H
-#define Q3CONTACTSOLVER_H
+#ifndef Q3ISLANDSOLVER_H
+#define Q3ISLANDSOLVER_H
 
-#include "../math/q3Math.h"
-#include "../common/q3Settings.h"
+class q3Scene;
 
 //--------------------------------------------------------------------------------------------------
-// q3ContactSolver
+// q3IslandSolver
 //--------------------------------------------------------------------------------------------------
-struct q3Island;
-
-struct q3ContactSolver
+struct q3IslandSolver
 {
-    virtual ~q3ContactSolver() {};
+    virtual void Solve( q3Scene *scene ) = 0;
 
-    virtual void Initialize( q3Island *island ) = 0;
-    virtual void ShutDown( void ) = 0;
-
-    virtual void PreSolve( r32 dt ) = 0;
-    virtual void Solve( void ) = 0;
+    virtual ~q3IslandSolver() {};
 };
 
-#endif // Q3CONTACTSOLVER_H
+#endif // Q3ISLANDSOLVER_H

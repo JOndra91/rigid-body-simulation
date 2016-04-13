@@ -29,8 +29,9 @@
 
 #include "../common/q3Settings.h"
 #include "../common/q3Memory.h"
+#include "../common/q3OpenCL.h"
 #include "../dynamics/q3ContactManager.h"
-#include "../dynamics/q3Island.h"
+#include "../dynamics/q3IslandSolver.h"
 
 //--------------------------------------------------------------------------------------------------
 // q3Scene
@@ -39,7 +40,7 @@ class q3Body;
 struct q3BodyDef;
 struct q3ContactConstraint;
 class q3Render;
-struct q3Island;
+struct q3IslandSolver;
 
 // This listener is used to gather information about two shapes colliding. This
 // can be used for game logic and sounds. Physics objects created in these
@@ -148,12 +149,9 @@ public:
     void Dump( FILE* file ) const;
 
 private:
-    void SolveIslands( q3Island* island );
-
-private:
     q3ContactManager m_contactManager;
     q3PagedAllocator m_boxAllocator;
-    q3Island *m_island;
+    q3IslandSolver *m_islandSolver;
 
     i32 m_bodyCount;
     q3Body* m_bodyList;
@@ -170,6 +168,7 @@ private:
     bool m_enableFriction;
 
     friend class q3Body;
+    friend struct q3IslandSolverCpu;
 };
 
 #endif // Q3SCENE_H
