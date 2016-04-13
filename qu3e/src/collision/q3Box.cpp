@@ -104,7 +104,7 @@ bool q3Box::Raycast( const q3Transform& tx, q3RaycastData* raycast ) const
         }
     }
 
-    raycast->normal = q3Mul( world.rotation, n0 ); 
+    raycast->normal = q3Mul( world.rotation, n0 );
     raycast->toi = tmin;
 
     return true;

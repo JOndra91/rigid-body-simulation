@@ -227,7 +227,7 @@ void q3ContactManager::TestCollisions( void )
             constraint = next;
             continue;
         }
-        
+
         q3Manifold* manifold = &constraint->manifold;
         q3Manifold oldManifold = constraint->manifold;
         q3Vec3 ot0 = oldManifold.tangentVectors[ 0 ];
