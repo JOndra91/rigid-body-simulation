@@ -147,21 +147,21 @@ void Scene::prepareScene() {
 
 mat4 Scene::getProjectionMatrix() {
 
-      vec2 windowSize = camera->getWindowSize();
-      float fov = radians(75.0);
-      float aspect = windowSize.x / windowSize.y;
-      float near = 0.001;
-      float far = 1e5;
+    vec2 windowSize = camera->getWindowSize();
+    float fov = radians(75.0);
+    float aspect = windowSize.x / windowSize.y;
+    float near = 0.001;
+    float far = 1e5;
 
-      return glm::perspective(fov, aspect, near, far);
+    return glm::perspective(fov, aspect, near, far);
 }
 
 mat4 Scene::getViewMatrix() {
 
-      vec3 cameraPosition = camera->getPosition();
-      vec3 atPosition = cameraPosition + camera->getViewVector();
+    vec3 cameraPosition = camera->getPosition();
+    vec3 atPosition = cameraPosition + camera->getViewVector();
 
-      return glm::lookAt(cameraPosition, atPosition, vec3(0, 1, 0));
+    return glm::lookAt(cameraPosition, atPosition, vec3(0, 1, 0));
 }
 
 void Scene::render() {
@@ -224,16 +224,16 @@ void Scene::prepareBuffers(unsigned &index, const q3Box* box, Vertex* vert, GLui
 
     q3Transform world = q3Mul( tx, local );
 
-	q3Vec3 vertices[ 8 ] = {
-		q3Vec3( -e.x, -e.y, -e.z ),
-		q3Vec3( -e.x, -e.y,  e.z ),
-		q3Vec3( -e.x,  e.y, -e.z ),
-		q3Vec3( -e.x,  e.y,  e.z ),
-		q3Vec3(  e.x, -e.y, -e.z ),
-		q3Vec3(  e.x, -e.y,  e.z ),
-		q3Vec3(  e.x,  e.y, -e.z ),
-		q3Vec3(  e.x,  e.y,  e.z )
-	};
+    q3Vec3 vertices[ 8 ] = {
+        q3Vec3( -e.x, -e.y, -e.z ),
+        q3Vec3( -e.x, -e.y,  e.z ),
+        q3Vec3( -e.x,  e.y, -e.z ),
+        q3Vec3( -e.x,  e.y,  e.z ),
+        q3Vec3(  e.x, -e.y, -e.z ),
+        q3Vec3(  e.x, -e.y,  e.z ),
+        q3Vec3(  e.x,  e.y, -e.z ),
+        q3Vec3(  e.x,  e.y,  e.z )
+    };
 
     unsigned elements[] = {
         0, 1, 2, 3,
@@ -249,13 +249,13 @@ void Scene::prepareBuffers(unsigned &index, const q3Box* box, Vertex* vert, GLui
     q3Vec3 *b = face + 1;
     q3Vec3 *c = face + 2;
 
-	for (int i = 0; i < 24; i += 4)
-	{
+    for (int i = 0; i < 24; i += 4)
+    {
         for(int j = 0; j < 4; j++) {
             face[j] = q3Mul( world, vertices[ elements[ i + j ] ] );
         }
 
-		q3Vec3 n = q3Normalize( q3Cross( *b - *a, *c - *a ) );
+        q3Vec3 n = q3Normalize( q3Cross( *b - *a, *c - *a ) );
 
         for(int j = 0; j < 4; j++) {
             Vertex *v = boxVerticies + i + j;
@@ -272,7 +272,7 @@ void Scene::prepareBuffers(unsigned &index, const q3Box* box, Vertex* vert, GLui
 
         *boxElements = UINT32_MAX;
         boxElements++;
-	}
+    }
 }
 
 
