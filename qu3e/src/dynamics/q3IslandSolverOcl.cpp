@@ -24,13 +24,437 @@
 */
 //--------------------------------------------------------------------------------------------------
 
-#include "q3IslandSolverOcl.h"
+#include <CL/cl.hpp>
+#include <openCLUtilities.hpp>
+#include <iostream>
+#include <vector>
+#include <set>
+
 #include "../scene/q3Scene.h"
+#include "q3Body.h"
+#include "q3Contact.h"
+#include "q3Island.h"
+#include "q3IslandSolverOcl.h"
+
+
+#define assert_size(type, size) assert(sizeof(type) == size)
+//#define assert_size(type, size) do { std::cout << "sizeof(" << # type << ") = " << sizeof(type) << std::endl; assert(sizeof(type) == size); } while(0)
+
+// Number of contacts needed for acceleration using OpenCL
+#define ACCELERATION_THRESHOLD 64
+#define PASSED_ACC_THRESHOLD (/*m_contactCount*/ 0 < ACCELERATION_THRESHOLD)
+
+#define copyBodyInfo(dest, src, sel) do { \
+    dest[src->index ## sel].center = src->center ## sel; \
+    dest[src->index ## sel].i = src->i ## sel; \
+    dest[src->index ## sel].m = src->m ## sel; \
+} while(0)
+
+#define CEIL_TO(a, ceil) ((a - 1 + ceil)/ceil) * ceil
+
+cl_int clErr;
+#define CHECK_CL_ERROR(info) do { \
+        if(clErr) { \
+            std::cerr << "OpenCL error: \"" info "\" (" \
+                << getCLErrorString(clErr) << ")" << std::endl; \
+        } \
+    } while(0)
+
+#ifdef NO_KERNEL_SOURCE
+std::string kernelSource = "";
+#else
+std::string kernelSource =
+#include "q3ContactSolverOcl.cl.str"
+;
+#endif // NO_KERNEL_SOURCE
 
 //--------------------------------------------------------------------------------------------------
 // q3IslandSolverOcl
 //--------------------------------------------------------------------------------------------------
+q3IslandSolverOcl::q3IslandSolverOcl(cl_device_type dev)
+{
+    assert_size(i32, sizeof(cl_int));
+    assert_size(r32, sizeof(cl_float));
+    assert_size(q3Vec3, sizeof(cl_float3));
+    assert_size(q3Mat3, sizeof(cl_float3) * 3);
+    // assert_size(q3VelocityState, sizeof(cl_float3) * 2);
+    // assert_size(q3ContactState, 64);
+    // assert_size(q3ContactConstraintState, 720);
+    // assert_size(q3ContactPlan, sizeof(cl_int) * 2);
 
+
+    m_clContext = createCLContext(dev);
+    m_clQueue = cl::CommandQueue(m_clContext);
+
+    m_clProgram = buildProgramFromSourceString(m_clContext, kernelSource);
+
+    std::vector<cl::Kernel> kernels;
+    m_clProgram.createKernels(&kernels);
+
+    assert(kernels.size() == 2);
+
+    m_clKernelPreSolve = kernels[0];
+    m_clKernelSolve = kernels[1];
+}
+
+//--------------------------------------------------------------------------------------------------
+q3IslandSolverOcl::~q3IslandSolverOcl( void ) {
+    m_clGC.deleteAllMemObjects();
+}
+
+//--------------------------------------------------------------------------------------------------
 void q3IslandSolverOcl::Solve( q3Scene *scene ) {
-    return;
+
+    i32 s_bodyCount = scene->m_bodyCount;
+    q3Stack *s_stack = &(scene->m_stack);
+    q3ContactManager *s_manager = &(scene->m_contactManager);
+
+    m_scene = scene;
+
+    m_bodyCapacity = s_bodyCount + s_bodyCount / 2; // Some static bodies can be present multiple times
+    m_bodyCount = 0;
+    m_contactCount = 0;
+    m_contactStateCount = 0;
+    m_contactCapacity = s_manager->m_contactCount;
+
+    m_bodies = (q3Body**) s_stack->Allocate( sizeof(q3Body*) * m_bodyCapacity);
+    m_contactConstraints = (q3ContactConstraint **)s_stack->Allocate( sizeof( q3ContactConstraint* ) * m_contactCapacity );
+
+// #ifdef TIMERS_ENABLED
+//     struct timeval begin, end, diff;
+//     gettimeofday(&begin,NULL);
+// #endif // TIMERS_ENABLED
+//
+    // Build each active island and then solve each built island
+    i32 stackSize = s_bodyCount;
+    q3Body** stack = (q3Body**)s_stack->Allocate( sizeof( q3Body* ) * stackSize );
+    for ( q3Body* seed = scene->m_bodyList; seed; seed = seed->m_next )
+    {
+        // Seed cannot be apart of an island already
+        if ( seed->m_flags & q3Body::eIsland )
+            continue;
+
+        // Seed must be awake
+        if ( !(seed->m_flags & q3Body::eAwake) )
+            continue;
+
+        // Seed cannot be a static body in order to keep islands
+        // as small as possible
+        if ( seed->m_flags & q3Body::eStatic )
+            continue;
+
+        i32 stackCount = 0;
+        stack[ stackCount++ ] = seed;
+
+        // Mark seed as apart of island
+        seed->m_flags |= q3Body::eIsland;
+
+        // Perform DFS on constraint graph
+        while( stackCount > 0 )
+        {
+            // Decrement stack to implement iterative backtracking
+            q3Body *body = stack[ --stackCount ];
+            Add( body );
+
+            // Awaken all bodies connected to the island
+            body->SetToAwake( );
+
+            // Do not search across static bodies to keep island
+            // formations as small as possible, however the static
+            // body itself should be apart of the island in order
+            // to properly represent a full contact
+            if ( body->m_flags & q3Body::eStatic )
+                continue;
+
+            // Search all contacts connected to this body
+            q3ContactEdge* contacts = body->m_contactList;
+            for ( q3ContactEdge* edge = contacts; edge; edge = edge->next )
+            {
+                q3ContactConstraint *contact = edge->constraint;
+
+                // Skip contacts that have been added to an island already
+                if ( contact->m_flags & q3ContactConstraint::eIsland )
+                    continue;
+
+                // Can safely skip this contact if it didn't actually collide with anything
+                if ( !(contact->m_flags & q3ContactConstraint::eColliding) )
+                    continue;
+
+                // Skip sensors
+                if ( contact->A->sensor || contact->B->sensor )
+                    continue;
+
+                // Mark island flag and add to island
+                contact->m_flags |= q3ContactConstraint::eIsland;
+                Add( contact );
+
+                // Attempt to add the other body in the contact to the island
+                // to simulate contact awakening propogation
+                q3Body* other = edge->other;
+                if ( other->m_flags & q3Body::eIsland )
+                    continue;
+
+                assert( stackCount < stackSize );
+
+                stack[ stackCount++ ] = other;
+                other->m_flags |= q3Body::eIsland;
+            }
+        }
+
+        // Reset all static island flags
+        // This allows static bodies to participate in other island formations
+        for ( i32 i = 0; i < m_bodyCount; i++ )
+        {
+            q3Body *body = m_bodies[ i ];
+
+            if ( body->m_flags & q3Body::eStatic )
+                body->m_flags &= ~q3Body::eIsland;
+        }
+    }
+
+    m_velocities = (q3VelocityStateOcl *)s_stack->Allocate( sizeof( q3VelocityState ) * m_bodyCount );
+    m_contactStates = (q3ContactStateOcl *)s_stack->Allocate( sizeof( q3ContactStateOcl ) * m_contactStateCount );
+    m_contactConstraintStates = (q3ContactConstraintStateOcl *)s_stack->Allocate( sizeof( q3ContactConstraintStateOcl ) * m_contactCount );
+
+    InitializeContacts();
+    PreSolveContacts();
+    SolveContacts();
+
+//
+// #ifdef TIMERS_ENABLED
+//     gettimeofday(&end, NULL);
+//
+//     timersub(&end, &begin, &diff);
+//
+//     std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+// #endif // TIMERS_ENABLED
+//
+
+    s_stack->Free(stack);
+    s_stack->Free(m_bodies);
+    s_stack->Free(m_velocities);
+    s_stack->Free(m_contactStates);
+    s_stack->Free(m_contactConstraints);
+    s_stack->Free(m_contactConstraintStates);
+
+    // clErr = m_clQueue.enqueueReadBuffer(*m_clBufferVelocity, true, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
+    // CHECK_CL_ERROR("Read buffer q3VelocityStateOcl");
+    clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, true, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates);
+    CHECK_CL_ERROR("Read buffer q3ContactStateOcl");
+    // clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactConstraintState, true, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates);
+    // CHECK_CL_ERROR("Read buffer q3ContactConstraintStateOcl");
+
+    q3ContactStateOcl *cs = m_contactStates;
+    for ( i32 i = 0; i < m_contactCount; ++i )
+    {
+        q3ContactConstraintStateOcl *c = m_contactConstraintStates + i;
+        q3ContactConstraint *cc = m_contactConstraints[ i ];
+
+        for ( i32 j = 0; j < c->contactCount; ++j )
+        {
+            q3Contact *oc = cc->manifold.contacts + j;
+            oc->normalImpulse = cs->normalImpulse;
+            oc->tangentImpulse[ 0 ] = cs->tangentImpulse[ 0 ];
+            oc->tangentImpulse[ 1 ] = cs->tangentImpulse[ 1 ];
+
+            cs++;
+        }
+    }
+
+    m_clGC.deleteAllMemObjects();
+
+    m_clBatches.clear();
+    m_clBatchSizes.clear();
+}
+
+//--------------------------------------------------------------------------------------------------
+void q3IslandSolverOcl::PreSolveContacts()
+{
+    q3Vec3 gravity = m_scene->m_gravity;
+    r32 dt = m_scene->m_dt;
+
+    // Apply gravity
+    // Integrate velocities and create state buffers, calculate world inertia
+    for ( i32 i = 0 ; i < m_bodyCount; ++i )
+    {
+        q3Body *body = m_bodies[ i ];
+        q3VelocityStateOcl *v = m_velocities + i;
+
+        if ( body->m_flags & q3Body::eDynamic )
+        {
+            body->ApplyLinearForce( gravity * body->m_gravityScale );
+
+            // Calculate world space intertia tensor
+            q3Mat3 r = body->m_tx.rotation;
+            body->m_invInertiaWorld = r * body->m_invInertiaModel * q3Transpose( r );
+
+            // Integrate velocity
+            body->m_linearVelocity += (body->m_force * body->m_invMass) * dt;
+            body->m_angularVelocity += (body->m_invInertiaWorld * body->m_torque) * dt;
+
+            // From Box2D!
+            // Apply damping.
+            // ODE: dv/dt + c * v = 0
+            // Solution: v(t) = v0 * exp(-c * t)
+            // Time step: v(t + dt) = v0 * exp(-c * (t + dt)) = v0 * exp(-c * t) * exp(-c * dt) = v * exp(-c * dt)
+            // v2 = exp(-c * dt) * v1
+            // Pade approximation:
+            // v2 = v1 * 1 / (1 + c * dt)
+            body->m_linearVelocity *= r32( 1.0 ) / (r32( 1.0 ) + dt * r32( 0.0 ));
+            body->m_angularVelocity *= r32( 1.0 ) / (r32( 1.0 ) + dt * r32( 0.1 ));
+        }
+
+        v->v = body->m_linearVelocity;
+        v->w = body->m_angularVelocity;
+    }
+
+    m_clBufferVelocity = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3VelocityState) * m_bodyCount, m_velocities, &clErr);
+    CHECK_CL_ERROR("Buffer q3VelocityState");
+    m_clBufferContactState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates, &clErr);
+    CHECK_CL_ERROR("Buffer q3ContactStateOcl");
+    // TODO: Read-only maybe?
+    m_clBufferContactConstraintState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates, &clErr);
+    CHECK_CL_ERROR("Buffer q3ContactConstraintStateOcl");
+
+    m_clGC.addMemObject(m_clBufferVelocity);
+    m_clGC.addMemObject(m_clBufferContactState);
+    m_clGC.addMemObject(m_clBufferContactConstraintState);
+
+    std::set<cl_uint> contactsToPlan;
+    std::vector<cl_uint> bodyAllocationTable(m_bodyCount, 0);
+
+    for(int i = 0; i < m_contactStateCount; ++i) {
+        contactsToPlan.insert(i);
+    }
+
+    m_clBatches.reserve(m_contactStateCount);
+
+    cl_uint batchIndex = 1;
+    cl_uint batchOffset = 0;
+    do
+    {
+        for(auto it : contactsToPlan) {
+            q3ContactConstraintStateOcl *cc = m_contactConstraintStates + it;
+
+            if(bodyAllocationTable[cc->indexA] < batchIndex && bodyAllocationTable[cc->indexB] < batchIndex)
+            {
+                bodyAllocationTable[cc->indexA] = batchIndex;
+                bodyAllocationTable[cc->indexB] = batchIndex;
+
+                m_clBatches.push_back(it);
+
+                it = contactsToPlan.erase(it);
+            }
+        }
+
+        //  std::cout << "Batch size:" << m_clBatches.size() - batchOffset << std::endl;
+        m_clBatchSizes.push_back(m_clBatches.size() - batchOffset);
+        batchOffset = m_clBatches.size();
+
+        batchIndex++;
+
+    } while(!contactsToPlan.empty());
+
+    m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint) * m_contactStateCount, m_clBatches.data(), &clErr);
+    CHECK_CL_ERROR("Buffer batches");
+
+    m_clGC.addMemObject(m_clBufferBatches);
+
+
+    // TODO: Run pre-solve
+}
+
+//--------------------------------------------------------------------------------------------------
+void q3IslandSolverOcl::SolveContacts( )
+{
+    clErr = m_clKernelSolve.setArg(0, *m_clBufferVelocity);
+    CHECK_CL_ERROR("Set solve kernel param 0 (velocity)");
+    clErr = m_clKernelSolve.setArg(1, *m_clBufferContactConstraintState);
+    CHECK_CL_ERROR("Set solve kernel param 1 (contact constraint state)");
+    clErr = m_clKernelSolve.setArg(2, *m_clBufferContactState);
+    CHECK_CL_ERROR("Set solve kernel param 2 (contact state)");
+    clErr = m_clKernelSolve.setArg(3, *m_clBufferBatches);
+    CHECK_CL_ERROR("Set solve kernel param 3 (batches)");
+    clErr = m_clKernelSolve.setArg(6, (cl_int)m_scene->m_enableFriction);
+    CHECK_CL_ERROR("Set solve kernel param 6 (friction)");
+
+    for(int i = 0; i < m_scene->m_iterations; ++i) {
+        cl_uint offset = 0;
+        cl::NDRange local(64);
+        for(cl_uint batchSize : m_clBatchSizes)
+        {
+            clErr = m_clKernelSolve.setArg(4, offset);
+            CHECK_CL_ERROR("Set kernel param 4 (batch offset)");
+            clErr = m_clKernelSolve.setArg(5, batchSize);
+            CHECK_CL_ERROR("Set kernel param 5 (batch size)");
+
+            offset += batchSize;
+
+            cl::NDRange global(CEIL_TO(batchSize,local[0]));
+
+            clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelSolve, cl::NullRange, global, local);
+            CHECK_CL_ERROR("Run kernel");
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void q3IslandSolverOcl::Add( q3Body *body )
+{
+    assert( m_bodyCount < m_bodyCapacity );
+
+    body->m_islandIndex = m_bodyCount;
+
+    m_bodies[ m_bodyCount++ ] = body;
+}
+
+//--------------------------------------------------------------------------------------------------
+void q3IslandSolverOcl::Add( q3ContactConstraint *contact )
+{
+    assert( m_contactCount < m_contactCapacity );
+
+    m_contactConstraints[ m_contactCount++ ] = contact;
+    m_contactStateCount += contact->manifold.contactCount;
+}
+
+//--------------------------------------------------------------------------------------------------
+void q3IslandSolverOcl::InitializeContacts() {
+    unsigned contactStateCount = 0;
+    for ( i32 i = 0; i < m_contactCount; ++i )
+    {
+        q3ContactConstraint *cc = m_contactConstraints[ i ];
+
+        q3ContactConstraintStateOcl *c = m_contactConstraintStates + i;
+
+        c->centerA = cc->bodyA->m_worldCenter;
+        c->centerB = cc->bodyB->m_worldCenter;
+        c->iA = cc->bodyA->m_invInertiaWorld;
+        c->iB = cc->bodyB->m_invInertiaWorld;
+        c->mA = cc->bodyA->m_invMass;
+        c->mB = cc->bodyB->m_invMass;
+        c->restitution = cc->restitution;
+        c->friction = cc->friction;
+        c->indexA = cc->bodyA->m_islandIndex;
+        c->indexB = cc->bodyB->m_islandIndex;
+        c->normal = cc->manifold.normal;
+        c->tangentVectors[ 0 ] = cc->manifold.tangentVectors[ 0 ];
+        c->tangentVectors[ 1 ] = cc->manifold.tangentVectors[ 1 ];
+        c->contactCount = cc->manifold.contactCount;
+
+        for ( i32 j = 0; j < c->contactCount; ++j )
+        {
+            q3ContactStateOcl *s = m_contactStates + contactStateCount;
+            q3Contact *cp = cc->manifold.contacts + j;
+
+            s->constraintIndex = i;
+            s->ra = cp->position - c->centerA;
+            s->rb = cp->position - c->centerB;
+            s->penetration = cp->penetration;
+            s->normalImpulse = cp->normalImpulse;
+            s->tangentImpulse[ 0 ] = cp->tangentImpulse[ 0 ];
+            s->tangentImpulse[ 1 ] = cp->tangentImpulse[ 1 ];
+
+            contactStateCount++;
+        }
+    }
 }

@@ -148,6 +148,7 @@ private:
     friend class q3ContactManager;
     friend struct q3Island;
     friend struct q3IslandSolverCpu;
+    friend struct q3IslandSolverOcl;
     friend struct q3ContactSolver;
 
     q3Body( const q3BodyDef& def, q3Scene* scene );

@@ -29,19 +29,18 @@
 
 #include "../math/q3Math.h"
 #include "../common/q3Settings.h"
-#include "q3ContactSolver.h"
 #include "q3Island.h"
 
 //--------------------------------------------------------------------------------------------------
 // q3ContactSolverCpu
 //--------------------------------------------------------------------------------------------------
-struct q3ContactSolverCpu : q3ContactSolver
+struct q3ContactSolverCpu
 {
-    void Initialize( q3Island *island ) override;
-    void ShutDown( void ) override;
+    void Initialize( q3Island *island );
+    void ShutDown( void );
 
-    void PreSolve( r32 dt ) override;
-    void Solve( void ) override;
+    void PreSolve( r32 dt );
+    void Solve( void );
 
     q3Island *m_island;
     q3ContactConstraintState *m_contacts;

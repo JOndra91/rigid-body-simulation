@@ -45,19 +45,16 @@ set(qu3e_dynamics_srcs
 	dynamics/q3ContactSolverCpu.cpp
 	dynamics/q3Island.cpp
 	dynamics/q3IslandSolverCpu.cpp
-	dynamics/q3IslandSolverOcl.cpp
 )
 
 set(qu3e_dynamics_hdrs
 	dynamics/q3Body.h
 	dynamics/q3Contact.h
 	dynamics/q3ContactManager.h
-	dynamics/q3ContactSolver.h
 	dynamics/q3ContactSolverCpu.h
 	dynamics/q3Island.h
 	dynamics/q3IslandSolver.h
 	dynamics/q3IslandSolverCpu.h
-	dynamics/q3IslandSolverOcl.h
 )
 
 set(qu3e_math_srcs
@@ -95,12 +92,12 @@ if(qu3e_use_gpu)
 
 	set(qu3e_dynamics_hdrs
 		${qu3e_dynamics_hdrs}
-		dynamics/q3ContactSolverOcl.h
+		dynamics/q3IslandSolverOcl.h
 	)
 
 	set(qu3e_dynamics_srcs
 		${qu3e_dynamics_srcs}
-		dynamics/q3ContactSolverOcl.cpp
+		dynamics/q3IslandSolverOcl.cpp
 	)
 
 	find_program(PYTHON_3 python3)
