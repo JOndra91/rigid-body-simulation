@@ -81,6 +81,7 @@ private:
     friend struct q3Box;
     friend class q3Body;
     friend struct q3IslandSolverCpu;
+    friend struct q3IslandSolverOcl;
 };
 
 #endif // Q3CONTACTMANAGER_H

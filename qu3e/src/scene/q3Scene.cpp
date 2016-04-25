@@ -34,7 +34,6 @@
 #include "../dynamics/q3Contact.h"
 #include "../dynamics/q3IslandSolverCpu.h"
 #include "../dynamics/q3IslandSolverOcl.h"
-#include "../dynamics/q3ContactSolver.h"
 #include "../dynamics/q3ContactSolverCpu.h"
 #include "../collision/q3Box.h"
 
@@ -67,7 +66,7 @@ q3Scene::~q3Scene( )
 {
     Shutdown( );
 
-  delete m_islandSolver;
+    delete m_islandSolver;
 }
 
 //--------------------------------------------------------------------------------------------------

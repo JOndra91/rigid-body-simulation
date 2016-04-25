@@ -24,7 +24,6 @@
 */
 //--------------------------------------------------------------------------------------------------
 
-#include "q3ContactSolver.h"
 #include "q3ContactSolverCpu.h"
 #include "q3Contact.h"
 #include "q3Island.h"

@@ -27,14 +27,147 @@
 #ifndef Q3ISLANDSOLVEROCL_H
 #define Q3ISLANDSOLVEROCL_H
 
+#include <CL/cl.hpp>
+#include <openCLUtilities.hpp>
+
+#include "../math/q3Math.h"
+#include "../common/q3Settings.h"
+#include "q3Body.h"
+#include "q3Island.h"
 #include "q3IslandSolver.h"
+
+struct q3VelocityStateOcl
+{
+    q3Vec3 w;
+    q3Vec3 v;
+};
+
+struct q3ContactStateOcl
+{
+    q3ContactStateOcl& operator= (const q3ContactState &c) {
+        ra = c.ra;
+        rb = c.rb;
+        penetration = c.penetration;
+        normalImpulse = c.normalImpulse;
+        tangentImpulse[0] = c.tangentImpulse[0];
+        tangentImpulse[1] = c.tangentImpulse[1];
+        bias = c.bias;
+        normalMass = c.normalMass;
+        tangentMass[0] = c.tangentMass[0];
+        tangentMass[1] = c.tangentMass[1];
+        // constraintIndex = c.constraintIndex;
+
+        return *this;
+    }
+
+    q3Vec3 ra;                   // Vector from C.O.M to contact position
+    q3Vec3 rb;                   // Vector from C.O.M to contact position
+    r32 penetration;             // Depth of penetration from collision
+    r32 normalImpulse;           // Accumulated normal impulse
+    r32 tangentImpulse[ 2 ];     // Accumulated friction impulse
+    r32 bias;                    // Restitution + baumgarte
+    r32 normalMass;              // Normal constraint mass
+    r32 tangentMass[ 2 ];        // Tangent constraint mass
+    i32 constraintIndex;
+};
+
+struct q3ContactConstraintStateOcl
+{
+    q3ContactConstraintStateOcl& operator= (const q3ContactConstraintState &c) {
+      iA = c.iA;
+      iB = c.iB;
+      tangentVectors[0] = c.tangentVectors[0];
+      tangentVectors[1] = c.tangentVectors[1];
+      normal = c.normal;
+      centerA = c.centerA;
+      centerB = c.centerB;
+      contactCount = c.contactCount;
+      mA = c.mA;
+      mB = c.mB;
+      restitution = c.restitution;
+      friction = c.friction;
+      indexA = c.indexA;
+      indexB = c.indexB;
+
+      return *this;
+    }
+
+    q3Mat3 iA;  // inertia of body A
+    q3Mat3 iB;  // inertia of body B
+    q3Vec3 tangentVectors[ 2 ];    // Tangent vectors
+    q3Vec3 normal;                // From A to B
+    q3Vec3 centerA;
+    q3Vec3 centerB;
+    i32 contactCount;
+    r32 mA; // mass of body A
+    r32 mB; // mass of body B
+    r32 restitution;
+    r32 friction;
+    i32 indexA;
+    i32 indexB;
+    i32 _padding;
+};
+
+struct q3ContactPlan
+{
+    cl_uint contactConstraintStateIndex;
+    cl_uint contactStateIndex;
+
+    bool operator< (const q3ContactPlan &b) const
+    {
+        if(contactConstraintStateIndex < b.contactConstraintStateIndex)
+        {
+            return true;
+        }
+
+        return contactConstraintStateIndex == b.contactConstraintStateIndex
+                && contactStateIndex < b.contactStateIndex;
+    }
+};
 
 //--------------------------------------------------------------------------------------------------
 // q3IslandSolverOcl
 //--------------------------------------------------------------------------------------------------
 struct q3IslandSolverOcl : q3IslandSolver
 {
+    q3IslandSolverOcl(cl_device_type dev = CL_DEVICE_TYPE_DEFAULT);
+    ~q3IslandSolverOcl();
+
     void Solve( q3Scene *scene ) override;
+
+    void PreSolveContacts( r32 dt );
+    void SolveContacts( void );
+
+    void Add( q3Body *body );
+    void Add( q3ContactConstraint *contact );
+
+    q3ContactConstraintStateOcl *m_contactConstraintStates;
+    q3ContactStateOcl *m_contactStates;
+    q3ContactConstraint **m_contactConstraints;
+    q3VelocityStateOcl *m_velocities;
+    q3Body **m_bodies;
+
+    i32 m_bodyCapacity;
+    i32 m_contactCapacity;
+    i32 m_contactCount;
+    i32 m_bodyCount;
+
+    bool m_enableFriction;
+
+    //-----------------------------------------------------------
+    // Properties for OpenCL acceleration
+    //-----------------------------------------------------------
+    cl::Context m_clContext;
+    cl::Program m_clProgram;
+    cl::Kernel m_clKernel;
+    cl::CommandQueue m_clQueue;
+    cl::Buffer *m_clBufferVelocity;
+    cl::Buffer *m_clBufferContactConstraintState;
+    cl::Buffer *m_clBufferBatches;
+    GarbageCollector m_clGC;
+
+    std::vector<q3ContactPlan> m_clBatches;
+    std::vector<cl_uint> m_clBatchSizes;
 };
 
 #endif // Q3ISLANDSOLVEROCL_H

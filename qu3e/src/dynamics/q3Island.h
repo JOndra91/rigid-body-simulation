@@ -30,7 +30,6 @@
 #include "../math/q3Math.h"
 #include "../common/q3Geometry.h"
 #include "../common/q3Settings.h"
-#include "q3ContactSolver.h"
 
 //--------------------------------------------------------------------------------------------------
 // q3Island
@@ -47,13 +46,13 @@ struct q3VelocityState
 
 struct q3ContactState
 {
-    q3Vec3 ra;                    // Vector from C.O.M to contact position
-    q3Vec3 rb;                    // Vector from C.O.M to contact position
-    r32 penetration;            // Depth of penetration from collision
-    r32 normalImpulse;            // Accumulated normal impulse
-    r32 tangentImpulse[ 2 ];    // Accumulated friction impulse
+    q3Vec3 ra;                   // Vector from C.O.M to contact position
+    q3Vec3 rb;                   // Vector from C.O.M to contact position
+    r32 penetration;             // Depth of penetration from collision
+    r32 normalImpulse;           // Accumulated normal impulse
+    r32 tangentImpulse[ 2 ];     // Accumulated friction impulse
     r32 bias;                    // Restitution + baumgarte
-    r32 normalMass;                // Normal constraint mass
+    r32 normalMass;              // Normal constraint mass
     r32 tangentMass[ 2 ];        // Tangent constraint mass
 };
 
@@ -61,7 +60,7 @@ struct q3ContactConstraintState
 {
     q3ContactState contacts[ 8 ];
     q3Vec3 tangentVectors[ 2 ];    // Tangent vectors
-    q3Vec3 normal;                // From A to B
+    q3Vec3 normal;                 // From A to B
     q3Vec3 centerA;
     q3Vec3 centerB;
     q3Mat3 iA;
@@ -73,22 +72,14 @@ struct q3ContactConstraintState
     r32 friction;
     i32 indexA;
     i32 indexB;
-#ifdef WITH_OCL
-    i32 _padding;
-#endif // WITH_OCL
 };
 
 struct q3Island
 {
-    q3Island();
-    ~q3Island();
-
     void Solve( );
     void Add( q3Body *body );
     void Add( q3ContactConstraint *contact );
     void Initialize( );
-
-    q3ContactSolver *m_solver;
 
     q3Body **m_bodies;
     q3VelocityState *m_velocities;
