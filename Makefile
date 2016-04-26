@@ -11,7 +11,7 @@ $(BINDIR)/gmu: CMakeLists.txt qu3e src | $(BUILDDIR)
 
 $(BUILDDIR):
 	$(MKDIR) $@
-	cd $@; cmake ..
+	cd $@; cmake -DCMAKE_BUILD_TYPE=Debug ..
 
 clean:
 	$(RM) $(BUILDDIR) $(BINDIR)
