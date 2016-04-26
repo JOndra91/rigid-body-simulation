@@ -28,6 +28,8 @@
 #define Q3ISLANDSOLVEROCL_H
 
 #include <CL/cl.hpp>
+#include <set>
+#include <vector>
 #include <openCLUtilities.hpp>
 
 #include "../math/q3Math.h"
