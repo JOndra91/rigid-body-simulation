@@ -231,12 +231,14 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     PreSolveContacts();
     SolveContacts();
 
-    clErr = m_clQueue.enqueueReadBuffer(*m_clBufferVelocity, true, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
-    CHECK_CL_ERROR("Read buffer q3VelocityStateOcl");
-    clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, true, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates);
-    CHECK_CL_ERROR("Read buffer q3ContactStateOcl");
-    // clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactConstraintState, true, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates);
-    // CHECK_CL_ERROR("Read buffer q3ContactConstraintStateOcl");
+    if(m_contactCount > 0) {
+        clErr = m_clQueue.enqueueReadBuffer(*m_clBufferVelocity, true, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
+        CHECK_CL_ERROR("Read buffer q3VelocityStateOcl");
+        clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, true, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates);
+        CHECK_CL_ERROR("Read buffer q3ContactStateOcl");
+        // clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactConstraintState, true, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates);
+        // CHECK_CL_ERROR("Read buffer q3ContactConstraintStateOcl");
+    }
 
     q3ContactStateOcl *cs = m_contactStates;
     for ( i32 i = 0; i < m_contactCount; ++i )
@@ -376,119 +378,125 @@ void q3IslandSolverOcl::PreSolveContacts()
         v->w = body->m_angularVelocity;
     }
 
-    m_clBufferVelocity = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3VelocityState) * m_bodyCount, m_velocities, &clErr);
-    CHECK_CL_ERROR("Buffer q3VelocityState");
-    m_clBufferContactState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates, &clErr);
-    CHECK_CL_ERROR("Buffer q3ContactStateOcl");
-    m_clBufferContactConstraintState = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates, &clErr);
-    CHECK_CL_ERROR("Buffer q3ContactConstraintStateOcl");
+    if(m_contactCount > 0) {
 
-    m_clGC.addMemObject(m_clBufferVelocity);
-    m_clGC.addMemObject(m_clBufferContactState);
-    m_clGC.addMemObject(m_clBufferContactConstraintState);
+        m_clBufferVelocity = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3VelocityState) * m_bodyCount, m_velocities, &clErr);
+        // m_clBufferVelocity = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityState) * m_bodyCount, NULL, &clErr);
+        CHECK_CL_ERROR("Buffer q3VelocityState");
+        m_clBufferContactState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates, &clErr);
+        CHECK_CL_ERROR("Buffer q3ContactStateOcl");
+        m_clBufferContactConstraintState = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates, &clErr);
+        CHECK_CL_ERROR("Buffer q3ContactConstraintStateOcl");
 
-    std::set<cl_uint> contactsToPlan;
-    std::vector<cl_uint> bodyAllocationTable(m_bodyCount, 0);
+        m_clGC.addMemObject(m_clBufferVelocity);
+        m_clGC.addMemObject(m_clBufferContactState);
+        m_clGC.addMemObject(m_clBufferContactConstraintState);
 
-    for(int i = 0; i < m_contactStateCount; ++i) {
-        contactsToPlan.insert(i);
-    }
+        std::set<cl_uint> contactsToPlan;
+        std::vector<cl_uint> bodyAllocationTable(m_bodyCount, 0);
 
-    m_clBatches.reserve(m_contactStateCount);
-
-    cl_uint batchIndex = 1;
-    cl_uint batchOffset = 0;
-    do
-    {
-        for(auto it : contactsToPlan) {
-            q3ContactStateOcl* cs = m_contactStates + it;
-            q3ContactConstraintStateOcl *cc = m_contactConstraintStates + cs->constraintIndex;
-
-            if(bodyAllocationTable[cc->indexA] < batchIndex && bodyAllocationTable[cc->indexB] < batchIndex)
-            {
-                bodyAllocationTable[cc->indexA] = batchIndex;
-                bodyAllocationTable[cc->indexB] = batchIndex;
-
-                m_clBatches.push_back(it);
-
-                contactsToPlan.erase(it);
-            }
+        for(int i = 0; i < m_contactStateCount; ++i) {
+            contactsToPlan.insert(i);
         }
 
-        //  std::cout << "Batch size:" << m_clBatches.size() - batchOffset << std::endl;
-        m_clBatchSizes.push_back(m_clBatches.size() - batchOffset);
-        batchOffset = m_clBatches.size();
+        m_clBatches.reserve(m_contactStateCount);
 
-        batchIndex++;
+        cl_uint batchIndex = 1;
+        cl_uint batchOffset = 0;
+        do
+        {
+            for(auto it : contactsToPlan) {
+                q3ContactStateOcl* cs = m_contactStates + it;
+                q3ContactConstraintStateOcl *cc = m_contactConstraintStates + cs->constraintIndex;
 
-    } while(!contactsToPlan.empty());
+                if(bodyAllocationTable[cc->indexA] < batchIndex && bodyAllocationTable[cc->indexB] < batchIndex)
+                {
+                    bodyAllocationTable[cc->indexA] = batchIndex;
+                    bodyAllocationTable[cc->indexB] = batchIndex;
 
-    m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint) * m_contactStateCount, m_clBatches.data(), &clErr);
-    CHECK_CL_ERROR("Buffer batches");
+                    m_clBatches.push_back(it);
 
-    m_clGC.addMemObject(m_clBufferBatches);
+                    contactsToPlan.erase(it);
+                }
+            }
 
-    clErr = m_clKernelPreSolve.setArg(0, *m_clBufferVelocity);
-    CHECK_CL_ERROR("Set pre-solve kernel param 0 (velocity)");
-    clErr = m_clKernelPreSolve.setArg(1, *m_clBufferContactConstraintState);
-    CHECK_CL_ERROR("Set pre-solve kernel param 1 (contact constraint state)");
-    clErr = m_clKernelPreSolve.setArg(2, *m_clBufferContactState);
-    CHECK_CL_ERROR("Set pre-solve kernel param 2 (contact state)");
-    clErr = m_clKernelPreSolve.setArg(3, *m_clBufferBatches);
-    CHECK_CL_ERROR("Set pre-solve kernel param 3 (batches)");
-    clErr = m_clKernelPreSolve.setArg(6, (cl_int)m_scene->m_enableFriction);
-    CHECK_CL_ERROR("Set pre-solve kernel param 6 (friction)");
-    clErr = m_clKernelPreSolve.setArg(7, (cl_float)m_scene->m_dt);
-    CHECK_CL_ERROR("Set pre-solve kernel param 7 (dt)");
+            //  std::cout << "Batch size:" << m_clBatches.size() - batchOffset << std::endl;
+            m_clBatchSizes.push_back(m_clBatches.size() - batchOffset);
+            batchOffset = m_clBatches.size();
 
-    cl_uint offset = 0;
-    cl::NDRange local(64);
-    for(cl_uint batchSize : m_clBatchSizes)
-    {
-        clErr = m_clKernelPreSolve.setArg(4, offset);
-        CHECK_CL_ERROR("Set pre-solve kernel param 4 (batch offset)");
-        clErr = m_clKernelPreSolve.setArg(5, batchSize);
-        CHECK_CL_ERROR("Set pre-solve kernel param 5 (batch size)");
+            batchIndex++;
 
-        offset += batchSize;
+        } while(!contactsToPlan.empty());
 
-        cl::NDRange global(CEIL_TO(batchSize,local[0]));
+        m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint) * m_contactStateCount, m_clBatches.data(), &clErr);
+        CHECK_CL_ERROR("Buffer batches");
 
-        clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelPreSolve, cl::NullRange, global, local);
-        CHECK_CL_ERROR("Run pre-solve kernel");
+        m_clGC.addMemObject(m_clBufferBatches);
+
+        clErr = m_clKernelPreSolve.setArg(0, *m_clBufferVelocity);
+        CHECK_CL_ERROR("Set pre-solve kernel param 0 (velocity)");
+        clErr = m_clKernelPreSolve.setArg(1, *m_clBufferContactConstraintState);
+        CHECK_CL_ERROR("Set pre-solve kernel param 1 (contact constraint state)");
+        clErr = m_clKernelPreSolve.setArg(2, *m_clBufferContactState);
+        CHECK_CL_ERROR("Set pre-solve kernel param 2 (contact state)");
+        clErr = m_clKernelPreSolve.setArg(3, *m_clBufferBatches);
+        CHECK_CL_ERROR("Set pre-solve kernel param 3 (batches)");
+        clErr = m_clKernelPreSolve.setArg(6, (cl_int)m_scene->m_enableFriction);
+        CHECK_CL_ERROR("Set pre-solve kernel param 6 (friction)");
+        clErr = m_clKernelPreSolve.setArg(7, (cl_float)m_scene->m_dt);
+        CHECK_CL_ERROR("Set pre-solve kernel param 7 (dt)");
+
+        cl_uint offset = 0;
+        cl::NDRange local(64);
+        for(cl_uint batchSize : m_clBatchSizes)
+        {
+            clErr = m_clKernelPreSolve.setArg(4, offset);
+            CHECK_CL_ERROR("Set pre-solve kernel param 4 (batch offset)");
+            clErr = m_clKernelPreSolve.setArg(5, batchSize);
+            CHECK_CL_ERROR("Set pre-solve kernel param 5 (batch size)");
+
+            offset += batchSize;
+
+            cl::NDRange global(CEIL_TO(batchSize,local[0]));
+
+            clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelPreSolve, cl::NullRange, global, local);
+            CHECK_CL_ERROR("Run pre-solve kernel");
+        }
     }
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3IslandSolverOcl::SolveContacts( )
 {
-    clErr = m_clKernelSolve.setArg(0, *m_clBufferVelocity);
-    CHECK_CL_ERROR("Set solve kernel param 0 (velocity)");
-    clErr = m_clKernelSolve.setArg(1, *m_clBufferContactConstraintState);
-    CHECK_CL_ERROR("Set solve kernel param 1 (contact constraint state)");
-    clErr = m_clKernelSolve.setArg(2, *m_clBufferContactState);
-    CHECK_CL_ERROR("Set solve kernel param 2 (contact state)");
-    clErr = m_clKernelSolve.setArg(3, *m_clBufferBatches);
-    CHECK_CL_ERROR("Set solve kernel param 3 (batches)");
-    clErr = m_clKernelSolve.setArg(6, (cl_int)m_scene->m_enableFriction);
-    CHECK_CL_ERROR("Set solve kernel param 6 (friction)");
+    if(m_contactCount > 0) {
+        clErr = m_clKernelSolve.setArg(0, *m_clBufferVelocity);
+        CHECK_CL_ERROR("Set solve kernel param 0 (velocity)");
+        clErr = m_clKernelSolve.setArg(1, *m_clBufferContactConstraintState);
+        CHECK_CL_ERROR("Set solve kernel param 1 (contact constraint state)");
+        clErr = m_clKernelSolve.setArg(2, *m_clBufferContactState);
+        CHECK_CL_ERROR("Set solve kernel param 2 (contact state)");
+        clErr = m_clKernelSolve.setArg(3, *m_clBufferBatches);
+        CHECK_CL_ERROR("Set solve kernel param 3 (batches)");
+        clErr = m_clKernelSolve.setArg(6, (cl_int)m_scene->m_enableFriction);
+        CHECK_CL_ERROR("Set solve kernel param 6 (friction)");
 
-    for(int i = 0; i < m_scene->m_iterations; ++i) {
-        cl_uint offset = 0;
-        cl::NDRange local(64);
-        for(cl_uint batchSize : m_clBatchSizes)
-        {
-            clErr = m_clKernelSolve.setArg(4, offset);
-            CHECK_CL_ERROR("Set solve kernel param 4 (batch offset)");
-            clErr = m_clKernelSolve.setArg(5, batchSize);
-            CHECK_CL_ERROR("Set solve kernel param 5 (batch size)");
+        for(int i = 0; i < m_scene->m_iterations; ++i) {
+            cl_uint offset = 0;
+            cl::NDRange local(64);
+            for(cl_uint batchSize : m_clBatchSizes)
+            {
+                clErr = m_clKernelSolve.setArg(4, offset);
+                CHECK_CL_ERROR("Set solve kernel param 4 (batch offset)");
+                clErr = m_clKernelSolve.setArg(5, batchSize);
+                CHECK_CL_ERROR("Set solve kernel param 5 (batch size)");
 
-            offset += batchSize;
+                offset += batchSize;
 
-            cl::NDRange global(CEIL_TO(batchSize,local[0]));
+                cl::NDRange global(CEIL_TO(batchSize,local[0]));
 
-            clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelSolve, cl::NullRange, global, local);
-            CHECK_CL_ERROR("Run solve kernel");
+                clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelSolve, cl::NullRange, global, local);
+                CHECK_CL_ERROR("Run solve kernel");
+            }
         }
     }
 }
