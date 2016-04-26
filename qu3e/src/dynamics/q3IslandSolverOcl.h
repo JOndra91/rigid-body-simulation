@@ -46,13 +46,14 @@ struct q3ContactStateOcl
 {
     q3Vec3 ra;                   // Vector from C.O.M to contact position
     q3Vec3 rb;                   // Vector from C.O.M to contact position
+    r32 tangentImpulse[ 2 ];     // Accumulated friction impulse
+    r32 tangentMass[ 2 ];        // Tangent constraint mass
     r32 penetration;             // Depth of penetration from collision
     r32 normalImpulse;           // Accumulated normal impulse
-    r32 tangentImpulse[ 2 ];     // Accumulated friction impulse
     r32 bias;                    // Restitution + baumgarte
     r32 normalMass;              // Normal constraint mass
-    r32 tangentMass[ 2 ];        // Tangent constraint mass
     u32 constraintIndex;
+    char _padding[12];
 };
 
 struct q3ContactConstraintStateOcl
@@ -70,7 +71,7 @@ struct q3ContactConstraintStateOcl
     r32 friction;
     i32 indexA;
     i32 indexB;
-    i32 _padding;
+    char _padding[4];
 };
 
 //--------------------------------------------------------------------------------------------------
