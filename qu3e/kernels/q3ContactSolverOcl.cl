@@ -1,4 +1,5 @@
 typedef int    i32;
+typedef uint   u32;
 typedef float  r32;
 typedef float3 q3Vec3;
 
@@ -16,20 +17,20 @@ typedef struct
 {
   q3Vec3 w;
   q3Vec3 v;
-} q3VelocityState;
+} q3VelocityStateOcl;
 
 typedef struct
 {
   q3Vec3 ra;          // Vector from C.O.M to contact position
   q3Vec3 rb;          // Vector from C.O.M to contact position
+  r32 tangentImpulse[ 2 ];  // Accumulated friction impulse
+  r32 tangentMass[ 2 ];    // Tangent constraint mass
   r32 penetration;      // Depth of penetration from collision
   r32 normalImpulse;      // Accumulated normal impulse
-  r32 tangentImpulse[ 2 ];  // Accumulated friction impulse
   r32 bias;          // Restitution + baumgarte
   r32 normalMass;        // Normal constraint mass
-  r32 tangentMass[ 2 ];    // Tangent constraint mass
-  i32 constraintIndex;
-} q3ContactState;
+  u32 constraintIndex;
+} q3ContactStateOcl;
 
 typedef struct
 {
@@ -46,7 +47,7 @@ typedef struct
   r32 friction;
   i32 indexA;
   i32 indexB;
-} q3ContactConstraintState;
+} q3ContactConstraintStateOcl;
 
 inline q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
 {
@@ -91,9 +92,9 @@ inline q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
 }
 
 kernel void preSolve
-    ( global q3VelocityState *m_velocities
-    , global q3ContactConstraintState *m_contactConstraints
-    , global q3ContactState *m_contactStates
+    ( global q3VelocityStateOcl *m_velocities
+    , global q3ContactConstraintStateOcl *m_contactConstraints
+    , global q3ContactStateOcl *m_contactStates
     , global uint *batches
     , uint batchOffset, uint batchSize, int m_enableFriction, r32 dt
     )
@@ -110,18 +111,16 @@ kernel void preSolve
   // if(totalOffset == 0) {
   //   printf("sizeof(i32) = %u\n", sizeof(i32));
   //   printf("sizeof(r32) = %u\n", sizeof(r32));
+  //   printf("sizeof(u32) = %u\n", sizeof(u32));
   //   printf("sizeof(q3Vec3) = %u\n", sizeof(q3Vec3));
   //   printf("sizeof(q3Mat3) = %u\n", sizeof(q3Mat3));
-  //   printf("sizeof(q3VelocityState) = %u\n", sizeof(q3VelocityState));
-  //   printf("sizeof(q3ContactState) = %u\n", sizeof(q3ContactState));
-  //   printf("sizeof(q3ContactConstraintState) = %u\n", sizeof(q3ContactConstraintState));
-  //   printf("sizeof(q3ContactPlan) = %u\n", sizeof(q3ContactPlan));
+  //   printf("sizeof(q3VelocityStateOcl) = %u\n", sizeof(q3VelocityStateOcl));
+  //   printf("sizeof(q3ContactStateOcl) = %u\n", sizeof(q3ContactStateOcl));
+  //   printf("sizeof(q3ContactConstraintStateOcl) = %u\n", sizeof(q3ContactConstraintStateOcl));
   // }
-  //
-  // return;
 
-  global q3ContactState *c = m_contactStates + batches[totalOffset];
-  global q3ContactConstraintState *cs = m_contactConstraints + c->constraintIndex;
+  global q3ContactStateOcl *c = m_contactStates + batches[totalOffset];
+  global q3ContactConstraintStateOcl *cs = m_contactConstraints + c->constraintIndex;
 
   q3Vec3 vA = m_velocities[ cs->indexA ].v;
   q3Vec3 wA = m_velocities[ cs->indexA ].w;
@@ -181,9 +180,9 @@ kernel void preSolve
 
 // constant modifier doesn't work on nVidia
 kernel void solve
-    ( global q3VelocityState *m_velocities
-    , global q3ContactConstraintState *m_contactConstraints
-    , global q3ContactState *m_contactStates
+    ( global q3VelocityStateOcl *m_velocities
+    , global q3ContactConstraintStateOcl *m_contactConstraints
+    , global q3ContactStateOcl *m_contactStates
     , global uint *batches
     , uint batchOffset, uint batchSize, int m_enableFriction
     )
@@ -197,8 +196,8 @@ kernel void solve
 
   uint totalOffset = global_x + batchOffset;
 
-  global q3ContactState *c = m_contactStates + batches[totalOffset];
-  global q3ContactConstraintState *cs = m_contactConstraints + c->constraintIndex;
+  global q3ContactStateOcl *c = m_contactStates + batches[totalOffset];
+  global q3ContactConstraintStateOcl *cs = m_contactConstraints + c->constraintIndex;
 
   q3Vec3 vA = m_velocities[ cs->indexA ].v;
   q3Vec3 wA = m_velocities[ cs->indexA ].w;

@@ -162,13 +162,13 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
         }
     }
 
-    #ifdef TIMERS_ENABLED
-        gettimeofday(&end, NULL);
+#ifdef TIMERS_ENABLED
+    gettimeofday(&end, NULL);
 
-        timersub(&end, &begin, &diff);
+    timersub(&end, &begin, &diff);
 
-        std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-    #endif // TIMERS_ENABLED
+    std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
+#endif // TIMERS_ENABLED
 
     s_stack->Free( stack );
     s_stack->Free( island.m_contactStates );
