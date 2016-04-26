@@ -2,6 +2,8 @@ typedef int    i32;
 typedef float  r32;
 typedef float3 q3Vec3;
 
+#define Q3_BAUMGARTE 0.2f
+
 typedef struct
 {
   q3Vec3 ex;
@@ -25,11 +27,11 @@ typedef struct
   r32 bias;          // Restitution + baumgarte
   r32 normalMass;        // Normal constraint mass
   r32 tangentMass[ 2 ];    // Tangent constraint mass
+  i32 constraintIndex;
 } q3ContactState;
 
 typedef struct
 {
-  q3ContactState contacts[ 8 ];
   q3Vec3 tangentVectors[ 2 ];  // Tangent vectors
   q3Vec3 normal;        // From A to B
   q3Vec3 centerA;
@@ -44,12 +46,6 @@ typedef struct
   i32 indexA;
   i32 indexB;
 } q3ContactConstraintState;
-
-typedef struct
-{
-  uint contactConstraintStateIndex;
-  uint contactStateIndex;
-} q3ContactPlan;
 
 q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
 {
@@ -71,6 +67,11 @@ r32 q3Max(r32 a, r32 b)
   return max(a, b);
 }
 
+r32 q3Min(r32 a, r32 b)
+{
+  return min(a, b);
+}
+
 q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
 {
   return (q3Vec3)(
@@ -80,9 +81,12 @@ q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
   );
 }
 
-// constant modifier doesn't work on nVidia
-kernel void solve(global q3VelocityState *m_velocities, global q3ContactConstraintState *m_contacts,
-    global q3ContactPlan *batches, uint batchOffset, uint batchSize, int m_enableFriction)
+kernel void preSolve
+    ( global q3ContactConstraintState *m_contactConstraints
+    , global q3ContactState m_contactStates*
+    , global uint *batches
+    , uint batchOffset, uint batchSize, int m_enableFriction
+    )
 {
   uint global_x = (uint)get_global_id(0);
 
@@ -106,16 +110,90 @@ kernel void solve(global q3VelocityState *m_velocities, global q3ContactConstrai
   //
   // return;
 
-  global q3ContactPlan *plan = batches + totalOffset;
-
-  global q3ContactConstraintState *cs = m_contacts + plan->contactConstraintStateIndex;
+  global q3ContactState *c = m_contactStates + batches + totalOffset;
+  global q3ContactConstraintState *cs = m_contacts + c->constraintIndex;
 
   q3Vec3 vA = m_velocities[ cs->indexA ].v;
   q3Vec3 wA = m_velocities[ cs->indexA ].w;
   q3Vec3 vB = m_velocities[ cs->indexB ].v;
   q3Vec3 wB = m_velocities[ cs->indexB ].w;
 
-  global q3ContactState *c = cs->contacts + plan->contactStateIndex;
+  // Precalculate JM^-1JT for contact and friction constraints
+  q3Vec3 raCn = q3Cross( c->ra, cs->normal );
+  q3Vec3 rbCn = q3Cross( c->rb, cs->normal );
+  r32 nm = cs->mA + cs->mB;
+  r32 tm[ 2 ];
+  tm[ 0 ] = nm;
+  tm[ 1 ] = nm;
+
+  nm += q3Dot( raCn, cs->iA * raCn ) + q3Dot( rbCn, cs->iB * rbCn );
+  c->normalMass = q3Invert( nm );
+
+  for ( i32 i = 0; i < 2; ++i )
+  {
+    q3Vec3 raCt = q3Cross( cs->tangentVectors[ i ], c->ra );
+    q3Vec3 rbCt = q3Cross( cs->tangentVectors[ i ], c->rb );
+    tm[ i ] += q3Dot( raCt, cs->iA * raCt ) + q3Dot( rbCt, cs->iB * rbCt );
+    c->tangentMass[ i ] = q3Invert( tm[ i ] );
+  }
+
+  // Precalculate bias factor
+  c->bias = -Q3_BAUMGARTE * (1.0f / dt) * q3Min( 0.0f, c->penetration + Q3_PENETRATION_SLOP );
+
+  // Warm start contact
+  q3Vec3 P = cs->normal * c->normalImpulse;
+
+  if ( m_enableFriction )
+  {
+      P += cs->tangentVectors[ 0 ] * c->tangentImpulse[ 0 ];
+      P += cs->tangentVectors[ 1 ] * c->tangentImpulse[ 1 ];
+  }
+
+  vA -= P * cs->mA;
+  wA -= cs->iA * q3Cross( c->ra, P );
+
+  vB += P * cs->mB;
+  wB += cs->iB * q3Cross( c->rb, P );
+
+  // Add in restitution bias
+  r32 dv = q3Dot( vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra ), cs->normal );
+
+  if ( dv < -1.0f ) {
+    c->bias += -(cs->restitution) * dv;
+  }
+
+  m_velocities[ cs->indexA ].v = vA;
+  m_velocities[ cs->indexA ].w = wA;
+  m_velocities[ cs->indexB ].v = vB;
+  m_velocities[ cs->indexB ].w = wB;
+}
+
+
+// constant modifier doesn't work on nVidia
+kernel void solve
+    ( global q3VelocityState *m_velocities
+    , global q3ContactConstraintState *m_contactConstraints
+    , global q3ContactState m_contactStates*
+    , global uint *batches
+    , uint batchOffset, uint batchSize, int m_enableFriction
+    )
+{
+  uint global_x = (uint)get_global_id(0);
+
+  if(global_x >= batchSize)
+  {
+    return;
+  }
+
+  uint totalOffset = global_x + batchOffset;
+
+  global q3ContactState *c = m_contactStates + batches + totalOffset;
+  global q3ContactConstraintState *cs = m_contacts + c->constraintIndex;
+
+  q3Vec3 vA = m_velocities[ cs->indexA ].v;
+  q3Vec3 wA = m_velocities[ cs->indexA ].w;
+  q3Vec3 vB = m_velocities[ cs->indexB ].v;
+  q3Vec3 wB = m_velocities[ cs->indexB ].w;
 
   r32 c_normalImpulse = c->normalImpulse;
   r32 cs_mA = cs->mA;
