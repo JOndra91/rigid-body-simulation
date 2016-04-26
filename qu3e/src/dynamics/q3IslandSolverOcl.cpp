@@ -60,15 +60,49 @@ cl_int clErr;
         } \
     } while(0)
 
+#ifdef NO_KERNEL_SOURCE
+std::string kernelSource = "";
+#else
 std::string kernelSource =
-""
-// #include "q3ContactSolverOcl.cl.str"
+#include "q3ContactSolverOcl.cl.str"
 ;
+#endif // NO_KERNEL_SOURCE
 
 //--------------------------------------------------------------------------------------------------
 // q3IslandSolverOcl
 //--------------------------------------------------------------------------------------------------
+q3IslandSolverOcl::q3IslandSolverOcl(cl_device_type dev)
+{
+    assert_size(i32, sizeof(cl_int));
+    assert_size(r32, sizeof(cl_float));
+    assert_size(q3Vec3, sizeof(cl_float3));
+    assert_size(q3Mat3, sizeof(cl_float3) * 3);
+    // assert_size(q3VelocityState, sizeof(cl_float3) * 2);
+    // assert_size(q3ContactState, 64);
+    // assert_size(q3ContactConstraintState, 720);
+    // assert_size(q3ContactPlan, sizeof(cl_int) * 2);
 
+
+    m_clContext = createCLContext(dev);
+    m_clQueue = cl::CommandQueue(m_clContext);
+
+    m_clProgram = buildProgramFromSourceString(m_clContext, kernelSource);
+
+    std::vector<cl::Kernel> kernels;
+    m_clProgram.createKernels(&kernels);
+
+    assert(kernels.size() == 2);
+
+    m_clKernelPreSolve = kernels[0];
+    m_clKernelSolve = kernels[1];
+}
+
+//--------------------------------------------------------------------------------------------------
+q3IslandSolverOcl::~q3IslandSolverOcl( void ) {
+    m_clGC.deleteAllMemObjects();
+}
+
+//--------------------------------------------------------------------------------------------------
 void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
     i32 s_bodyCount = scene->m_bodyCount;
@@ -81,9 +115,10 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     m_bodyCount = 0;
     m_contactCount = 0;
     m_contactStateCount = 0;
+    m_contactCapacity = s_manager->m_contactCount;
 
-    m_bodies = (q3Body**) s_stack->Allocate(s_bodyCount);
-    m_contactConstraints = (q3ContactConstraint **)s_stack->Allocate( sizeof( q3ContactConstraint* ) * s_manager->m_contactCount );
+    m_bodies = (q3Body**) s_stack->Allocate( sizeof(q3Body*) * m_bodyCapacity);
+    m_contactConstraints = (q3ContactConstraint **)s_stack->Allocate( sizeof( q3ContactConstraint* ) * m_contactCapacity );
 
 // #ifdef TIMERS_ENABLED
 //     struct timeval begin, end, diff;
@@ -177,7 +212,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         }
     }
 
-    m_velocities = (q3VelocityStateOcl *)s_stack->Allocate( sizeof( q3VelocityState ) * s_bodyCount );
+    m_velocities = (q3VelocityStateOcl *)s_stack->Allocate( sizeof( q3VelocityState ) * m_bodyCount );
     m_contactStates = (q3ContactStateOcl *)s_stack->Allocate( sizeof( q3ContactStateOcl ) * m_contactStateCount );
     m_contactConstraintStates = (q3ContactConstraintStateOcl *)s_stack->Allocate( sizeof( q3ContactConstraintStateOcl ) * m_contactCount );
 
@@ -233,36 +268,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 }
 
 //--------------------------------------------------------------------------------------------------
-q3IslandSolverOcl::q3IslandSolverOcl(cl_device_type dev)
-{
-    assert_size(i32, sizeof(cl_int));
-    assert_size(r32, sizeof(cl_float));
-    assert_size(q3Vec3, sizeof(cl_float3));
-    assert_size(q3Mat3, sizeof(cl_float3) * 3);
-    // assert_size(q3VelocityState, sizeof(cl_float3) * 2);
-    // assert_size(q3ContactState, 64);
-    // assert_size(q3ContactConstraintState, 720);
-    // assert_size(q3ContactPlan, sizeof(cl_int) * 2);
-
-
-    m_clContext = createCLContext(dev);
-    m_clQueue = cl::CommandQueue(m_clContext);
-
-    m_clProgram = buildProgramFromSourceString(m_clContext, kernelSource);
-
-    std::vector<cl::Kernel> kernels;
-    m_clProgram.createKernels(&kernels);
-
-    m_clKernelPreSolve = kernels[0];
-    m_clKernelSolve = kernels[1];
-}
-
-//--------------------------------------------------------------------------------------------------
-q3IslandSolverOcl::~q3IslandSolverOcl( void ) {
-    m_clGC.deleteAllMemObjects();
-}
-
-//--------------------------------------------------------------------------------------------------
 void q3IslandSolverOcl::PreSolveContacts()
 {
     q3Vec3 gravity = m_scene->m_gravity;
@@ -307,6 +312,7 @@ void q3IslandSolverOcl::PreSolveContacts()
     CHECK_CL_ERROR("Buffer q3VelocityState");
     m_clBufferContactState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates, &clErr);
     CHECK_CL_ERROR("Buffer q3ContactStateOcl");
+    // TODO: Read-only maybe?
     m_clBufferContactConstraintState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates, &clErr);
     CHECK_CL_ERROR("Buffer q3ContactConstraintStateOcl");
 
@@ -413,7 +419,7 @@ void q3IslandSolverOcl::Add( q3ContactConstraint *contact )
 
 //--------------------------------------------------------------------------------------------------
 void q3IslandSolverOcl::InitializeContacts() {
-    m_contactStateCount = 0;
+    unsigned contactStateCount = 0;
     for ( i32 i = 0; i < m_contactCount; ++i )
     {
         q3ContactConstraint *cc = m_contactConstraints[ i ];
@@ -437,7 +443,7 @@ void q3IslandSolverOcl::InitializeContacts() {
 
         for ( i32 j = 0; j < c->contactCount; ++j )
         {
-            q3ContactStateOcl *s = m_contactStates + m_contactStateCount;
+            q3ContactStateOcl *s = m_contactStates + contactStateCount;
             q3Contact *cp = cc->manifold.contacts + j;
 
             s->constraintIndex = i;
@@ -448,7 +454,7 @@ void q3IslandSolverOcl::InitializeContacts() {
             s->tangentImpulse[ 0 ] = cp->tangentImpulse[ 0 ];
             s->tangentImpulse[ 1 ] = cp->tangentImpulse[ 1 ];
 
-            m_contactStateCount++;
+            contactStateCount++;
         }
     }
 }

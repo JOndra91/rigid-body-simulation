@@ -3,6 +3,7 @@ typedef float  r32;
 typedef float3 q3Vec3;
 
 #define Q3_BAUMGARTE 0.2f
+#define Q3_PENETRATION_SLOP 0.05f
 
 typedef struct
 {
@@ -47,32 +48,40 @@ typedef struct
   i32 indexB;
 } q3ContactConstraintState;
 
-q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
+inline q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
 {
   return cross(a, b);
 }
 
-r32 q3Dot(q3Vec3 a, q3Vec3 b)
+inline r32 q3Dot(q3Vec3 a, q3Vec3 b)
 {
   return dot(a, b);
 }
 
-r32 q3Clamp(r32 minval, r32 maxval, r32 x)
+inline r32 q3Clamp(r32 minval, r32 maxval, r32 x)
 {
   return clamp(x, minval, maxval);
 }
 
-r32 q3Max(r32 a, r32 b)
+inline r32 q3Max(r32 a, r32 b)
 {
   return max(a, b);
 }
 
-r32 q3Min(r32 a, r32 b)
+inline r32 q3Min(r32 a, r32 b)
 {
   return min(a, b);
 }
 
-q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
+inline r32 q3Invert( r32 a )
+{
+  return a != 0.0f ? 1.0f / a : 0.0f;
+}
+
+/**
+ * Matrix vector multiplication
+ */
+inline q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
 {
   return (q3Vec3)(
     m.ex.x * v.x + m.ey.x * v.y + m.ez.x * v.z,
@@ -82,10 +91,11 @@ q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
 }
 
 kernel void preSolve
-    ( global q3ContactConstraintState *m_contactConstraints
-    , global q3ContactState m_contactStates*
+    ( global q3VelocityState *m_velocities
+    , global q3ContactConstraintState *m_contactConstraints
+    , global q3ContactState *m_contactStates
     , global uint *batches
-    , uint batchOffset, uint batchSize, int m_enableFriction
+    , uint batchOffset, uint batchSize, int m_enableFriction, r32 dt
     )
 {
   uint global_x = (uint)get_global_id(0);
@@ -110,8 +120,8 @@ kernel void preSolve
   //
   // return;
 
-  global q3ContactState *c = m_contactStates + batches + totalOffset;
-  global q3ContactConstraintState *cs = m_contacts + c->constraintIndex;
+  global q3ContactState *c = m_contactStates + batches[totalOffset];
+  global q3ContactConstraintState *cs = m_contactConstraints + c->constraintIndex;
 
   q3Vec3 vA = m_velocities[ cs->indexA ].v;
   q3Vec3 wA = m_velocities[ cs->indexA ].w;
@@ -126,14 +136,14 @@ kernel void preSolve
   tm[ 0 ] = nm;
   tm[ 1 ] = nm;
 
-  nm += q3Dot( raCn, cs->iA * raCn ) + q3Dot( rbCn, cs->iB * rbCn );
+  nm += q3Dot( raCn, mvMul(cs->iA, raCn) ) + q3Dot( rbCn, mvMul(cs->iB, rbCn) );
   c->normalMass = q3Invert( nm );
 
   for ( i32 i = 0; i < 2; ++i )
   {
     q3Vec3 raCt = q3Cross( cs->tangentVectors[ i ], c->ra );
     q3Vec3 rbCt = q3Cross( cs->tangentVectors[ i ], c->rb );
-    tm[ i ] += q3Dot( raCt, cs->iA * raCt ) + q3Dot( rbCt, cs->iB * rbCt );
+    tm[ i ] += q3Dot( raCt, mvMul(cs->iA, raCt) ) + q3Dot( rbCt, mvMul(cs->iB, rbCt) );
     c->tangentMass[ i ] = q3Invert( tm[ i ] );
   }
 
@@ -150,10 +160,10 @@ kernel void preSolve
   }
 
   vA -= P * cs->mA;
-  wA -= cs->iA * q3Cross( c->ra, P );
+  wA -= mvMul(cs->iA, q3Cross( c->ra, P ));
 
   vB += P * cs->mB;
-  wB += cs->iB * q3Cross( c->rb, P );
+  wB += mvMul(cs->iB, q3Cross( c->rb, P ));
 
   // Add in restitution bias
   r32 dv = q3Dot( vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra ), cs->normal );
@@ -173,7 +183,7 @@ kernel void preSolve
 kernel void solve
     ( global q3VelocityState *m_velocities
     , global q3ContactConstraintState *m_contactConstraints
-    , global q3ContactState m_contactStates*
+    , global q3ContactState *m_contactStates
     , global uint *batches
     , uint batchOffset, uint batchSize, int m_enableFriction
     )
@@ -187,8 +197,8 @@ kernel void solve
 
   uint totalOffset = global_x + batchOffset;
 
-  global q3ContactState *c = m_contactStates + batches + totalOffset;
-  global q3ContactConstraintState *cs = m_contacts + c->constraintIndex;
+  global q3ContactState *c = m_contactStates + batches[totalOffset];
+  global q3ContactConstraintState *cs = m_contactConstraints + c->constraintIndex;
 
   q3Vec3 vA = m_velocities[ cs->indexA ].v;
   q3Vec3 wA = m_velocities[ cs->indexA ].w;
