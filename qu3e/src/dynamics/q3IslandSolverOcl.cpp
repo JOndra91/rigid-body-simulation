@@ -293,8 +293,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                 q3ContactStateOcl* cs = m_contactStates + it;
                 q3ContactConstraintStateOcl *cc = m_contactConstraintStates + cs->constraintIndex;
 
-                if((bodyAllocationTable[cc->indexA] < batchIndex && bodyAllocationTable[cc->indexB] < batchIndex)
-                  || (m_bodies[cc->indexA]->m_flags | m_bodies[cc->indexB]->m_flags) & q3Body::eStatic)
+                if((bodyAllocationTable[cc->indexA] < batchIndex || (m_bodies[cc->indexA]->m_flags & q3Body::eStatic))
+                  && (bodyAllocationTable[cc->indexB] < batchIndex || (m_bodies[cc->indexB]->m_flags & q3Body::eStatic)))
                 {
                     bodyAllocationTable[cc->indexA] = batchIndex;
                     bodyAllocationTable[cc->indexB] = batchIndex;
