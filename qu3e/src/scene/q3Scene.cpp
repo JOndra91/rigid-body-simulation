@@ -54,7 +54,19 @@ q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iter
 {
 
     if(q3IsOpenCLAccelerated(device)) {
-        m_islandSolver = new q3IslandSolverOcl();
+        cl_device_type clDevType;
+        switch(device) {
+            case q3OpenCLDevice::CPU:
+                clDevType = CL_DEVICE_TYPE_CPU;
+                break;
+            case q3OpenCLDevice::GPU:
+                clDevType = CL_DEVICE_TYPE_GPU;
+                break;
+            default:
+                clDevType = CL_DEVICE_TYPE_DEFAULT;
+        }
+
+        m_islandSolver = new q3IslandSolverOcl(clDevType);
     }
     else {
         m_islandSolver = new q3IslandSolverCpu();
