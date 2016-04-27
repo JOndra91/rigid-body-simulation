@@ -263,6 +263,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     }
 
     if(m_contactCount > 0) {
+        InitializeContacts();
+
         m_clBufferVelocity = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities, &clErr);
         CHECK_CL_ERROR("Buffer q3VelocityStateOcl");
         m_clBufferContactState = new cl::Buffer(m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates, &clErr);
@@ -273,8 +275,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         m_clGC.addMemObject(m_clBufferVelocity);
         m_clGC.addMemObject(m_clBufferContactState);
         m_clGC.addMemObject(m_clBufferContactConstraintState);
-
-        InitializeContacts();
 
         std::set<cl_uint> contactsToPlan;
         std::vector<cl_uint> bodyAllocationTable(m_bodyCount, 0);
@@ -313,7 +313,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
         } while(!contactsToPlan.empty());
 
-        m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint) * m_contactStateCount, m_clBatches.data(), &clErr);
+        m_clBufferBatches = new cl::Buffer(m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint) * m_clBatches.size(), m_clBatches.data(), &clErr);
         CHECK_CL_ERROR("Buffer batches");
 
         m_clGC.addMemObject(m_clBufferBatches);
@@ -328,8 +328,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         // clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactConstraintState, true, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates);
         // CHECK_CL_ERROR("Read buffer q3ContactConstraintStateOcl");
     }
-
-    m_clQueue.finish();
 
     q3ContactStateOcl *cs = m_contactStates;
     for ( i32 i = 0; i < m_contactCount; ++i )
