@@ -3,7 +3,7 @@
 #define S_OK 0
 #define S_SDL_ERROR 1
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "RegistrablesContainer.hpp"
 #include "Camera.hpp"
