@@ -98,6 +98,7 @@ struct q3IslandSolverOcl : q3IslandSolver
     q3ContactConstraint **m_contactConstraints;
     q3VelocityStateOcl *m_velocities;
     q3Body **m_bodies;
+    std::set<q3Body*> m_staticBodies;
 
     q3Scene *m_scene;
 
