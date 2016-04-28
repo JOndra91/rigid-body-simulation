@@ -34,15 +34,15 @@ typedef struct
 
 typedef struct
 {
-  q3Vec3 tangentVectors[ 2 ];  // Tangent vectors
-  q3Vec3 normal;        // From A to B
+  q3Mat3 iA;  // inertia of body A
+  q3Mat3 iB;  // inertia of body B
+  q3Vec3 tangentVectors[ 2 ];    // Tangent vectors
+  q3Vec3 normal;                // From A to B
   q3Vec3 centerA;
   q3Vec3 centerB;
-  q3Mat3 iA;
-  q3Mat3 iB;
   i32 contactCount;
-  r32 mA;
-  r32 mB;
+  r32 mA; // mass of body A
+  r32 mB; // mass of body B
   r32 restitution;
   r32 friction;
   i32 indexA;
