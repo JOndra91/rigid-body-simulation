@@ -54,7 +54,7 @@ void glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
     }
 }
 
-Main::Main() : sdlWindow(NULL), context(NULL), camera(NULL), clDev(q3OpenCLDevice::NONE), scene(NULL) {
+Main::Main() : sdlWindow(NULL), context(NULL), camera(NULL), scene(NULL), clDev(q3OpenCLDevice::NONE){
 }
 
 Main::~Main() {
