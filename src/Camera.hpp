@@ -30,6 +30,8 @@ namespace gmu {
             return windowSize;
         }
 
+        void setPosition(vec3);
+
         void setRotation(vec2);
 
         vec3 getViewVector();

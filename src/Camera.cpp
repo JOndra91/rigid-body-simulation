@@ -8,7 +8,7 @@
 using namespace gmu;
 using namespace glm;
 
-Camera::Camera(SDL_Window *_window) : position(0.0, 20.0, -25.0), rotation(0, 0) {
+Camera::Camera(SDL_Window *_window) : position(0.0, 0.0, 0.0), rotation(0, 0) {
     window = _window;
     SDL_GetWindowSize(window, &(windowSize.x), &(windowSize.y));
 }
@@ -20,6 +20,10 @@ vec3 Camera::getViewVector() {
     direction = rotateY(direction, rotation.y);
 
     return normalize(direction);
+}
+
+void Camera::setPosition(vec3 p) {
+    position = p;
 }
 
 void Camera::setRotation(vec2 r) {
@@ -107,6 +111,8 @@ void Camera::step(float time, float delta) {
 
     // TODO: Add speed coeficient
     position += direction * delta * 15.0f;
+
+    // printf("Position: (%f, %f, %f), Rotation: (%f, %f)\n", position.x, position.y, position.z, rotation.x, rotation.y);
 }
 
 void Camera::render() {
