@@ -123,7 +123,7 @@ void Scene::prepareScene() {
     bodyDef.bodyType = eDynamicBody;
     boxDef.Set( tx, q3Vec3( 1.0f, 1.0f, 1.0f ) );
 
-    int width = 8, height = 80, depth = 8;
+    int width = 16, height = 80, depth = 16;
 
     for ( int i = 0; i < height; ++i )
     {
@@ -131,7 +131,7 @@ void Scene::prepareScene() {
         {
             for ( int k = -depth/2; k < depth/2; ++k )
             {
-                bodyDef.position.Set( 1.1f * j, 1.1f * i + 1.5f, 1.1f * k );
+                bodyDef.position.Set( 1.1f * j, 1.1f * i + 5.0f, 1.1f * k );
                 b = scene.CreateBody( bodyDef );
                 box = b->AddBox( boxDef );
 
