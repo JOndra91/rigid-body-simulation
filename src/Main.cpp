@@ -134,7 +134,7 @@ void Main::init() {
     }
 
     sdlWindow = SDL_CreateWindow(
-            "Rigid body simulation (not yet :P) on GPU (not yet as well) PRE-ALPHA",
+            "Rigid body simulation on GPU (sort of) ALPHA",
             SDL_WINDOWPOS_UNDEFINED,
             SDL_WINDOWPOS_UNDEFINED,
             1200,
