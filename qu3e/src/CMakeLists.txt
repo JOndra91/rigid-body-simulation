@@ -34,8 +34,13 @@ set(qu3e_common_hdrs
 	common/q3Types.h
 )
 
+set(qu3e_debug_srcs
+	debug/q3Timers.cpp
+)
+
 set(qu3e_debug_hdrs
 	debug/q3Render.h
+	debug/q3Timers.h
 )
 
 set(qu3e_dynamics_srcs
@@ -130,6 +135,7 @@ if(qu3e_build_shared)
 		${qu3e_collision_hdrs}
 		${qu3e_common_srcs}
 		${qu3e_common_hdrs}
+		${qu3e_debug_srcs}
 		${qu3e_debug_hdrs}
 		${qu3e_dynamics_srcs}
 		${qu3e_dynamics_hdrs}
@@ -161,6 +167,7 @@ if(qu3e_build_static)
 		${qu3e_collision_hdrs}
 		${qu3e_common_srcs}
 		${qu3e_common_hdrs}
+		${qu3e_debug_srcs}
 		${qu3e_debug_hdrs}
 		${qu3e_dynamics_srcs}
 		${qu3e_dynamics_hdrs}
@@ -188,7 +195,7 @@ endif()
 source_group(broadphase FILES ${qu3e_broadphase_srcs} ${qu3e_broadphase_hdrs})
 source_group(collision FILES ${qu3e_collision_srcs} ${qu3e_collision_hdrs})
 source_group(common FILES ${qu3e_common_srcs} ${qu3e_common_hdrs})
-source_group(debug FILES ${qu3e_debug_hdrs})
+source_group(debug FILES ${qu3e_debug_srcs} ${qu3e_debug_hdrs})
 source_group(dynamics FILES ${qu3e_dynamics_srcs} ${qu3e_dynamics_hdrs})
 source_group(math FILES ${qu3e_math_srcs} ${qu3e_math_hdrs})
 source_group(scene FILES ${qu3e_scene_srcs} ${qu3e_scene_hdrs})

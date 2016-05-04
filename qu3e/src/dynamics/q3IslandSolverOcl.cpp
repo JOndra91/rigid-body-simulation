@@ -27,7 +27,6 @@
 #include <CL/cl.hpp>
 #include <openCLUtilities.hpp>
 #include <iostream>
-#include <sys/time.h>
 
 #include "../scene/q3Scene.h"
 #include "q3Body.h"
@@ -35,19 +34,10 @@
 #include "q3Island.h"
 #include "q3IslandSolverOcl.h"
 
+#include "../debug/q3Timers.h"
 
 #define assert_size(type, size) assert(sizeof(type) == size)
 //#define assert_size(type, size) do { std::cout << "sizeof(" << # type << ") = " << sizeof(type) << std::endl; assert(sizeof(type) == size); } while(0)
-
-// Number of contacts needed for acceleration using OpenCL
-#define ACCELERATION_THRESHOLD 64
-#define PASSED_ACC_THRESHOLD (/*m_contactCount*/ 0 < ACCELERATION_THRESHOLD)
-
-#define copyBodyInfo(dest, src, sel) do { \
-    dest[src->index ## sel].center = src->center ## sel; \
-    dest[src->index ## sel].i = src->i ## sel; \
-    dest[src->index ## sel].m = src->m ## sel; \
-} while(0)
 
 #define CEIL_TO(a, ceil) ((a - 1 + ceil)/ceil) * ceil
 
@@ -128,11 +118,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
     m_bodies = (q3Body**) s_stack->Allocate( sizeof(q3Body*) * m_bodyCapacity);
     m_contactConstraints = (q3ContactConstraint **)s_stack->Allocate( sizeof( q3ContactConstraint* ) * m_contactCapacity );
-
-#ifdef TIMERS_ENABLED
-    struct timeval begin, end, diff;
-    gettimeofday(&begin,NULL);
-#endif // TIMERS_ENABLED
 
     // Build each active island and then solve each built island
     i32 stackSize = s_bodyCount;
@@ -258,6 +243,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         v->w = body->m_angularVelocity;
     }
 
+    q3TimerStart("solve");
+
     if(m_contactCount > 0) {
         InitializeContacts();
 
@@ -321,9 +308,10 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         CHECK_CL_ERROR("Read buffer q3VelocityStateOcl");
         clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, true, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates);
         CHECK_CL_ERROR("Read buffer q3ContactStateOcl");
-        // clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactConstraintState, true, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates);
-        // CHECK_CL_ERROR("Read buffer q3ContactConstraintStateOcl");
     }
+
+    q3TimerStop("solve");
+    q3TimerPrint("solve", "  Solve");
 
     q3ContactStateOcl *cs = m_contactStates;
     for ( i32 i = 0; i < m_contactCount; ++i )
@@ -340,14 +328,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
             cs++;
         }
     }
-
-#ifdef TIMERS_ENABLED
-    gettimeofday(&end, NULL);
-
-    timersub(&end, &begin, &diff);
-
-    std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-#endif // TIMERS_ENABLED
 
     // Integrate positions
     for ( i32 i = 0 ; i < m_bodyCount; ++i )

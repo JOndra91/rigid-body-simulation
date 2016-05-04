@@ -26,10 +26,10 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include <sys/time.h>
 
 #include "q3Scene.h"
 #include "../common/q3OpenCL.h"
+#include "../debug/q3Timers.h"
 #include "../dynamics/q3Body.h"
 #include "../dynamics/q3Contact.h"
 #include "../dynamics/q3IslandSolverCpu.h"
@@ -84,10 +84,8 @@ q3Scene::~q3Scene( )
 //--------------------------------------------------------------------------------------------------
 void q3Scene::Step( )
 {
-    #ifdef TIMERS_ENABLED
-        struct timeval begin_step, end, diff;
-        gettimeofday(&begin_step,NULL);
-    #endif // TIMERS_ENABLED
+    q3TimerStart("step");
+    q3TimerStart("subStep");
 
     if ( m_newBox )
     {
@@ -95,7 +93,15 @@ void q3Scene::Step( )
         m_newBox = false;
     }
 
+    q3TimerStop("subStep");
+    q3TimerPrint("subStep", " Update pairs");
+    q3TimerStart("subStep");
+
     m_contactManager.TestCollisions( );
+
+    q3TimerStop("subStep");
+    q3TimerPrint("subStep", " Test collisions");
+    q3TimerStart("subStep");
 
     for ( q3Body* body = m_bodyList; body; body = body->m_next )
         body->m_flags &= ~q3Body::eIsland;
@@ -103,7 +109,15 @@ void q3Scene::Step( )
     for ( q3ContactConstraint* c = m_contactManager.m_contactList; c; c = c->next )
         c->m_flags &= ~q3ContactConstraint::eIsland;
 
+    q3TimerStop("subStep");
+    q3TimerPrint("subStep", " Reset flags");
+    q3TimerStart("subStep");
+
     m_islandSolver->Solve(this);
+
+    q3TimerStop("subStep");
+    q3TimerPrint("subStep", " Island solver");
+    q3TimerStart("subStep");
 
     // Update the broadphase AABBs
     for ( q3Body* body = m_bodyList; body; body = body->m_next )
@@ -114,8 +128,16 @@ void q3Scene::Step( )
         body->SynchronizeProxies( );
     }
 
+    q3TimerStop("subStep");
+    q3TimerPrint("subStep", " Synchronize proxies");
+    q3TimerStart("subStep");
+
     // Look for new contacts
     m_contactManager.FindNewContacts( );
+
+    q3TimerStop("subStep");
+    q3TimerPrint("subStep", " Find new contacts");
+    q3TimerStart("subStep");
 
     // Clear all forces
     for ( q3Body* body = m_bodyList; body; body = body->m_next )
@@ -124,12 +146,9 @@ void q3Scene::Step( )
         q3Identity( body->m_torque );
     }
 
+    q3TimerStop("step");
+    q3TimerPrint("step", "Step");
     #ifdef TIMERS_ENABLED
-        gettimeofday(&end, NULL);
-
-        timersub(&end, &begin_step, &diff);
-
-        std::cout << "Step: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
         std::cout << "====================================" << std::endl;
     #endif // TIMERS_ENABLED
 }

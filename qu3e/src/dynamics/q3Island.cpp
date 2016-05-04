@@ -35,6 +35,8 @@
 #include "../broadphase/q3BroadPhase.h"
 #include "q3Contact.h"
 
+#include "../debug/q3Timers.h"
+
 //--------------------------------------------------------------------------------------------------
 // q3Island
 //--------------------------------------------------------------------------------------------------
@@ -75,6 +77,7 @@ void q3Island::Solve( )
         v->w = body->m_angularVelocity;
     }
 
+    q3TimerStart("solve");
 
     // Create contact solver, pass in state buffers, create buffers for contacts
     // Initialize velocity constraint for normal + friction and warm start
@@ -85,6 +88,8 @@ void q3Island::Solve( )
 
     for ( i32 i = 0; i < m_iterations; ++i )
         contactSolver.Solve( );
+
+    q3TimerPause("solve");
 
     contactSolver.ShutDown( );
 

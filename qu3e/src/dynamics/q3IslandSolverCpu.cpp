@@ -34,6 +34,8 @@
 #include "q3IslandSolverCpu.h"
 #include "../scene/q3Scene.h"
 
+#include "../debug/q3Timers.h"
+
 //--------------------------------------------------------------------------------------------------
 // q3IslandSolverCpu
 //--------------------------------------------------------------------------------------------------
@@ -56,12 +58,6 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
     island.m_dt = scene->m_dt;
     island.m_gravity = scene->m_gravity;
     island.m_iterations = scene->m_iterations;
-
-
-#ifdef TIMERS_ENABLED
-    struct timeval begin, end, diff;
-    gettimeofday(&begin,NULL);
-#endif // TIMERS_ENABLED
 
     // Build each active island and then solve each built island
     i32 stackSize = s_bodyCount;
@@ -162,13 +158,8 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
         }
     }
 
-#ifdef TIMERS_ENABLED
-    gettimeofday(&end, NULL);
-
-    timersub(&end, &begin, &diff);
-
-    std::cout << "Solve: " << (diff.tv_sec * 1000.0 + diff.tv_usec / 1000.0) << "ms" << std::endl;
-#endif // TIMERS_ENABLED
+    q3TimerPrint("solve", "  Solve");
+    q3TimerClear("solve");
 
     s_stack->Free( stack );
     s_stack->Free( island.m_contactStates );
