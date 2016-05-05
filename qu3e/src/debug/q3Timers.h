@@ -67,15 +67,22 @@ public:
     inline static void stopTimer(string name) {
         struct timespec start, now, diff;
 
-        start = starts.at(name);
         clock_gettime(CLOCK_MONOTONIC, &now);
 
-        diff.tv_sec = now.tv_sec - start.tv_sec;
-        diff.tv_nsec = now.tv_nsec - start.tv_nsec;
+        auto it = starts.find(name);
+        if(it == starts.end()) {
+            diff = {0, 0};
+        }
+        else {
+            start = it->second;
 
-        if(diff.tv_nsec < 0) {
-            diff.tv_sec -= 1;
-            diff.tv_nsec += 1000000000;
+            diff.tv_sec = now.tv_sec - start.tv_sec;
+            diff.tv_nsec = now.tv_nsec - start.tv_nsec;
+
+            if(diff.tv_nsec < 0) {
+                diff.tv_sec -= 1;
+                diff.tv_nsec += 1000000000;
+            }
         }
 
         timers[name] = diff;
@@ -84,8 +91,15 @@ public:
     inline static void pauseTimer(string name) {
         struct timespec start, now, diff;
 
-        start = starts.at(name);
         clock_gettime(CLOCK_MONOTONIC, &now);
+
+        auto it = starts.find(name);
+        if(it == starts.end()) {
+            start = now;
+        }
+        else {
+            start = it->second;
+        }
 
         auto timer = timers.find(name);
         if(timer != timers.end()) {
