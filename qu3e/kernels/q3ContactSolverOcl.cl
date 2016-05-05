@@ -122,27 +122,39 @@ kernel void preSolve
   global q3ContactStateOcl *c = m_contactStates + batches[totalOffset];
   global q3ContactConstraintStateOcl *cs = m_contactConstraints + c->constraintIndex;
 
-  q3Vec3 vA = m_velocities[ cs->indexA ].v;
-  q3Vec3 wA = m_velocities[ cs->indexA ].w;
-  q3Vec3 vB = m_velocities[ cs->indexB ].v;
-  q3Vec3 wB = m_velocities[ cs->indexB ].w;
+  q3VelocityStateOcl A = m_velocities[ cs->indexA ];
+  q3VelocityStateOcl B = m_velocities[ cs->indexB ];
+
+  // Preload values
+  q3Vec3 ra = c->ra;
+  q3Vec3 rb = c->rb;
+  q3Vec3 normal = cs->normal;
+  r32 cs_mA = cs->mA;
+  r32 cs_mB = cs->mB;
+  q3Mat3 cs_iA = cs->iA;
+  q3Mat3 cs_iB = cs->iB;
+  q3Vec3 tangentVectors[2];
+
+  tangentVectors[0] = cs->tangentVectors[0];
+  tangentVectors[1] = cs->tangentVectors[1];
 
   // Precalculate JM^-1JT for contact and friction constraints
-  q3Vec3 raCn = q3Cross( c->ra, cs->normal );
-  q3Vec3 rbCn = q3Cross( c->rb, cs->normal );
-  r32 nm = cs->mA + cs->mB;
+  q3Vec3 raCn = q3Cross( ra, normal );
+  q3Vec3 rbCn = q3Cross( rb, normal );
+  r32 nm = cs_mA + cs_mB;
   r32 tm[ 2 ];
+
   tm[ 0 ] = nm;
   tm[ 1 ] = nm;
 
-  nm += q3Dot( raCn, mvMul(cs->iA, raCn) ) + q3Dot( rbCn, mvMul(cs->iB, rbCn) );
+  nm += q3Dot( raCn, mvMul(cs_iA, raCn) ) + q3Dot( rbCn, mvMul(cs_iB, rbCn) );
   c->normalMass = q3Invert( nm );
 
   for ( i32 i = 0; i < 2; ++i )
   {
-    q3Vec3 raCt = q3Cross( cs->tangentVectors[ i ], c->ra );
-    q3Vec3 rbCt = q3Cross( cs->tangentVectors[ i ], c->rb );
-    tm[ i ] += q3Dot( raCt, mvMul(cs->iA, raCt) ) + q3Dot( rbCt, mvMul(cs->iB, rbCt) );
+    q3Vec3 raCt = q3Cross( tangentVectors[ i ], ra );
+    q3Vec3 rbCt = q3Cross( tangentVectors[ i ], rb );
+    tm[ i ] += q3Dot( raCt, mvMul(cs_iA, raCt) ) + q3Dot( rbCt, mvMul(cs_iB, rbCt) );
     c->tangentMass[ i ] = q3Invert( tm[ i ] );
   }
 
@@ -150,31 +162,29 @@ kernel void preSolve
   c->bias = -Q3_BAUMGARTE * (1.0f / dt) * q3Min( 0.0f, c->penetration + Q3_PENETRATION_SLOP );
 
   // Warm start contact
-  q3Vec3 P = cs->normal * c->normalImpulse;
+  q3Vec3 P = normal * c->normalImpulse;
 
   if ( m_enableFriction )
   {
-      P += cs->tangentVectors[ 0 ] * c->tangentImpulse[ 0 ];
-      P += cs->tangentVectors[ 1 ] * c->tangentImpulse[ 1 ];
+      P += tangentVectors[ 0 ] * c->tangentImpulse[ 0 ];
+      P += tangentVectors[ 1 ] * c->tangentImpulse[ 1 ];
   }
 
-  vA -= P * cs->mA;
-  wA -= mvMul(cs->iA, q3Cross( c->ra, P ));
+  A.v -= P * cs_mA;
+  A.w -= mvMul(cs_iA, q3Cross( ra, P ));
 
-  vB += P * cs->mB;
-  wB += mvMul(cs->iB, q3Cross( c->rb, P ));
+  B.v += P * cs_mB;
+  B.w += mvMul(cs_iB, q3Cross( rb, P ));
 
   // Add in restitution bias
-  r32 dv = q3Dot( vB + q3Cross( wB, c->rb ) - vA - q3Cross( wA, c->ra ), cs->normal );
+  r32 dv = q3Dot( B.v + q3Cross( B.w, rb ) - A.v - q3Cross( A.w, ra ), normal );
 
   if ( dv < -1.0f ) {
     c->bias += -(cs->restitution) * dv;
   }
 
-  m_velocities[ cs->indexA ].v = vA;
-  m_velocities[ cs->indexA ].w = wA;
-  m_velocities[ cs->indexB ].v = vB;
-  m_velocities[ cs->indexB ].w = wB;
+  m_velocities[ cs->indexA ] = A;
+  m_velocities[ cs->indexB ] = B;
 }
 
 
@@ -199,10 +209,8 @@ kernel void solve
   global q3ContactStateOcl *c = m_contactStates + batches[totalOffset];
   global q3ContactConstraintStateOcl *cs = m_contactConstraints + c->constraintIndex;
 
-  q3Vec3 vA = m_velocities[ cs->indexA ].v;
-  q3Vec3 wA = m_velocities[ cs->indexA ].w;
-  q3Vec3 vB = m_velocities[ cs->indexB ].v;
-  q3Vec3 wB = m_velocities[ cs->indexB ].w;
+  q3VelocityStateOcl A = m_velocities[ cs->indexA ];
+  q3VelocityStateOcl B = m_velocities[ cs->indexB ];
 
   r32 c_normalImpulse = c->normalImpulse;
   r32 cs_mA = cs->mA;
@@ -216,7 +224,7 @@ kernel void solve
   q3Vec3 c_rb = c->rb;
 
   // relative velocity at contact
-  q3Vec3 dv = vB + q3Cross( wB, c_rb ) - vA - q3Cross( wA, c_ra );
+  q3Vec3 dv = B.v + q3Cross( B.w, c_rb ) - A.v - q3Cross( A.w, c_ra );
 
   // Friction
   if ( m_enableFriction )
@@ -239,17 +247,17 @@ kernel void solve
 
       // Apply friction impulse
       q3Vec3 impulse = cs_tangentVectorsI * lambda;
-      vA -= impulse * cs_mA;
-      wA -= mvMul(cs_iA, q3Cross( c_ra, impulse ));
+      A.v -= impulse * cs_mA;
+      A.w -= mvMul(cs_iA, q3Cross( c_ra, impulse ));
 
-      vB += impulse * cs_mB;
-      wB += mvMul(cs_iB, q3Cross( c_rb, impulse ));
+      B.v += impulse * cs_mB;
+      B.w += mvMul(cs_iB, q3Cross( c_rb, impulse ));
     }
   }
 
   // Normal
   {
-    dv = vB + q3Cross( wB, c_rb ) - vA - q3Cross( wA, c_ra );
+    dv = B.v + q3Cross( B.w, c_rb ) - A.v - q3Cross( A.w, c_ra );
 
     // Normal impulse
     r32 vn = q3Dot( dv, cs_normal );
@@ -265,15 +273,13 @@ kernel void solve
 
     // Apply impulse
     q3Vec3 impulse = cs_normal * lambda;
-    vA -= impulse * cs_mA;
-    wA -= mvMul(cs_iA, q3Cross( c_ra, impulse ));
+    A.v -= impulse * cs_mA;
+    A.w -= mvMul(cs_iA, q3Cross( c_ra, impulse ));
 
-    vB += impulse * cs_mB;
-    wB += mvMul(cs_iB, q3Cross( c_rb, impulse ));
+    B.v += impulse * cs_mB;
+    B.w += mvMul(cs_iB, q3Cross( c_rb, impulse ));
   }
 
-  m_velocities[ cs->indexA ].v = vA;
-  m_velocities[ cs->indexA ].w = wA;
-  m_velocities[ cs->indexB ].v = vB;
-  m_velocities[ cs->indexB ].w = wB;
+  m_velocities[ cs->indexA ] = A;
+  m_velocities[ cs->indexB ] = B;
 }
