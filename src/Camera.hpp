@@ -20,6 +20,7 @@ namespace gmu {
         ivec3 movement;
 
     public:
+        Camera();
         Camera(SDL_Window *window);
 
         inline vec3 getPosition() {

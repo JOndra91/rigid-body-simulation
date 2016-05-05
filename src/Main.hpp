@@ -21,12 +21,13 @@ namespace gmu {
         Camera *camera;
         Scene *scene;
         q3OpenCLDevice clDev;
+        bool renderingEnabled;
 
     public:
         Main();
         ~Main();
         void run();
-        void init();
+        void init(bool renderingEnabled);
         void onQuit();
         void release();
 

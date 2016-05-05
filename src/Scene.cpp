@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "Scene.hpp"
+#include "Main.hpp"
 
 using namespace gmu;
 
@@ -32,9 +33,16 @@ const u8vec3 Scene::colors[] = {
     u8vec3(128,128,128), // Static box color
 };
 
-Scene::Scene(Camera *_camera, q3OpenCLDevice device) :
-    camera(_camera), vao(0), vbo(0), ebo(0), polygonMode(GL_FILL),
+Scene::Scene(q3OpenCLDevice device) : vao(0), vbo(0), ebo(0),
     scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 20), loop(0) {
+
+    prepareScene();
+}
+
+Scene::Scene(Camera *_camera, q3OpenCLDevice device) : Scene(device) {
+
+    camera = _camera;
+    polygonMode = GL_FILL;
 
     string vertexShaderFile("./shaders/shader.vert");
     string fragmentShaderFile("./shaders/shader.frag");
@@ -82,8 +90,6 @@ Scene::Scene(Camera *_camera, q3OpenCLDevice device) :
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-    prepareScene();
-
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * boxes.size() * 6 * 4, NULL, GL_STREAM_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * boxes.size() * 6 * 5, NULL, GL_STREAM_DRAW);
 
@@ -92,11 +98,12 @@ Scene::Scene(Camera *_camera, q3OpenCLDevice device) :
 
 Scene::~Scene() {
 
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
+    if(ebo != 0) {
+        glDeleteBuffers(1, &vbo);
+        glDeleteBuffers(1, &ebo);
 
-    glDeleteVertexArrays(1, &vao);
-
+        glDeleteVertexArrays(1, &vao);
+    }
 }
 
 void Scene::prepareScene() {
@@ -279,6 +286,7 @@ void Scene::prepareBuffers(unsigned &index, const q3Box* box, Vertex* vert, GLui
 
 void Scene::step(float time, float delta) {
     std::cout << "Loop: " << loop << std::endl;
+    // printf("Delta: %f", scene.m_dt);
     scene.Step();
 
     ++loop;

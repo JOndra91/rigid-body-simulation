@@ -40,6 +40,7 @@ namespace gmu {
         static void prepareBuffers(unsigned &index, const q3Box *b, Vertex *vert, GLuint *elem);
     public:
         int loop;
+        Scene(q3OpenCLDevice device);
         Scene(Camera *camera, q3OpenCLDevice device);
 
         ~Scene();
