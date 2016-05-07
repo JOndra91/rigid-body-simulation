@@ -123,7 +123,13 @@ public:
     inline static void printTimer(string name, string text) {
         struct timespec t;
         double ms;
-        t = timers.at(name);
+        auto it = timers.find(name);
+        if(it == starts.end()) {
+            t = {0, 0};
+        }
+        else {
+            t = it->second;
+        }
 
         // Miliseconds
         ms = ((t.tv_sec * 1e3f) + (t.tv_nsec / 1e6f));
