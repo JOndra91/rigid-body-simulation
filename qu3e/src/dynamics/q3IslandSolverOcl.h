@@ -125,6 +125,8 @@ struct q3IslandSolverOcl : q3IslandSolver
 
     std::vector<cl_uint> m_clBatches;
     std::vector<cl_uint> m_clBatchSizes;
+
+    cl_uint m_clLocalSize;
 };
 
 #endif // Q3ISLANDSOLVEROCL_H

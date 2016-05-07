@@ -82,6 +82,13 @@ q3IslandSolverOcl::q3IslandSolverOcl(cl_device_type dev)
     assert_size(q3ContactStateOcl, 80);
     assert_size(q3ContactConstraintStateOcl, 208);
 
+    if(dev == CL_DEVICE_TYPE_CPU) {
+        m_clLocalSize = 8;
+    }
+    else {
+        m_clLocalSize = 32;
+    }
+
     m_clContext = createCLContext(dev);
     m_clQueue = cl::CommandQueue(m_clContext);
 
@@ -419,7 +426,7 @@ void q3IslandSolverOcl::PreSolveContacts()
     CHECK_CL_ERROR("Set pre-solve kernel param 7 (dt)");
 
     cl_uint offset = 0;
-    cl::NDRange local(64);
+    cl::NDRange local(m_clLocalSize);
     for(cl_uint batchSize : m_clBatchSizes)
     {
         clErr = m_clKernelPreSolve.setArg(4, offset);
@@ -452,7 +459,7 @@ void q3IslandSolverOcl::SolveContacts( )
 
     for(int i = 0; i < m_scene->m_iterations; ++i) {
         cl_uint offset = 0;
-        cl::NDRange local(64);
+        cl::NDRange local(m_clLocalSize);
         for(cl_uint batchSize : m_clBatchSizes)
         {
             clErr = m_clKernelSolve.setArg(4, offset);
