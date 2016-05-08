@@ -34,6 +34,7 @@
 
 #include "../math/q3Math.h"
 #include "../common/q3Settings.h"
+#include "../common/q3OpenCL.h"
 #include "q3Body.h"
 #include "q3Island.h"
 #include "q3IslandSolver.h"
@@ -42,7 +43,7 @@ struct q3VelocityStateOcl
 {
     q3Vec3 w;
     q3Vec3 v;
-};
+} ALIGNED;
 
 struct q3ContactStateOcl
 {
@@ -55,8 +56,7 @@ struct q3ContactStateOcl
     r32 bias;                    // Restitution + baumgarte
     r32 normalMass;              // Normal constraint mass
     u32 constraintIndex;
-    char _padding[12];
-};
+} ALIGNED;
 
 struct q3ContactConstraintStateOcl
 {
@@ -73,8 +73,7 @@ struct q3ContactConstraintStateOcl
     r32 friction;
     i32 indexA;
     i32 indexB;
-    char _padding[4];
-};
+} ALIGNED;
 
 //--------------------------------------------------------------------------------------------------
 // q3IslandSolverOcl

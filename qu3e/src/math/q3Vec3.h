@@ -28,13 +28,7 @@
 #define Q3VEC3_H
 
 #include "../common/q3Types.h"
-
-#ifdef WITH_OCL
-#include <CL/cl.hpp>
-#define CL_PADDING r32 padding;
-#else
-#define CL_PADDING
-#endif // WITH_OCL
+#include "../common/q3OpenCL.h"
 
 r32 q3Abs( r32 a );
 r32 q3Min( r32 a, r32 b );
@@ -57,8 +51,6 @@ struct q3Vec3
         };
     };
 
-    CL_PADDING
-
     q3Vec3( );
     q3Vec3( r32 _x, r32 _y, r32 _z );
 
@@ -78,7 +70,7 @@ struct q3Vec3
     const q3Vec3 operator-( const q3Vec3& rhs ) const;
     const q3Vec3 operator*( r32 f ) const;
     const q3Vec3 operator/( r32 f ) const;
-};
+} ALIGNED;
 
 #include "q3Vec3.inl"
 

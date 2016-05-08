@@ -35,6 +35,8 @@ enum class q3OpenCLDevice {
 #endif // WITH_OCL
 };
 
+#define ALIGNED __attribute__ ((aligned))
+
 inline bool q3IsOpenCLAccelerated(q3OpenCLDevice dev) {
     return dev != q3OpenCLDevice::NONE;
 }

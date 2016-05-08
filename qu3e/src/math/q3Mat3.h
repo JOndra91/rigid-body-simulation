@@ -29,6 +29,7 @@
 
 #include <cstring>    // memset
 #include "../common/q3Types.h"
+#include "../common/q3OpenCL.h"
 #include "q3Vec3.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -65,7 +66,7 @@ struct q3Mat3
     const q3Mat3 operator*( r32 f ) const;
     const q3Mat3 operator+( const q3Mat3& rhs ) const;
     const q3Mat3 operator-( const q3Mat3& rhs ) const;
-};
+} ALIGNED;
 
 #include "q3Mat3.inl"
 
