@@ -41,6 +41,8 @@
 //--------------------------------------------------------------------------------------------------
 
 void q3IslandSolverCpu::Solve( q3Scene *scene ) {
+
+    q3TimerStart("solve-init");
     // Size the stack island, pick worst case size
     q3Island island;
     q3Stack *s_stack = &(scene->m_stack);
@@ -62,8 +64,11 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
     // Build each active island and then solve each built island
     i32 stackSize = s_bodyCount;
     q3Body** stack = (q3Body**)s_stack->Allocate( sizeof( q3Body* ) * stackSize );
+    q3TimerStop("solve-init");
     for ( q3Body* seed = scene->m_bodyList; seed; seed = seed->m_next )
     {
+        q3TimerStart("dfs");
+
         // Seed cannot be apart of an island already
         if ( seed->m_flags & q3Body::eIsland )
             continue;
@@ -137,6 +142,8 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
             }
         }
 
+        q3TimerPause("dfs");
+
         assert( island.m_bodyCount != 0 );
 
         island.Initialize( );
@@ -147,6 +154,8 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
 
         assert( island.m_bodyCount != 0 );
 
+        q3TimerStart("island flags");
+
         // Reset all static island flags
         // This allows static bodies to participate in other island formations
         for ( i32 i = 0; i < island.m_bodyCount; i++ )
@@ -156,10 +165,9 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
             if ( body->m_flags & q3Body::eStatic )
                 body->m_flags &= ~q3Body::eIsland;
         }
-    }
 
-    q3TimerPrint("solve", "  Solve");
-    q3TimerClear("solve");
+        q3TimerPause("island flags");
+    }
 
     s_stack->Free( stack );
     s_stack->Free( island.m_contactStates );

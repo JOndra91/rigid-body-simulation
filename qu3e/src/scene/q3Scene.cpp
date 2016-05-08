@@ -117,8 +117,25 @@ void q3Scene::Step( )
 
     q3TimerStop("subStep");
     q3TimerPrint("subStep", " Island solver");
-    q3TimerStart("subStep");
 
+    q3TimerPrint("solve-init", "  Init solver");
+    q3TimerClear("solve-init");
+    q3TimerPrint("island flags", "  Clear static island flags");
+    q3TimerClear("island flags");
+    q3TimerPrint("dfs", "  Plan islands");
+    q3TimerClear("dfs");
+    q3TimerPrint("apply-gravity", "  Apply gravity");
+    q3TimerClear("apply-gravity");
+    q3TimerPrint("island-init", "  Init island");
+    q3TimerClear("island-init");
+    q3TimerPrint("solve", "  Solve contacts");
+    q3TimerClear("solve");
+    q3TimerPrint("read-back", "  Read state buffer");
+    q3TimerClear("read-back");
+    q3TimerPrint("sleep", "  Sleep");
+    q3TimerClear("sleep");
+
+    q3TimerStart("subStep");
     // Update the broadphase AABBs
     for ( q3Body* body = m_bodyList; body; body = body->m_next )
     {

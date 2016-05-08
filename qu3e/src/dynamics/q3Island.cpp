@@ -42,6 +42,7 @@
 //--------------------------------------------------------------------------------------------------
 void q3Island::Solve( )
 {
+    q3TimerStart("apply-gravity");
     // Apply gravity
     // Integrate velocities and create state buffers, calculate world inertia
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
@@ -77,6 +78,7 @@ void q3Island::Solve( )
         v->w = body->m_angularVelocity;
     }
 
+    q3TimerPause("apply-gravity");
     q3TimerStart("solve");
 
     // Create contact solver, pass in state buffers, create buffers for contacts
@@ -89,11 +91,11 @@ void q3Island::Solve( )
     for ( i32 i = 0; i < m_iterations; ++i )
         contactSolver.Solve( );
 
-    q3TimerPause("solve");
-
     contactSolver.ShutDown( );
 
+    q3TimerPause("solve");
 
+    q3TimerStart("read-back");
     // Copy back state buffers
     // Integrate positions
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
@@ -113,6 +115,9 @@ void q3Island::Solve( )
         body->m_q = q3Normalize( body->m_q );
         body->m_tx.rotation = body->m_q.ToMat3( );
     }
+
+    q3TimerPause("read-back");
+    q3TimerStart("sleep");
 
     if ( m_allowSleep )
     {
@@ -153,6 +158,7 @@ void q3Island::Solve( )
                 m_bodies[ i ]->SetToSleep( );
         }
     }
+    q3TimerPause("sleep");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -176,6 +182,7 @@ void q3Island::Add( q3ContactConstraint *contact )
 //--------------------------------------------------------------------------------------------------
 void q3Island::Initialize( )
 {
+    q3TimerStart("island-init");
     for ( i32 i = 0; i < m_contactCount; ++i )
     {
         q3ContactConstraint *cc = m_contacts[ i ];
@@ -209,4 +216,5 @@ void q3Island::Initialize( )
             s->tangentImpulse[ 1 ] = cp->tangentImpulse[ 1 ];
         }
     }
+    q3TimerPause("island-init");
 }
