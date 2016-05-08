@@ -83,7 +83,7 @@ q3IslandSolverOcl::q3IslandSolverOcl(cl_device_type dev)
     assert_size(q3ContactConstraintStateOcl, 208);
 
     m_clContext = createCLContext(dev);
-    m_clQueue = cl::CommandQueue(m_clContext);
+    m_clQueue = cl::CommandQueue(m_clContext, CL_QUEUE_PROFILING_ENABLE);
 
     m_clProgram = buildProgramFromSourceString(m_clContext, kernelSource);
 
@@ -427,6 +427,9 @@ void q3IslandSolverOcl::PreSolveContacts()
 
     cl_uint offset = 0;
     cl::NDRange local(m_clLocalSize);
+    cl::Event kernelEvent, startEvent, endEvent;
+    cl_ulong start, stop;
+    m_clQueue.enqueueMarkerWithWaitList(NULL, &startEvent);
     for(cl_uint batchSize : m_clBatchSizes)
     {
         clErr = m_clKernelPreSolve.setArg(4, offset);
@@ -438,9 +441,25 @@ void q3IslandSolverOcl::PreSolveContacts()
 
         cl::NDRange global(CEIL_TO(batchSize,local[0]));
 
-        clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelPreSolve, cl::NullRange, global, local);
+        clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelPreSolve, cl::NullRange, global, local, NULL, &kernelEvent);
         CHECK_CL_ERROR("Run pre-solve kernel");
+
+        kernelEvent.wait();
+
+        start = kernelEvent.getProfilingInfo<CL_PROFILING_COMMAND_START>();
+        stop = kernelEvent.getProfilingInfo<CL_PROFILING_COMMAND_END>();
+
+        stop -= start;
+        printf("                      Presolve: (%u) %.4fms\n", batchSize, stop / 1e6f);
     }
+
+    m_clQueue.enqueueMarkerWithWaitList(NULL, &endEvent);
+    endEvent.wait();
+    start = startEvent.getProfilingInfo<CL_PROFILING_COMMAND_SUBMIT>();
+    stop = endEvent.getProfilingInfo<CL_PROFILING_COMMAND_SUBMIT>();
+
+    stop -= start;
+    printf("                      Presolve total: %.4fms\n", stop / 1e6f);
 }
 
 //--------------------------------------------------------------------------------------------------
