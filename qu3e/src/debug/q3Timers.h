@@ -60,8 +60,9 @@ public:
     inline static void startTimer(string name) {
         struct timespec now;
 
-        clock_gettime(CLOCK_MONOTONIC, &now);
         starts[name] = now;
+        auto it = starts.find(name);
+        clock_gettime(CLOCK_MONOTONIC, &it->second);
     }
 
     inline static void stopTimer(string name) {
