@@ -82,13 +82,6 @@ q3IslandSolverOcl::q3IslandSolverOcl(cl_device_type dev)
     assert_size(q3ContactStateOcl, 80);
     assert_size(q3ContactConstraintStateOcl, 208);
 
-    if(dev == CL_DEVICE_TYPE_CPU) {
-        m_clLocalSize = 8;
-    }
-    else {
-        m_clLocalSize = 32;
-    }
-
     m_clContext = createCLContext(dev);
     m_clQueue = cl::CommandQueue(m_clContext);
 
@@ -101,6 +94,13 @@ q3IslandSolverOcl::q3IslandSolverOcl(cl_device_type dev)
 
     m_clKernelPreSolve = kernels[0];
     m_clKernelSolve = kernels[1];
+
+    std::vector<cl::Device> devices;
+
+    m_clContext.getInfo(CL_CONTEXT_DEVICES, &devices);
+
+    m_clLocalSize = m_clKernelSolve.getWorkGroupInfo
+        <CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE>(devices.front());
 }
 
 //--------------------------------------------------------------------------------------------------
