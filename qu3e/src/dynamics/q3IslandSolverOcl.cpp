@@ -201,12 +201,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                 other->m_flags |= q3Body::eIsland;
             }
         }
-
-        // Reset all static island flags
-        // This allows static bodies to participate in other island formations
-        for(auto body : m_staticBodies) {
-            body->m_flags &= ~q3Body::eIsland;
-        }
     }
 
     m_velocities = (q3VelocityStateOcl *)s_stack->Allocate( sizeof( q3VelocityStateOcl ) * m_bodyCount );
@@ -406,7 +400,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
     m_clBatches.clear();
     m_clBatchSizes.clear();
-    m_staticBodies.clear();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -481,13 +474,6 @@ void q3IslandSolverOcl::SolveContacts( )
 void q3IslandSolverOcl::Add( q3Body *body )
 {
     assert( m_bodyCount < m_bodyCapacity );
-
-    if ( body->m_flags & q3Body::eStatic ) {
-      if(m_staticBodies.find(body) != m_staticBodies.end()) {
-        return;
-      }
-      m_staticBodies.insert(body);
-    }
 
     body->m_islandIndex = m_bodyCount;
 
