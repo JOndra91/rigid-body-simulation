@@ -1,0 +1,5011 @@
+Using platform vendor: NVIDIA Corporation
+Loop: 0
+ Update pairs: 307.3315ms
+ Test collisions: 211.4296ms
+ Reset flags: 11.1443ms
+  Solve: 0.0051ms
+ Island solver: 42.7723ms
+ Synchronize proxies: 21.2200ms
+ Find new contacts: 0.1867ms
+Step: 594.8965ms
+====================================
+Loop: 1
+ Update pairs: 0.0159ms
+ Test collisions: 257.1781ms
+ Reset flags: 11.0277ms
+  Solve: 0.0031ms
+ Island solver: 41.0617ms
+ Synchronize proxies: 20.6095ms
+ Find new contacts: 0.1904ms
+Step: 330.8698ms
+====================================
+Loop: 2
+ Update pairs: 0.0010ms
+ Test collisions: 225.7781ms
+ Reset flags: 11.0950ms
+  Solve: 0.0037ms
+ Island solver: 42.4551ms
+ Synchronize proxies: 22.0350ms
+ Find new contacts: 0.1992ms
+Step: 302.3579ms
+====================================
+Loop: 3
+ Update pairs: 0.0022ms
+ Test collisions: 228.8452ms
+ Reset flags: 11.5671ms
+  Solve: 0.0035ms
+ Island solver: 46.9641ms
+ Synchronize proxies: 22.1932ms
+ Find new contacts: 0.2014ms
+Step: 310.7605ms
+====================================
+Loop: 4
+ Update pairs: 0.0009ms
+ Test collisions: 214.7390ms
+ Reset flags: 11.1713ms
+  Solve: 0.0036ms
+ Island solver: 41.6706ms
+ Synchronize proxies: 20.8478ms
+ Find new contacts: 0.1988ms
+Step: 289.5246ms
+====================================
+Loop: 5
+ Update pairs: 0.0011ms
+ Test collisions: 215.7723ms
+ Reset flags: 11.1771ms
+  Solve: 0.0035ms
+ Island solver: 41.6376ms
+ Synchronize proxies: 20.6884ms
+ Find new contacts: 0.1859ms
+Step: 290.2216ms
+====================================
+Loop: 6
+ Update pairs: 0.0010ms
+ Test collisions: 214.1526ms
+ Reset flags: 11.4198ms
+  Solve: 0.0037ms
+ Island solver: 44.1855ms
+ Synchronize proxies: 20.7886ms
+ Find new contacts: 0.1883ms
+Step: 291.5462ms
+====================================
+Loop: 7
+ Update pairs: 0.0011ms
+ Test collisions: 214.4947ms
+ Reset flags: 11.1447ms
+  Solve: 0.0031ms
+ Island solver: 41.7502ms
+ Synchronize proxies: 20.8102ms
+ Find new contacts: 0.1912ms
+Step: 289.1671ms
+====================================
+Loop: 8
+ Update pairs: 0.0010ms
+ Test collisions: 216.2457ms
+ Reset flags: 11.0436ms
+  Solve: 0.0033ms
+ Island solver: 41.3172ms
+ Synchronize proxies: 20.7909ms
+ Find new contacts: 0.1900ms
+Step: 290.3637ms
+====================================
+Loop: 9
+ Update pairs: 0.0011ms
+ Test collisions: 214.7630ms
+ Reset flags: 11.0089ms
+  Solve: 0.0037ms
+ Island solver: 41.6220ms
+ Synchronize proxies: 20.7395ms
+ Find new contacts: 0.1902ms
+Step: 289.1095ms
+====================================
+Loop: 10
+ Update pairs: 0.0011ms
+ Test collisions: 211.6962ms
+ Reset flags: 11.2039ms
+  Solve: 0.0032ms
+ Island solver: 41.4423ms
+ Synchronize proxies: 20.6443ms
+ Find new contacts: 0.1876ms
+Step: 285.9797ms
+====================================
+Loop: 11
+ Update pairs: 0.0011ms
+ Test collisions: 212.0274ms
+ Reset flags: 11.1891ms
+  Solve: 0.0040ms
+ Island solver: 41.4254ms
+ Synchronize proxies: 20.8898ms
+ Find new contacts: 0.1894ms
+Step: 286.5012ms
+====================================
+Loop: 12
+ Update pairs: 0.0013ms
+ Test collisions: 214.7483ms
+ Reset flags: 11.0859ms
+  Solve: 0.0036ms
+ Island solver: 41.7814ms
+ Synchronize proxies: 20.7389ms
+ Find new contacts: 0.1902ms
+Step: 289.3307ms
+====================================
+Loop: 13
+ Update pairs: 0.0011ms
+ Test collisions: 210.8793ms
+ Reset flags: 11.0731ms
+  Solve: 0.0051ms
+ Island solver: 42.4992ms
+ Synchronize proxies: 21.6127ms
+ Find new contacts: 0.3067ms
+Step: 288.7802ms
+====================================
+Loop: 14
+ Update pairs: 0.0012ms
+ Test collisions: 213.9270ms
+ Reset flags: 11.0677ms
+  Solve: 0.0034ms
+ Island solver: 41.8786ms
+ Synchronize proxies: 20.8374ms
+ Find new contacts: 0.1896ms
+Step: 288.6936ms
+====================================
+Loop: 15
+ Update pairs: 0.0011ms
+ Test collisions: 213.8284ms
+ Reset flags: 11.0881ms
+  Solve: 0.0033ms
+ Island solver: 41.2446ms
+ Synchronize proxies: 20.9542ms
+ Find new contacts: 0.1882ms
+Step: 288.1763ms
+====================================
+Loop: 16
+ Update pairs: 0.0011ms
+ Test collisions: 209.8573ms
+ Reset flags: 13.9497ms
+  Solve: 0.0034ms
+ Island solver: 44.3395ms
+ Synchronize proxies: 21.9321ms
+ Find new contacts: 0.1952ms
+Step: 291.0677ms
+====================================
+Loop: 17
+ Update pairs: 0.0011ms
+ Test collisions: 210.2619ms
+ Reset flags: 11.1232ms
+  Solve: 0.0036ms
+ Island solver: 41.6650ms
+ Synchronize proxies: 21.6421ms
+ Find new contacts: 0.1986ms
+Step: 285.7886ms
+====================================
+Loop: 18
+ Update pairs: 0.0009ms
+ Test collisions: 212.8846ms
+ Reset flags: 11.2007ms
+  Solve: 0.0035ms
+ Island solver: 42.3201ms
+ Synchronize proxies: 168.0727ms
+ Find new contacts: 252.5626ms
+Step: 687.9167ms
+====================================
+Loop: 19
+ Update pairs: 0.0011ms
+ Test collisions: 209.6607ms
+ Reset flags: 11.2855ms
+  Solve: 0.0038ms
+ Island solver: 41.1619ms
+ Synchronize proxies: 22.0254ms
+ Find new contacts: 0.2011ms
+Step: 285.2343ms
+====================================
+Loop: 20
+ Update pairs: 0.0010ms
+ Test collisions: 209.4220ms
+ Reset flags: 11.0764ms
+  Solve: 0.0034ms
+ Island solver: 41.3706ms
+ Synchronize proxies: 20.7930ms
+ Find new contacts: 0.1890ms
+Step: 283.6667ms
+====================================
+Loop: 21
+ Update pairs: 0.0009ms
+ Test collisions: 212.7956ms
+ Reset flags: 11.2679ms
+  Solve: 0.0034ms
+ Island solver: 41.9470ms
+ Synchronize proxies: 20.9645ms
+ Find new contacts: 0.1919ms
+Step: 287.9502ms
+====================================
+Loop: 22
+ Update pairs: 0.0014ms
+ Test collisions: 213.1745ms
+ Reset flags: 11.0602ms
+  Solve: 0.0038ms
+ Island solver: 45.4180ms
+ Synchronize proxies: 21.9129ms
+ Find new contacts: 0.3635ms
+Step: 292.8888ms
+====================================
+Loop: 23
+ Update pairs: 0.0009ms
+ Test collisions: 210.0768ms
+ Reset flags: 11.1853ms
+  Solve: 0.0033ms
+ Island solver: 43.5223ms
+ Synchronize proxies: 20.7752ms
+ Find new contacts: 0.2063ms
+Step: 286.5521ms
+====================================
+Loop: 24
+ Update pairs: 0.0010ms
+ Test collisions: 215.1974ms
+ Reset flags: 11.1849ms
+  Solve: 0.0040ms
+ Island solver: 42.1750ms
+ Synchronize proxies: 21.0466ms
+ Find new contacts: 0.1879ms
+Step: 290.6294ms
+====================================
+Loop: 25
+ Update pairs: 0.0016ms
+ Test collisions: 212.1593ms
+ Reset flags: 12.5644ms
+  Solve: 0.0039ms
+ Island solver: 44.7577ms
+ Synchronize proxies: 20.6300ms
+ Find new contacts: 0.1926ms
+Step: 291.1101ms
+====================================
+Loop: 26
+ Update pairs: 0.0010ms
+ Test collisions: 210.2333ms
+ Reset flags: 11.0368ms
+  Solve: 0.0034ms
+ Island solver: 41.4889ms
+ Synchronize proxies: 171.2590ms
+ Find new contacts: 252.6903ms
+Step: 687.5826ms
+====================================
+Loop: 27
+ Update pairs: 0.0010ms
+ Test collisions: 213.2969ms
+ Reset flags: 11.0348ms
+  Solve: 0.0035ms
+ Island solver: 41.3062ms
+ Synchronize proxies: 20.8203ms
+ Find new contacts: 0.1866ms
+Step: 287.4250ms
+====================================
+Loop: 28
+ Update pairs: 0.0010ms
+ Test collisions: 211.1400ms
+ Reset flags: 11.0055ms
+  Solve: 0.0033ms
+ Island solver: 41.0967ms
+ Synchronize proxies: 21.6786ms
+ Find new contacts: 0.1907ms
+Step: 286.1050ms
+====================================
+Loop: 29
+ Update pairs: 0.0010ms
+ Test collisions: 214.3091ms
+ Reset flags: 10.9817ms
+  Solve: 0.0030ms
+ Island solver: 41.3066ms
+ Synchronize proxies: 20.6685ms
+ Find new contacts: 0.1899ms
+Step: 288.2302ms
+====================================
+Loop: 30
+ Update pairs: 0.0010ms
+ Test collisions: 215.6617ms
+ Reset flags: 11.0492ms
+  Solve: 0.0036ms
+ Island solver: 41.4645ms
+ Synchronize proxies: 20.7322ms
+ Find new contacts: 0.1842ms
+Step: 290.0377ms
+====================================
+Loop: 31
+ Update pairs: 0.0010ms
+ Test collisions: 209.3768ms
+ Reset flags: 11.2937ms
+  Solve: 0.0034ms
+ Island solver: 44.7249ms
+ Synchronize proxies: 22.0412ms
+ Find new contacts: 0.2010ms
+Step: 288.5345ms
+====================================
+Loop: 32
+ Update pairs: 0.0011ms
+ Test collisions: 214.7547ms
+ Reset flags: 11.1810ms
+  Solve: 0.0031ms
+ Island solver: 41.3395ms
+ Synchronize proxies: 20.7186ms
+ Find new contacts: 0.1920ms
+Step: 288.9703ms
+====================================
+Loop: 33
+ Update pairs: 0.0009ms
+ Test collisions: 214.0636ms
+ Reset flags: 11.0470ms
+  Solve: 0.0035ms
+ Island solver: 42.1538ms
+ Synchronize proxies: 171.8893ms
+ Find new contacts: 252.7910ms
+Step: 692.8027ms
+====================================
+Loop: 34
+ Update pairs: 0.0009ms
+ Test collisions: 269.8192ms
+ Reset flags: 11.3605ms
+  Solve: 0.0036ms
+ Island solver: 47.7632ms
+ Synchronize proxies: 22.3383ms
+ Find new contacts: 0.1955ms
+Step: 352.3748ms
+====================================
+Loop: 35
+ Update pairs: 0.0010ms
+ Test collisions: 212.6547ms
+ Reset flags: 11.1276ms
+  Solve: 0.0036ms
+ Island solver: 41.3978ms
+ Synchronize proxies: 20.6668ms
+ Find new contacts: 0.2076ms
+Step: 286.9549ms
+====================================
+Loop: 36
+ Update pairs: 0.0010ms
+ Test collisions: 215.1908ms
+ Reset flags: 11.1195ms
+  Solve: 0.0035ms
+ Island solver: 41.3429ms
+ Synchronize proxies: 20.7459ms
+ Find new contacts: 0.1923ms
+Step: 289.3655ms
+====================================
+Loop: 37
+ Update pairs: 0.0012ms
+ Test collisions: 212.8750ms
+ Reset flags: 14.0966ms
+  Solve: 0.0038ms
+ Island solver: 42.6339ms
+ Synchronize proxies: 21.2881ms
+ Find new contacts: 0.1918ms
+Step: 291.8697ms
+====================================
+Loop: 38
+ Update pairs: 0.0012ms
+ Test collisions: 211.1421ms
+ Reset flags: 11.1143ms
+  Solve: 0.0035ms
+ Island solver: 42.1195ms
+ Synchronize proxies: 169.3876ms
+ Find new contacts: 248.9340ms
+Step: 683.5819ms
+====================================
+Loop: 39
+ Update pairs: 0.0011ms
+ Test collisions: 215.3966ms
+ Reset flags: 11.1399ms
+  Solve: 0.0032ms
+ Island solver: 41.3544ms
+ Synchronize proxies: 20.7386ms
+ Find new contacts: 0.1915ms
+Step: 289.6133ms
+====================================
+Loop: 40
+ Update pairs: 0.0010ms
+ Test collisions: 210.7947ms
+ Reset flags: 11.0141ms
+  Solve: 0.0056ms
+ Island solver: 42.1475ms
+ Synchronize proxies: 21.8230ms
+ Find new contacts: 0.1868ms
+Step: 286.8115ms
+====================================
+Loop: 41
+ Update pairs: 0.0009ms
+ Test collisions: 210.4530ms
+ Reset flags: 10.9912ms
+  Solve: 0.0034ms
+ Island solver: 41.4371ms
+ Synchronize proxies: 20.6748ms
+ Find new contacts: 0.1912ms
+Step: 284.5292ms
+====================================
+Loop: 42
+ Update pairs: 0.0011ms
+ Test collisions: 213.6204ms
+ Reset flags: 11.0865ms
+  Solve: 0.0033ms
+ Island solver: 42.1214ms
+ Synchronize proxies: 21.7775ms
+ Find new contacts: 0.2016ms
+Step: 289.7232ms
+====================================
+Loop: 43
+ Update pairs: 0.0010ms
+ Test collisions: 212.7803ms
+ Reset flags: 14.0722ms
+  Solve: 0.0031ms
+ Island solver: 44.2956ms
+ Synchronize proxies: 171.6717ms
+ Find new contacts: 245.9677ms
+Step: 689.6619ms
+====================================
+Loop: 44
+ Update pairs: 0.0130ms
+ Test collisions: 213.3387ms
+ Reset flags: 11.1745ms
+  Solve: 0.0036ms
+ Island solver: 41.2379ms
+ Synchronize proxies: 20.7225ms
+ Find new contacts: 0.1903ms
+Step: 287.4526ms
+====================================
+Loop: 45
+ Update pairs: 0.0010ms
+ Test collisions: 212.3752ms
+ Reset flags: 11.0727ms
+  Solve: 0.0037ms
+ Island solver: 42.2489ms
+ Synchronize proxies: 20.5983ms
+ Find new contacts: 0.1836ms
+Step: 287.3492ms
+====================================
+Loop: 46
+ Update pairs: 0.0011ms
+ Test collisions: 211.4906ms
+ Reset flags: 11.0731ms
+  Solve: 0.0034ms
+ Island solver: 45.1028ms
+ Synchronize proxies: 22.2493ms
+ Find new contacts: 0.1922ms
+Step: 291.0187ms
+====================================
+Loop: 47
+ Update pairs: 0.0009ms
+ Test collisions: 209.2343ms
+ Reset flags: 11.0381ms
+  Solve: 0.0038ms
+ Island solver: 41.3510ms
+ Synchronize proxies: 166.9092ms
+ Find new contacts: 251.0194ms
+Step: 680.4231ms
+====================================
+Loop: 48
+ Update pairs: 0.0014ms
+ Test collisions: 214.0384ms
+ Reset flags: 12.6586ms
+  Solve: 0.0037ms
+ Island solver: 42.6679ms
+ Synchronize proxies: 21.4809ms
+ Find new contacts: 0.1872ms
+Step: 291.8274ms
+====================================
+Loop: 49
+ Update pairs: 0.0010ms
+ Test collisions: 213.8818ms
+ Reset flags: 11.0816ms
+  Solve: 0.0033ms
+ Island solver: 41.9213ms
+ Synchronize proxies: 20.7401ms
+ Find new contacts: 0.1846ms
+Step: 288.5933ms
+====================================
+Loop: 50
+ Update pairs: 0.0015ms
+ Test collisions: 215.6131ms
+ Reset flags: 11.1503ms
+  Solve: 0.0038ms
+ Island solver: 42.2594ms
+ Synchronize proxies: 21.1434ms
+ Find new contacts: 0.1896ms
+Step: 291.1839ms
+====================================
+Loop: 51
+ Update pairs: 0.0014ms
+ Test collisions: 221.2787ms
+ Reset flags: 11.2506ms
+  Solve: 0.0038ms
+ Island solver: 42.0769ms
+ Synchronize proxies: 173.4140ms
+ Find new contacts: 253.5054ms
+Step: 702.4161ms
+====================================
+Loop: 52
+ Update pairs: 0.0009ms
+ Test collisions: 213.0608ms
+ Reset flags: 12.8321ms
+  Solve: 0.0035ms
+ Island solver: 42.4249ms
+ Synchronize proxies: 20.8211ms
+ Find new contacts: 0.1844ms
+Step: 290.1238ms
+====================================
+Loop: 53
+ Update pairs: 0.0009ms
+ Test collisions: 213.9325ms
+ Reset flags: 11.1953ms
+  Solve: 0.0042ms
+ Island solver: 42.1770ms
+ Synchronize proxies: 21.5653ms
+ Find new contacts: 0.1893ms
+Step: 289.8372ms
+====================================
+Loop: 54
+ Update pairs: 0.0011ms
+ Test collisions: 211.8913ms
+ Reset flags: 14.3262ms
+  Solve: 5.6650ms
+ Island solver: 48.6725ms
+ Synchronize proxies: 21.2647ms
+ Find new contacts: 0.1862ms
+Step: 297.2701ms
+====================================
+Loop: 55
+ Update pairs: 0.0011ms
+ Test collisions: 213.9849ms
+ Reset flags: 11.1174ms
+  Solve: 10.2599ms
+ Island solver: 52.5871ms
+ Synchronize proxies: 168.0691ms
+ Find new contacts: 254.7600ms
+Step: 701.5182ms
+====================================
+Loop: 56
+ Update pairs: 0.0015ms
+ Test collisions: 275.7707ms
+ Reset flags: 13.3363ms
+  Solve: 13.7265ms
+ Island solver: 61.2860ms
+ Synchronize proxies: 22.2366ms
+ Find new contacts: 0.2064ms
+Step: 373.7773ms
+====================================
+Loop: 57
+ Update pairs: 0.0011ms
+ Test collisions: 227.8647ms
+ Reset flags: 11.6224ms
+  Solve: 15.4193ms
+ Island solver: 60.5107ms
+ Synchronize proxies: 22.5827ms
+ Find new contacts: 0.2008ms
+Step: 323.5918ms
+====================================
+Loop: 58
+ Update pairs: 0.0010ms
+ Test collisions: 219.6439ms
+ Reset flags: 11.8032ms
+  Solve: 23.3414ms
+ Island solver: 75.8931ms
+ Synchronize proxies: 29.6200ms
+ Find new contacts: 0.2530ms
+Step: 341.0543ms
+====================================
+Loop: 59
+ Update pairs: 0.0012ms
+ Test collisions: 320.0825ms
+ Reset flags: 15.4253ms
+  Solve: 25.1142ms
+ Island solver: 85.7149ms
+ Synchronize proxies: 217.9800ms
+ Find new contacts: 293.4742ms
+Step: 934.0686ms
+====================================
+Loop: 60
+ Update pairs: 0.0023ms
+ Test collisions: 311.1959ms
+ Reset flags: 17.4650ms
+  Solve: 29.7066ms
+ Island solver: 91.9795ms
+ Synchronize proxies: 27.5026ms
+ Find new contacts: 0.6929ms
+Step: 450.1895ms
+====================================
+Loop: 61
+ Update pairs: 0.0011ms
+ Test collisions: 273.5027ms
+ Reset flags: 11.9249ms
+  Solve: 27.9585ms
+ Island solver: 74.5363ms
+ Synchronize proxies: 22.1782ms
+ Find new contacts: 0.1947ms
+Step: 383.2102ms
+====================================
+Loop: 62
+ Update pairs: 0.0014ms
+ Test collisions: 228.2882ms
+ Reset flags: 11.8356ms
+  Solve: 30.5887ms
+ Island solver: 78.3982ms
+ Synchronize proxies: 185.5501ms
+ Find new contacts: 295.9963ms
+Step: 801.1598ms
+====================================
+Loop: 63
+ Update pairs: 0.0018ms
+ Test collisions: 315.0668ms
+ Reset flags: 17.4464ms
+  Solve: 46.7509ms
+ Island solver: 108.8927ms
+ Synchronize proxies: 34.0162ms
+ Find new contacts: 0.2195ms
+Step: 476.7527ms
+====================================
+Loop: 64
+ Update pairs: 0.0011ms
+ Test collisions: 238.6596ms
+ Reset flags: 12.0701ms
+  Solve: 39.4285ms
+ Island solver: 84.7845ms
+ Synchronize proxies: 21.8580ms
+ Find new contacts: 0.2011ms
+Step: 358.5112ms
+====================================
+Loop: 65
+ Update pairs: 0.0011ms
+ Test collisions: 242.8091ms
+ Reset flags: 14.0922ms
+  Solve: 53.0328ms
+ Island solver: 116.4887ms
+ Synchronize proxies: 214.0994ms
+ Find new contacts: 237.5371ms
+Step: 825.9305ms
+====================================
+Loop: 66
+ Update pairs: 0.0010ms
+ Test collisions: 255.3985ms
+ Reset flags: 15.0476ms
+  Solve: 58.2934ms
+ Island solver: 117.2964ms
+ Synchronize proxies: 30.3138ms
+ Find new contacts: 0.3206ms
+Step: 419.7072ms
+====================================
+Loop: 67
+ Update pairs: 0.0017ms
+ Test collisions: 249.0602ms
+ Reset flags: 12.2819ms
+  Solve: 53.8445ms
+ Island solver: 100.3541ms
+ Synchronize proxies: 22.0703ms
+ Find new contacts: 0.1885ms
+Step: 384.7588ms
+====================================
+Loop: 68
+ Update pairs: 0.0010ms
+ Test collisions: 240.7735ms
+ Reset flags: 12.3558ms
+  Solve: 58.0970ms
+ Island solver: 103.1486ms
+ Synchronize proxies: 140.8828ms
+ Find new contacts: 208.5067ms
+Step: 706.5677ms
+====================================
+Loop: 69
+ Update pairs: 0.0121ms
+ Test collisions: 246.4455ms
+ Reset flags: 12.4579ms
+  Solve: 65.6179ms
+ Island solver: 112.3437ms
+ Synchronize proxies: 21.3361ms
+ Find new contacts: 0.1893ms
+Step: 393.5694ms
+====================================
+Loop: 70
+ Update pairs: 0.0010ms
+ Test collisions: 244.5331ms
+ Reset flags: 12.4446ms
+  Solve: 68.0734ms
+ Island solver: 114.9021ms
+ Synchronize proxies: 21.0102ms
+ Find new contacts: 0.1819ms
+Step: 393.9255ms
+====================================
+Loop: 71
+ Update pairs: 0.0016ms
+ Test collisions: 252.4565ms
+ Reset flags: 12.1184ms
+  Solve: 72.4747ms
+ Island solver: 117.7917ms
+ Synchronize proxies: 137.2784ms
+ Find new contacts: 197.1040ms
+Step: 717.6257ms
+====================================
+Loop: 72
+ Update pairs: 0.0011ms
+ Test collisions: 248.8461ms
+ Reset flags: 12.8789ms
+  Solve: 76.7618ms
+ Island solver: 126.0360ms
+ Synchronize proxies: 21.0518ms
+ Find new contacts: 0.1883ms
+Step: 409.8327ms
+====================================
+Loop: 73
+ Update pairs: 0.0016ms
+ Test collisions: 249.7356ms
+ Reset flags: 12.6696ms
+  Solve: 81.5603ms
+ Island solver: 129.3667ms
+ Synchronize proxies: 21.8744ms
+ Find new contacts: 0.1905ms
+Step: 414.6559ms
+====================================
+Loop: 74
+ Update pairs: 0.0014ms
+ Test collisions: 263.5183ms
+ Reset flags: 12.9800ms
+  Solve: 83.2822ms
+ Island solver: 133.8374ms
+ Synchronize proxies: 145.7234ms
+ Find new contacts: 188.8851ms
+Step: 745.8386ms
+====================================
+Loop: 75
+ Update pairs: 0.0011ms
+ Test collisions: 260.4516ms
+ Reset flags: 12.8703ms
+  Solve: 85.0553ms
+ Island solver: 133.4027ms
+ Synchronize proxies: 20.8974ms
+ Find new contacts: 0.2357ms
+Step: 428.6562ms
+====================================
+Loop: 76
+ Update pairs: 0.0015ms
+ Test collisions: 263.9218ms
+ Reset flags: 12.4913ms
+  Solve: 96.7586ms
+ Island solver: 145.9553ms
+ Synchronize proxies: 21.4308ms
+ Find new contacts: 1.7622ms
+Step: 446.5262ms
+====================================
+Loop: 77
+ Update pairs: 0.0100ms
+ Test collisions: 265.6908ms
+ Reset flags: 12.9551ms
+  Solve: 107.0819ms
+ Island solver: 157.2875ms
+ Synchronize proxies: 147.6372ms
+ Find new contacts: 197.6216ms
+Step: 783.2658ms
+====================================
+Loop: 78
+ Update pairs: 0.0011ms
+ Test collisions: 289.0882ms
+ Reset flags: 14.5665ms
+  Solve: 124.8871ms
+ Island solver: 180.4259ms
+ Synchronize proxies: 22.4700ms
+ Find new contacts: 3.1451ms
+Step: 510.7180ms
+====================================
+Loop: 79
+ Update pairs: 0.0026ms
+ Test collisions: 318.4399ms
+ Reset flags: 17.7823ms
+  Solve: 131.8450ms
+ Island solver: 186.9021ms
+ Synchronize proxies: 22.8294ms
+ Find new contacts: 2.7642ms
+Step: 549.6743ms
+====================================
+Loop: 80
+ Update pairs: 0.0011ms
+ Test collisions: 286.0717ms
+ Reset flags: 13.6843ms
+  Solve: 138.9160ms
+ Island solver: 196.8050ms
+ Synchronize proxies: 125.6949ms
+ Find new contacts: 172.0015ms
+Step: 795.1725ms
+====================================
+Loop: 81
+ Update pairs: 0.0011ms
+ Test collisions: 282.8206ms
+ Reset flags: 15.8390ms
+  Solve: 143.7643ms
+ Island solver: 198.8477ms
+ Synchronize proxies: 21.7607ms
+ Find new contacts: 3.6826ms
+Step: 523.8312ms
+====================================
+Loop: 82
+ Update pairs: 0.0018ms
+ Test collisions: 287.0724ms
+ Reset flags: 13.0724ms
+  Solve: 143.6971ms
+ Island solver: 194.5610ms
+ Synchronize proxies: 23.1759ms
+ Find new contacts: 2.7369ms
+Step: 521.4841ms
+====================================
+Loop: 83
+ Update pairs: 0.0031ms
+ Test collisions: 288.7599ms
+ Reset flags: 13.2585ms
+  Solve: 159.7277ms
+ Island solver: 212.3373ms
+ Synchronize proxies: 117.2963ms
+ Find new contacts: 165.8664ms
+Step: 798.4223ms
+====================================
+Loop: 84
+ Update pairs: 0.0010ms
+ Test collisions: 299.8130ms
+ Reset flags: 16.0430ms
+  Solve: 160.2465ms
+ Island solver: 216.5969ms
+ Synchronize proxies: 21.6327ms
+ Find new contacts: 3.0747ms
+Step: 558.0632ms
+====================================
+Loop: 85
+ Update pairs: 0.0025ms
+ Test collisions: 301.0652ms
+ Reset flags: 13.5057ms
+  Solve: 170.9924ms
+ Island solver: 226.7883ms
+ Synchronize proxies: 22.8467ms
+ Find new contacts: 4.2207ms
+Step: 569.2900ms
+====================================
+Loop: 86
+ Update pairs: 0.0011ms
+ Test collisions: 289.5384ms
+ Reset flags: 13.4777ms
+  Solve: 174.6561ms
+ Island solver: 229.6028ms
+ Synchronize proxies: 112.6181ms
+ Find new contacts: 155.4076ms
+Step: 801.5252ms
+====================================
+Loop: 87
+ Update pairs: 0.0010ms
+ Test collisions: 304.3245ms
+ Reset flags: 13.7784ms
+  Solve: 181.8122ms
+ Island solver: 237.4704ms
+ Synchronize proxies: 22.4450ms
+ Find new contacts: 4.8939ms
+Step: 583.7852ms
+====================================
+Loop: 88
+ Update pairs: 0.0010ms
+ Test collisions: 299.6610ms
+ Reset flags: 14.0788ms
+  Solve: 188.3667ms
+ Island solver: 243.2985ms
+ Synchronize proxies: 22.2711ms
+ Find new contacts: 6.0834ms
+Step: 586.2421ms
+====================================
+Loop: 89
+ Update pairs: 0.0011ms
+ Test collisions: 306.6397ms
+ Reset flags: 13.7905ms
+  Solve: 191.5126ms
+ Island solver: 246.1384ms
+ Synchronize proxies: 104.3739ms
+ Find new contacts: 150.8874ms
+Step: 822.7023ms
+====================================
+Loop: 90
+ Update pairs: 0.0010ms
+ Test collisions: 311.7765ms
+ Reset flags: 16.0309ms
+  Solve: 204.5438ms
+ Island solver: 263.7426ms
+ Synchronize proxies: 21.7764ms
+ Find new contacts: 4.7017ms
+Step: 618.8611ms
+====================================
+Loop: 91
+ Update pairs: 0.0011ms
+ Test collisions: 319.3969ms
+ Reset flags: 14.2604ms
+  Solve: 209.2293ms
+ Island solver: 266.8326ms
+ Synchronize proxies: 22.7839ms
+ Find new contacts: 6.7952ms
+Step: 630.9489ms
+====================================
+Loop: 92
+ Update pairs: 0.0012ms
+ Test collisions: 321.2182ms
+ Reset flags: 14.0797ms
+  Solve: 223.6819ms
+ Island solver: 280.6544ms
+ Synchronize proxies: 102.6097ms
+ Find new contacts: 143.2238ms
+Step: 862.6472ms
+====================================
+Loop: 93
+ Update pairs: 0.0009ms
+ Test collisions: 339.5489ms
+ Reset flags: 14.5426ms
+  Solve: 234.9875ms
+ Island solver: 295.1849ms
+ Synchronize proxies: 22.9838ms
+ Find new contacts: 9.1304ms
+Step: 682.3162ms
+====================================
+Loop: 94
+ Update pairs: 0.0010ms
+ Test collisions: 364.6699ms
+ Reset flags: 14.8713ms
+  Solve: 227.8096ms
+ Island solver: 289.1653ms
+ Synchronize proxies: 95.4312ms
+ Find new contacts: 143.1413ms
+Step: 908.2013ms
+====================================
+Loop: 95
+ Update pairs: 0.0010ms
+ Test collisions: 339.0340ms
+ Reset flags: 17.1772ms
+  Solve: 236.8914ms
+ Island solver: 298.4774ms
+ Synchronize proxies: 23.6449ms
+ Find new contacts: 11.8587ms
+Step: 691.1287ms
+====================================
+Loop: 96
+ Update pairs: 0.0009ms
+ Test collisions: 345.8220ms
+ Reset flags: 15.0257ms
+  Solve: 245.0966ms
+ Island solver: 306.5056ms
+ Synchronize proxies: 93.2524ms
+ Find new contacts: 136.5014ms
+Step: 897.9935ms
+====================================
+Loop: 97
+ Update pairs: 0.0010ms
+ Test collisions: 355.8221ms
+ Reset flags: 15.3678ms
+  Solve: 247.1939ms
+ Island solver: 308.9780ms
+ Synchronize proxies: 25.4125ms
+ Find new contacts: 21.1655ms
+Step: 727.7183ms
+====================================
+Loop: 98
+ Update pairs: 0.0009ms
+ Test collisions: 356.4622ms
+ Reset flags: 15.6268ms
+  Solve: 256.0883ms
+ Island solver: 322.6008ms
+ Synchronize proxies: 92.0348ms
+ Find new contacts: 138.7176ms
+Step: 926.4252ms
+====================================
+Loop: 99
+ Update pairs: 0.0013ms
+ Test collisions: 385.3632ms
+ Reset flags: 22.7969ms
+  Solve: 271.7849ms
+ Island solver: 344.5667ms
+ Synchronize proxies: 24.7679ms
+ Find new contacts: 22.9222ms
+Step: 801.3637ms
+====================================
+Loop: 100
+ Update pairs: 0.0010ms
+ Test collisions: 425.5977ms
+ Reset flags: 16.3426ms
+  Solve: 307.3501ms
+ Island solver: 371.8730ms
+ Synchronize proxies: 85.3692ms
+ Find new contacts: 138.4829ms
+Step: 1039.0367ms
+====================================
+Loop: 101
+ Update pairs: 0.0013ms
+ Test collisions: 428.4156ms
+ Reset flags: 25.4307ms
+  Solve: 271.5248ms
+ Island solver: 351.3024ms
+ Synchronize proxies: 25.9831ms
+ Find new contacts: 30.9024ms
+Step: 862.9971ms
+====================================
+Loop: 102
+ Update pairs: 0.0013ms
+ Test collisions: 454.1380ms
+ Reset flags: 16.9134ms
+  Solve: 283.7206ms
+ Island solver: 355.1294ms
+ Synchronize proxies: 102.5700ms
+ Find new contacts: 140.1587ms
+Step: 1069.8638ms
+====================================
+Loop: 103
+ Update pairs: 0.0014ms
+ Test collisions: 441.2295ms
+ Reset flags: 17.4808ms
+  Solve: 277.6187ms
+ Island solver: 347.1364ms
+ Synchronize proxies: 33.5874ms
+ Find new contacts: 36.4500ms
+Step: 876.8192ms
+====================================
+Loop: 104
+ Update pairs: 0.0009ms
+ Test collisions: 420.4855ms
+ Reset flags: 20.8684ms
+  Solve: 285.1290ms
+ Island solver: 372.9534ms
+ Synchronize proxies: 83.4583ms
+ Find new contacts: 136.4102ms
+Step: 1035.1282ms
+====================================
+Loop: 105
+ Update pairs: 0.0010ms
+ Test collisions: 428.9612ms
+ Reset flags: 18.3888ms
+  Solve: 287.5321ms
+ Island solver: 356.2418ms
+ Synchronize proxies: 27.9300ms
+ Find new contacts: 41.5282ms
+Step: 873.9982ms
+====================================
+Loop: 106
+ Update pairs: 0.0010ms
+ Test collisions: 424.5150ms
+ Reset flags: 18.6238ms
+  Solve: 300.3038ms
+ Island solver: 376.3667ms
+ Synchronize proxies: 82.6188ms
+ Find new contacts: 135.2845ms
+Step: 1038.3278ms
+====================================
+Loop: 107
+ Update pairs: 0.0012ms
+ Test collisions: 441.5912ms
+ Reset flags: 18.6835ms
+  Solve: 309.1537ms
+ Island solver: 380.5490ms
+ Synchronize proxies: 30.0152ms
+ Find new contacts: 46.4222ms
+Step: 918.1917ms
+====================================
+Loop: 108
+ Update pairs: 0.0010ms
+ Test collisions: 442.5477ms
+ Reset flags: 18.8668ms
+  Solve: 315.8708ms
+ Island solver: 388.0921ms
+ Synchronize proxies: 77.7394ms
+ Find new contacts: 136.7584ms
+Step: 1064.9062ms
+====================================
+Loop: 109
+ Update pairs: 0.0011ms
+ Test collisions: 483.4342ms
+ Reset flags: 19.8927ms
+  Solve: 322.4949ms
+ Island solver: 398.6275ms
+ Synchronize proxies: 30.8916ms
+ Find new contacts: 54.7977ms
+Step: 988.5533ms
+====================================
+Loop: 110
+ Update pairs: 0.0010ms
+ Test collisions: 673.5057ms
+ Reset flags: 27.3293ms
+  Solve: 415.3120ms
+ Island solver: 518.5152ms
+ Synchronize proxies: 112.8379ms
+ Find new contacts: 193.1082ms
+Step: 1526.5942ms
+====================================
+Loop: 111
+ Update pairs: 0.0013ms
+ Test collisions: 687.8533ms
+ Reset flags: 28.7899ms
+  Solve: 388.1579ms
+ Island solver: 489.4715ms
+ Synchronize proxies: 47.5839ms
+ Find new contacts: 92.7361ms
+Step: 1347.6261ms
+====================================
+Loop: 112
+ Update pairs: 0.0013ms
+ Test collisions: 739.5624ms
+ Reset flags: 28.2892ms
+  Solve: 420.6830ms
+ Island solver: 519.9604ms
+ Synchronize proxies: 108.2162ms
+ Find new contacts: 187.1322ms
+Step: 1584.2533ms
+====================================
+Loop: 113
+ Update pairs: 0.0012ms
+ Test collisions: 785.8848ms
+ Reset flags: 29.9294ms
+  Solve: 346.0785ms
+ Island solver: 444.5067ms
+ Synchronize proxies: 33.5891ms
+ Find new contacts: 77.2958ms
+Step: 1372.1530ms
+====================================
+Loop: 114
+ Update pairs: 0.0011ms
+ Test collisions: 507.0025ms
+ Reset flags: 22.4775ms
+  Solve: 391.6691ms
+ Island solver: 478.4251ms
+ Synchronize proxies: 106.6566ms
+ Find new contacts: 197.1357ms
+Step: 1314.1008ms
+====================================
+Loop: 115
+ Update pairs: 0.0013ms
+ Test collisions: 688.3207ms
+ Reset flags: 30.4805ms
+  Solve: 404.0929ms
+ Island solver: 511.1185ms
+ Synchronize proxies: 49.0791ms
+ Find new contacts: 102.4555ms
+Step: 1382.3668ms
+====================================
+Loop: 116
+ Update pairs: 0.0011ms
+ Test collisions: 541.2478ms
+ Reset flags: 25.6423ms
+  Solve: 352.8962ms
+ Island solver: 445.0604ms
+ Synchronize proxies: 72.2117ms
+ Find new contacts: 164.9917ms
+Step: 1250.0999ms
+====================================
+Loop: 117
+ Update pairs: 0.0015ms
+ Test collisions: 553.4141ms
+ Reset flags: 24.4256ms
+  Solve: 349.8360ms
+ Island solver: 435.7076ms
+ Synchronize proxies: 39.0011ms
+ Find new contacts: 116.0204ms
+Step: 1169.5223ms
+====================================
+Loop: 118
+ Update pairs: 0.0011ms
+ Test collisions: 553.6176ms
+ Reset flags: 25.5411ms
+  Solve: 357.8839ms
+ Island solver: 446.5067ms
+ Synchronize proxies: 65.6412ms
+ Find new contacts: 171.6464ms
+Step: 1263.8882ms
+====================================
+Loop: 119
+ Update pairs: 0.0013ms
+ Test collisions: 566.5594ms
+ Reset flags: 25.8841ms
+  Solve: 363.9219ms
+ Island solver: 453.7552ms
+ Synchronize proxies: 40.6348ms
+ Find new contacts: 125.7685ms
+Step: 1213.5514ms
+====================================
+Loop: 120
+ Update pairs: 0.0011ms
+ Test collisions: 576.4215ms
+ Reset flags: 26.6151ms
+  Solve: 377.4677ms
+ Island solver: 472.8102ms
+ Synchronize proxies: 66.7259ms
+ Find new contacts: 193.5515ms
+Step: 1337.0503ms
+====================================
+Loop: 121
+ Update pairs: 0.0010ms
+ Test collisions: 790.8956ms
+ Reset flags: 33.7616ms
+  Solve: 495.2394ms
+ Island solver: 624.8483ms
+ Synchronize proxies: 65.7145ms
+ Find new contacts: 202.4705ms
+Step: 1719.2385ms
+====================================
+Loop: 122
+ Update pairs: 0.0013ms
+ Test collisions: 858.7581ms
+ Reset flags: 37.5889ms
+  Solve: 443.8543ms
+ Island solver: 567.9028ms
+ Synchronize proxies: 66.8005ms
+ Find new contacts: 205.8960ms
+Step: 1737.8608ms
+====================================
+Loop: 123
+ Update pairs: 0.0009ms
+ Test collisions: 831.7067ms
+ Reset flags: 38.3586ms
+  Solve: 518.0486ms
+ Island solver: 647.2645ms
+ Synchronize proxies: 69.7591ms
+ Find new contacts: 235.9696ms
+Step: 1824.3975ms
+====================================
+Loop: 124
+ Update pairs: 0.0011ms
+ Test collisions: 807.8942ms
+ Reset flags: 29.5605ms
+  Solve: 401.5976ms
+ Island solver: 504.1235ms
+ Synchronize proxies: 83.0999ms
+ Find new contacts: 273.5536ms
+Step: 1699.5515ms
+====================================
+Loop: 125
+ Update pairs: 0.0013ms
+ Test collisions: 950.8827ms
+ Reset flags: 41.9627ms
+  Solve: 426.1746ms
+ Island solver: 554.7546ms
+ Synchronize proxies: 47.2918ms
+ Find new contacts: 254.6937ms
+Step: 1850.6555ms
+====================================
+Loop: 126
+ Update pairs: 0.0023ms
+ Test collisions: 957.5992ms
+ Reset flags: 43.9615ms
+  Solve: 415.9059ms
+ Island solver: 548.9456ms
+ Synchronize proxies: 91.4362ms
+ Find new contacts: 306.0515ms
+Step: 1949.0354ms
+====================================
+Loop: 127
+ Update pairs: 0.0015ms
+ Test collisions: 900.9856ms
+ Reset flags: 35.1503ms
+  Solve: 400.6553ms
+ Island solver: 503.7919ms
+ Synchronize proxies: 53.8475ms
+ Find new contacts: 293.6444ms
+Step: 1788.9753ms
+====================================
+Loop: 128
+ Update pairs: 0.0011ms
+ Test collisions: 737.9896ms
+ Reset flags: 41.8500ms
+  Solve: 491.4153ms
+ Island solver: 635.6979ms
+ Synchronize proxies: 85.6281ms
+ Find new contacts: 340.5651ms
+Step: 1842.8840ms
+====================================
+Loop: 129
+ Update pairs: 0.0013ms
+ Test collisions: 883.5733ms
+ Reset flags: 33.2958ms
+  Solve: 476.2769ms
+ Island solver: 586.8005ms
+ Synchronize proxies: 73.1526ms
+ Find new contacts: 302.7802ms
+Step: 1880.6797ms
+====================================
+Loop: 130
+ Update pairs: 0.0010ms
+ Test collisions: 845.1197ms
+ Reset flags: 35.2536ms
+  Solve: 530.3325ms
+ Island solver: 659.3567ms
+ Synchronize proxies: 92.2485ms
+ Find new contacts: 337.7028ms
+Step: 1970.6293ms
+====================================
+Loop: 131
+ Update pairs: 0.0010ms
+ Test collisions: 689.2669ms
+ Reset flags: 35.5031ms
+  Solve: 520.6475ms
+ Island solver: 644.6237ms
+ Synchronize proxies: 57.9037ms
+ Find new contacts: 250.7291ms
+Step: 1678.9745ms
+====================================
+Loop: 132
+ Update pairs: 0.0012ms
+ Test collisions: 777.2174ms
+ Reset flags: 35.0705ms
+  Solve: 531.6088ms
+ Island solver: 640.6191ms
+ Synchronize proxies: 70.1245ms
+ Find new contacts: 322.7528ms
+Step: 1846.7324ms
+====================================
+Loop: 133
+ Update pairs: 0.0011ms
+ Test collisions: 702.9896ms
+ Reset flags: 35.6876ms
+  Solve: 424.7472ms
+ Island solver: 538.2746ms
+ Synchronize proxies: 64.6739ms
+ Find new contacts: 283.0201ms
+Step: 1625.5789ms
+====================================
+Loop: 134
+ Update pairs: 0.0009ms
+ Test collisions: 703.4172ms
+ Reset flags: 36.0450ms
+  Solve: 412.9211ms
+ Island solver: 526.4384ms
+ Synchronize proxies: 62.0412ms
+ Find new contacts: 284.4413ms
+Step: 1613.3274ms
+====================================
+Loop: 135
+ Update pairs: 0.0010ms
+ Test collisions: 718.5549ms
+ Reset flags: 36.6289ms
+  Solve: 405.9327ms
+ Island solver: 520.5454ms
+ Synchronize proxies: 62.4386ms
+ Find new contacts: 284.4393ms
+Step: 1623.5532ms
+====================================
+Loop: 136
+ Update pairs: 0.0011ms
+ Test collisions: 711.1198ms
+ Reset flags: 36.7592ms
+  Solve: 401.7663ms
+ Island solver: 513.0972ms
+ Synchronize proxies: 61.2361ms
+ Find new contacts: 303.6846ms
+Step: 1626.8445ms
+====================================
+Loop: 137
+ Update pairs: 0.0009ms
+ Test collisions: 712.8085ms
+ Reset flags: 36.7674ms
+  Solve: 396.5620ms
+ Island solver: 513.8435ms
+ Synchronize proxies: 61.9238ms
+ Find new contacts: 292.4996ms
+Step: 1618.7866ms
+====================================
+Loop: 138
+ Update pairs: 0.0012ms
+ Test collisions: 739.1360ms
+ Reset flags: 38.4299ms
+  Solve: 386.0388ms
+ Island solver: 500.4270ms
+ Synchronize proxies: 62.0188ms
+ Find new contacts: 284.7812ms
+Step: 1625.7290ms
+====================================
+Loop: 139
+ Update pairs: 0.0012ms
+ Test collisions: 716.8936ms
+ Reset flags: 37.5168ms
+  Solve: 381.1815ms
+ Island solver: 493.5056ms
+ Synchronize proxies: 62.9261ms
+ Find new contacts: 293.9354ms
+Step: 1605.7466ms
+====================================
+Loop: 140
+ Update pairs: 0.0011ms
+ Test collisions: 709.6445ms
+ Reset flags: 41.1313ms
+  Solve: 374.9613ms
+ Island solver: 491.2951ms
+ Synchronize proxies: 62.3589ms
+ Find new contacts: 310.4928ms
+Step: 1615.8324ms
+====================================
+Loop: 141
+ Update pairs: 0.0013ms
+ Test collisions: 711.6710ms
+ Reset flags: 37.8316ms
+  Solve: 371.4907ms
+ Island solver: 485.4406ms
+ Synchronize proxies: 66.0555ms
+ Find new contacts: 295.9805ms
+Step: 1597.9152ms
+====================================
+Loop: 142
+ Update pairs: 0.0010ms
+ Test collisions: 714.6202ms
+ Reset flags: 37.9787ms
+  Solve: 360.3060ms
+ Island solver: 472.2734ms
+ Synchronize proxies: 63.1151ms
+ Find new contacts: 302.1377ms
+Step: 1591.0811ms
+====================================
+Loop: 143
+ Update pairs: 0.0012ms
+ Test collisions: 706.0544ms
+ Reset flags: 39.3733ms
+  Solve: 354.0216ms
+ Island solver: 466.6045ms
+ Synchronize proxies: 64.7164ms
+ Find new contacts: 305.7564ms
+Step: 1583.4246ms
+====================================
+Loop: 144
+ Update pairs: 0.0011ms
+ Test collisions: 707.8778ms
+ Reset flags: 38.1647ms
+  Solve: 347.0007ms
+ Island solver: 461.3829ms
+ Synchronize proxies: 65.1773ms
+ Find new contacts: 302.8267ms
+Step: 1576.3406ms
+====================================
+Loop: 145
+ Update pairs: 0.0011ms
+ Test collisions: 708.6500ms
+ Reset flags: 38.3502ms
+  Solve: 351.8943ms
+ Island solver: 464.2244ms
+ Synchronize proxies: 64.9791ms
+ Find new contacts: 309.4553ms
+Step: 1586.6519ms
+====================================
+Loop: 146
+ Update pairs: 0.0011ms
+ Test collisions: 702.7411ms
+ Reset flags: 39.8630ms
+  Solve: 351.3578ms
+ Island solver: 466.3405ms
+ Synchronize proxies: 67.0453ms
+ Find new contacts: 303.7422ms
+Step: 1580.6411ms
+====================================
+Loop: 147
+ Update pairs: 0.0011ms
+ Test collisions: 704.3341ms
+ Reset flags: 38.5954ms
+  Solve: 333.9515ms
+ Island solver: 446.8930ms
+ Synchronize proxies: 66.8055ms
+ Find new contacts: 307.6228ms
+Step: 1565.1851ms
+====================================
+Loop: 148
+ Update pairs: 0.0011ms
+ Test collisions: 703.4717ms
+ Reset flags: 38.1363ms
+  Solve: 338.7111ms
+ Island solver: 451.9851ms
+ Synchronize proxies: 67.8741ms
+ Find new contacts: 309.3471ms
+Step: 1571.7390ms
+====================================
+Loop: 149
+ Update pairs: 0.0009ms
+ Test collisions: 706.6696ms
+ Reset flags: 38.7131ms
+  Solve: 324.1463ms
+ Island solver: 435.9253ms
+ Synchronize proxies: 67.7001ms
+ Find new contacts: 310.6929ms
+Step: 1560.6362ms
+====================================
+Loop: 150
+ Update pairs: 0.0010ms
+ Test collisions: 694.3924ms
+ Reset flags: 38.9551ms
+  Solve: 327.4022ms
+ Island solver: 440.6293ms
+ Synchronize proxies: 65.9175ms
+ Find new contacts: 309.2951ms
+Step: 1550.1382ms
+====================================
+Loop: 151
+ Update pairs: 0.0011ms
+ Test collisions: 702.2164ms
+ Reset flags: 38.9022ms
+  Solve: 315.7063ms
+ Island solver: 428.7326ms
+ Synchronize proxies: 69.6309ms
+ Find new contacts: 319.7664ms
+Step: 1560.1949ms
+====================================
+Loop: 152
+ Update pairs: 0.0009ms
+ Test collisions: 697.3087ms
+ Reset flags: 39.1235ms
+  Solve: 310.1728ms
+ Island solver: 424.6169ms
+ Synchronize proxies: 68.4523ms
+ Find new contacts: 313.3867ms
+Step: 1543.8162ms
+====================================
+Loop: 153
+ Update pairs: 0.0016ms
+ Test collisions: 695.4760ms
+ Reset flags: 40.9973ms
+  Solve: 313.6301ms
+ Island solver: 426.3611ms
+ Synchronize proxies: 72.4976ms
+ Find new contacts: 316.4062ms
+Step: 1552.6848ms
+====================================
+Loop: 154
+ Update pairs: 0.0011ms
+ Test collisions: 697.2469ms
+ Reset flags: 39.1024ms
+  Solve: 310.8737ms
+ Island solver: 424.0872ms
+ Synchronize proxies: 69.9671ms
+ Find new contacts: 328.2308ms
+Step: 1559.6025ms
+====================================
+Loop: 155
+ Update pairs: 0.0010ms
+ Test collisions: 697.2156ms
+ Reset flags: 39.0974ms
+  Solve: 306.3924ms
+ Island solver: 414.7260ms
+ Synchronize proxies: 72.8519ms
+ Find new contacts: 319.5482ms
+Step: 1544.3850ms
+====================================
+Loop: 156
+ Update pairs: 0.0010ms
+ Test collisions: 694.5037ms
+ Reset flags: 40.5567ms
+  Solve: 299.3895ms
+ Island solver: 411.0708ms
+ Synchronize proxies: 69.9620ms
+ Find new contacts: 320.5229ms
+Step: 1537.5649ms
+====================================
+Loop: 157
+ Update pairs: 0.0015ms
+ Test collisions: 689.5468ms
+ Reset flags: 38.2894ms
+  Solve: 303.6637ms
+ Island solver: 417.4995ms
+ Synchronize proxies: 74.6521ms
+ Find new contacts: 325.5934ms
+Step: 1546.5076ms
+====================================
+Loop: 158
+ Update pairs: 0.0010ms
+ Test collisions: 694.4634ms
+ Reset flags: 39.4707ms
+  Solve: 288.3883ms
+ Island solver: 398.8156ms
+ Synchronize proxies: 72.3507ms
+ Find new contacts: 318.8741ms
+Step: 1524.9131ms
+====================================
+Loop: 159
+ Update pairs: 0.0010ms
+ Test collisions: 688.9390ms
+ Reset flags: 39.2209ms
+  Solve: 288.1508ms
+ Island solver: 401.9531ms
+ Synchronize proxies: 73.4246ms
+ Find new contacts: 332.1588ms
+Step: 1536.6372ms
+====================================
+Loop: 160
+ Update pairs: 0.0011ms
+ Test collisions: 688.4427ms
+ Reset flags: 39.0556ms
+  Solve: 287.6596ms
+ Island solver: 399.6813ms
+ Synchronize proxies: 73.4534ms
+ Find new contacts: 336.5651ms
+Step: 1538.1667ms
+====================================
+Loop: 161
+ Update pairs: 0.0009ms
+ Test collisions: 687.7772ms
+ Reset flags: 39.2754ms
+  Solve: 279.1935ms
+ Island solver: 390.1662ms
+ Synchronize proxies: 75.1061ms
+ Find new contacts: 336.6135ms
+Step: 1529.8813ms
+====================================
+Loop: 162
+ Update pairs: 0.0011ms
+ Test collisions: 676.4103ms
+ Reset flags: 39.1711ms
+  Solve: 270.2299ms
+ Island solver: 382.0443ms
+ Synchronize proxies: 76.1200ms
+ Find new contacts: 332.5312ms
+Step: 1507.2571ms
+====================================
+Loop: 163
+ Update pairs: 0.0011ms
+ Test collisions: 687.2927ms
+ Reset flags: 37.9697ms
+  Solve: 273.5371ms
+ Island solver: 387.5928ms
+ Synchronize proxies: 78.6885ms
+ Find new contacts: 346.0117ms
+Step: 1538.5002ms
+====================================
+Loop: 164
+ Update pairs: 0.0010ms
+ Test collisions: 686.6068ms
+ Reset flags: 39.4069ms
+  Solve: 264.5074ms
+ Island solver: 374.6684ms
+ Synchronize proxies: 78.2221ms
+ Find new contacts: 335.3303ms
+Step: 1515.1823ms
+====================================
+Loop: 165
+ Update pairs: 0.0014ms
+ Test collisions: 706.5098ms
+ Reset flags: 37.6722ms
+  Solve: 256.8463ms
+ Island solver: 359.8271ms
+ Synchronize proxies: 74.8625ms
+ Find new contacts: 328.1807ms
+Step: 1507.9633ms
+====================================
+Loop: 166
+ Update pairs: 0.0011ms
+ Test collisions: 675.7663ms
+ Reset flags: 40.1986ms
+  Solve: 245.2125ms
+ Island solver: 350.2562ms
+ Synchronize proxies: 77.2496ms
+ Find new contacts: 339.3474ms
+Step: 1483.7163ms
+====================================
+Loop: 167
+ Update pairs: 0.0010ms
+ Test collisions: 673.3818ms
+ Reset flags: 38.0895ms
+  Solve: 245.5026ms
+ Island solver: 349.0818ms
+ Synchronize proxies: 78.0728ms
+ Find new contacts: 352.0301ms
+Step: 1491.5448ms
+====================================
+Loop: 168
+ Update pairs: 0.0012ms
+ Test collisions: 671.1642ms
+ Reset flags: 37.6156ms
+  Solve: 242.7211ms
+ Island solver: 345.2148ms
+ Synchronize proxies: 79.0364ms
+ Find new contacts: 337.3137ms
+Step: 1471.2352ms
+====================================
+Loop: 169
+ Update pairs: 0.0010ms
+ Test collisions: 672.4671ms
+ Reset flags: 38.1117ms
+  Solve: 237.4505ms
+ Island solver: 342.5456ms
+ Synchronize proxies: 80.7642ms
+ Find new contacts: 383.7877ms
+Step: 1518.6332ms
+====================================
+Loop: 170
+ Update pairs: 0.0015ms
+ Test collisions: 674.5372ms
+ Reset flags: 38.5958ms
+  Solve: 231.7813ms
+ Island solver: 340.2227ms
+ Synchronize proxies: 79.7124ms
+ Find new contacts: 345.1292ms
+Step: 1479.0862ms
+====================================
+Loop: 171
+ Update pairs: 0.0012ms
+ Test collisions: 727.0233ms
+ Reset flags: 37.4940ms
+  Solve: 231.4357ms
+ Island solver: 337.4738ms
+ Synchronize proxies: 79.0322ms
+ Find new contacts: 344.4604ms
+Step: 1526.3994ms
+====================================
+Loop: 172
+ Update pairs: 0.0019ms
+ Test collisions: 666.7547ms
+ Reset flags: 40.2147ms
+  Solve: 225.5249ms
+ Island solver: 328.5470ms
+ Synchronize proxies: 82.0376ms
+ Find new contacts: 348.2062ms
+Step: 1466.6610ms
+====================================
+Loop: 173
+ Update pairs: 0.0120ms
+ Test collisions: 662.6840ms
+ Reset flags: 41.1085ms
+  Solve: 220.9733ms
+ Island solver: 322.5363ms
+ Synchronize proxies: 82.5654ms
+ Find new contacts: 341.3800ms
+Step: 1451.1659ms
+====================================
+Loop: 174
+ Update pairs: 0.0011ms
+ Test collisions: 666.8284ms
+ Reset flags: 40.0925ms
+  Solve: 221.0451ms
+ Island solver: 321.9540ms
+ Synchronize proxies: 81.6392ms
+ Find new contacts: 340.1927ms
+Step: 1452.2438ms
+====================================
+Loop: 175
+ Update pairs: 0.0010ms
+ Test collisions: 660.1923ms
+ Reset flags: 39.8922ms
+  Solve: 229.5668ms
+ Island solver: 329.3399ms
+ Synchronize proxies: 82.2445ms
+ Find new contacts: 339.5094ms
+Step: 1452.0894ms
+====================================
+Loop: 176
+ Update pairs: 0.0009ms
+ Test collisions: 661.5289ms
+ Reset flags: 38.9808ms
+  Solve: 213.8995ms
+ Island solver: 313.0805ms
+ Synchronize proxies: 84.7011ms
+ Find new contacts: 338.5491ms
+Step: 1437.7324ms
+====================================
+Loop: 177
+ Update pairs: 0.0012ms
+ Test collisions: 714.6552ms
+ Reset flags: 37.5236ms
+  Solve: 212.5271ms
+ Island solver: 315.0934ms
+ Synchronize proxies: 81.6940ms
+ Find new contacts: 336.1226ms
+Step: 1486.0044ms
+====================================
+Loop: 178
+ Update pairs: 0.0031ms
+ Test collisions: 654.0396ms
+ Reset flags: 37.5128ms
+  Solve: 209.9863ms
+ Island solver: 309.6184ms
+ Synchronize proxies: 82.1504ms
+ Find new contacts: 339.5012ms
+Step: 1423.7600ms
+====================================
+Loop: 179
+ Update pairs: 0.0010ms
+ Test collisions: 650.6313ms
+ Reset flags: 38.2882ms
+  Solve: 205.6739ms
+ Island solver: 305.3114ms
+ Synchronize proxies: 82.7910ms
+ Find new contacts: 341.1308ms
+Step: 1419.0419ms
+====================================
+Loop: 180
+ Update pairs: 0.0011ms
+ Test collisions: 655.1238ms
+ Reset flags: 40.0356ms
+  Solve: 204.9644ms
+ Island solver: 304.5522ms
+ Synchronize proxies: 84.5354ms
+ Find new contacts: 341.1606ms
+Step: 1426.3076ms
+====================================
+Loop: 181
+ Update pairs: 0.0009ms
+ Test collisions: 649.4222ms
+ Reset flags: 39.5577ms
+  Solve: 203.5308ms
+ Island solver: 304.9376ms
+ Synchronize proxies: 84.1534ms
+ Find new contacts: 352.7410ms
+Step: 1431.7722ms
+====================================
+Loop: 182
+ Update pairs: 0.0010ms
+ Test collisions: 721.2863ms
+ Reset flags: 37.5677ms
+  Solve: 202.5480ms
+ Island solver: 300.9530ms
+ Synchronize proxies: 85.5036ms
+ Find new contacts: 337.9200ms
+Step: 1484.1309ms
+====================================
+Loop: 183
+ Update pairs: 0.0011ms
+ Test collisions: 649.0314ms
+ Reset flags: 39.7955ms
+  Solve: 202.3484ms
+ Island solver: 302.2223ms
+ Synchronize proxies: 85.1007ms
+ Find new contacts: 336.4436ms
+Step: 1413.5156ms
+====================================
+Loop: 184
+ Update pairs: 0.0009ms
+ Test collisions: 648.5941ms
+ Reset flags: 39.1188ms
+  Solve: 202.9165ms
+ Island solver: 304.0084ms
+ Synchronize proxies: 85.2335ms
+ Find new contacts: 332.3753ms
+Step: 1410.2168ms
+====================================
+Loop: 185
+ Update pairs: 0.0014ms
+ Test collisions: 648.0203ms
+ Reset flags: 37.5058ms
+  Solve: 202.5916ms
+ Island solver: 306.4915ms
+ Synchronize proxies: 82.6844ms
+ Find new contacts: 331.6647ms
+Step: 1407.2605ms
+====================================
+Loop: 186
+ Update pairs: 0.0010ms
+ Test collisions: 648.1352ms
+ Reset flags: 38.3257ms
+  Solve: 199.2309ms
+ Island solver: 300.6565ms
+ Synchronize proxies: 83.0783ms
+ Find new contacts: 334.6285ms
+Step: 1405.7589ms
+====================================
+Loop: 187
+ Update pairs: 0.0012ms
+ Test collisions: 643.7020ms
+ Reset flags: 39.1960ms
+  Solve: 200.1343ms
+ Island solver: 299.4000ms
+ Synchronize proxies: 82.4263ms
+ Find new contacts: 330.8376ms
+Step: 1396.5009ms
+====================================
+Loop: 188
+ Update pairs: 0.0012ms
+ Test collisions: 644.7474ms
+ Reset flags: 37.8674ms
+  Solve: 202.6435ms
+ Island solver: 301.4632ms
+ Synchronize proxies: 83.4350ms
+ Find new contacts: 331.9925ms
+Step: 1400.4110ms
+====================================
+Loop: 189
+ Update pairs: 0.0009ms
+ Test collisions: 638.1109ms
+ Reset flags: 37.0773ms
+  Solve: 200.1463ms
+ Island solver: 300.0463ms
+ Synchronize proxies: 86.7061ms
+ Find new contacts: 332.4810ms
+Step: 1395.3066ms
+====================================
+Loop: 190
+ Update pairs: 0.0010ms
+ Test collisions: 642.2717ms
+ Reset flags: 37.2955ms
+  Solve: 200.4100ms
+ Island solver: 298.7850ms
+ Synchronize proxies: 81.3304ms
+ Find new contacts: 323.7405ms
+Step: 1384.3114ms
+====================================
+Loop: 191
+ Update pairs: 0.0010ms
+ Test collisions: 638.2388ms
+ Reset flags: 39.6019ms
+  Solve: 201.6918ms
+ Island solver: 299.5958ms
+ Synchronize proxies: 84.2808ms
+ Find new contacts: 321.3600ms
+Step: 1383.9783ms
+====================================
+Loop: 192
+ Update pairs: 0.0010ms
+ Test collisions: 639.8107ms
+ Reset flags: 39.0938ms
+  Solve: 200.5254ms
+ Island solver: 305.4807ms
+ Synchronize proxies: 83.1894ms
+ Find new contacts: 316.5448ms
+Step: 1385.0211ms
+====================================
+Loop: 193
+ Update pairs: 0.0009ms
+ Test collisions: 642.9486ms
+ Reset flags: 37.6431ms
+  Solve: 203.4469ms
+ Island solver: 300.6521ms
+ Synchronize proxies: 84.0127ms
+ Find new contacts: 323.2264ms
+Step: 1389.4127ms
+====================================
+Loop: 194
+ Update pairs: 0.0009ms
+ Test collisions: 707.1193ms
+ Reset flags: 37.6249ms
+  Solve: 202.6159ms
+ Island solver: 304.8755ms
+ Synchronize proxies: 82.8867ms
+ Find new contacts: 319.1931ms
+Step: 1452.5800ms
+====================================
+Loop: 195
+ Update pairs: 0.0009ms
+ Test collisions: 643.7485ms
+ Reset flags: 42.0322ms
+  Solve: 205.2002ms
+ Island solver: 303.3098ms
+ Synchronize proxies: 85.7918ms
+ Find new contacts: 325.2761ms
+Step: 1401.0547ms
+====================================
+Loop: 196
+ Update pairs: 0.0012ms
+ Test collisions: 641.8242ms
+ Reset flags: 37.3739ms
+  Solve: 208.4493ms
+ Island solver: 310.3608ms
+ Synchronize proxies: 84.3375ms
+ Find new contacts: 319.1194ms
+Step: 1393.9158ms
+====================================
+Loop: 197
+ Update pairs: 0.0011ms
+ Test collisions: 652.9858ms
+ Reset flags: 38.9184ms
+  Solve: 207.4487ms
+ Island solver: 308.3433ms
+ Synchronize proxies: 80.2719ms
+ Find new contacts: 322.4302ms
+Step: 1403.8544ms
+====================================
+Loop: 198
+ Update pairs: 0.0009ms
+ Test collisions: 641.8935ms
+ Reset flags: 38.2866ms
+  Solve: 212.8323ms
+ Island solver: 311.9178ms
+ Synchronize proxies: 80.8212ms
+ Find new contacts: 318.8166ms
+Step: 1392.6741ms
+====================================
+Loop: 199
+ Update pairs: 0.0011ms
+ Test collisions: 647.1420ms
+ Reset flags: 39.8328ms
+  Solve: 213.8415ms
+ Island solver: 313.3934ms
+ Synchronize proxies: 81.6168ms
+ Find new contacts: 315.1987ms
+Step: 1398.1066ms
+====================================
+Loop: 200
+ Update pairs: 0.0118ms
+ Test collisions: 644.4634ms
+ Reset flags: 37.8031ms
+  Solve: 216.9507ms
+ Island solver: 316.7169ms
+ Synchronize proxies: 80.4587ms
+ Find new contacts: 305.2519ms
+Step: 1385.6168ms
+====================================
+Loop: 201
+ Update pairs: 0.0010ms
+ Test collisions: 650.7495ms
+ Reset flags: 38.6483ms
+  Solve: 217.5757ms
+ Island solver: 316.2583ms
+ Synchronize proxies: 79.4159ms
+ Find new contacts: 305.7411ms
+Step: 1391.7053ms
+====================================
+Loop: 202
+ Update pairs: 0.0139ms
+ Test collisions: 651.4101ms
+ Reset flags: 39.0512ms
+  Solve: 216.7033ms
+ Island solver: 315.5943ms
+ Synchronize proxies: 80.7652ms
+ Find new contacts: 299.8118ms
+Step: 1387.5475ms
+====================================
+Loop: 203
+ Update pairs: 0.0011ms
+ Test collisions: 655.7077ms
+ Reset flags: 41.2532ms
+  Solve: 217.4655ms
+ Island solver: 316.2903ms
+ Synchronize proxies: 80.8798ms
+ Find new contacts: 314.2716ms
+Step: 1409.3062ms
+====================================
+Loop: 204
+ Update pairs: 0.0014ms
+ Test collisions: 659.5878ms
+ Reset flags: 38.3230ms
+  Solve: 218.5512ms
+ Island solver: 317.9452ms
+ Synchronize proxies: 80.9435ms
+ Find new contacts: 296.9431ms
+Step: 1394.6338ms
+====================================
+Loop: 205
+ Update pairs: 0.0022ms
+ Test collisions: 719.5424ms
+ Reset flags: 43.6593ms
+  Solve: 221.2366ms
+ Island solver: 321.0110ms
+ Synchronize proxies: 82.0791ms
+ Find new contacts: 293.7215ms
+Step: 1460.9299ms
+====================================
+Loop: 206
+ Update pairs: 0.0013ms
+ Test collisions: 703.1073ms
+ Reset flags: 38.5313ms
+  Solve: 220.6050ms
+ Island solver: 320.7038ms
+ Synchronize proxies: 79.9046ms
+ Find new contacts: 291.3788ms
+Step: 1434.5205ms
+====================================
+Loop: 207
+ Update pairs: 0.0010ms
+ Test collisions: 717.9359ms
+ Reset flags: 41.7239ms
+  Solve: 221.1672ms
+ Island solver: 320.9755ms
+ Synchronize proxies: 80.0139ms
+ Find new contacts: 288.7887ms
+Step: 1450.3264ms
+====================================
+Loop: 208
+ Update pairs: 0.0010ms
+ Test collisions: 660.5998ms
+ Reset flags: 38.5693ms
+  Solve: 222.1200ms
+ Island solver: 320.4428ms
+ Synchronize proxies: 78.1702ms
+ Find new contacts: 291.2975ms
+Step: 1389.9943ms
+====================================
+Loop: 209
+ Update pairs: 0.0013ms
+ Test collisions: 657.7563ms
+ Reset flags: 41.2692ms
+  Solve: 220.1836ms
+ Island solver: 325.4038ms
+ Synchronize proxies: 80.6233ms
+ Find new contacts: 285.3887ms
+Step: 1391.3291ms
+====================================
+Loop: 210
+ Update pairs: 0.0010ms
+ Test collisions: 662.3638ms
+ Reset flags: 38.8784ms
+  Solve: 221.4957ms
+ Island solver: 325.7275ms
+ Synchronize proxies: 79.8082ms
+ Find new contacts: 289.3487ms
+Step: 1397.0239ms
+====================================
+Loop: 211
+ Update pairs: 0.0010ms
+ Test collisions: 666.2913ms
+ Reset flags: 41.1179ms
+  Solve: 222.7355ms
+ Island solver: 324.3500ms
+ Synchronize proxies: 77.6429ms
+ Find new contacts: 288.2169ms
+Step: 1398.5186ms
+====================================
+Loop: 212
+ Update pairs: 0.0142ms
+ Test collisions: 661.0867ms
+ Reset flags: 39.5350ms
+  Solve: 220.6446ms
+ Island solver: 322.0363ms
+ Synchronize proxies: 75.5697ms
+ Find new contacts: 283.3680ms
+Step: 1382.5066ms
+====================================
+Loop: 213
+ Update pairs: 0.0009ms
+ Test collisions: 656.8235ms
+ Reset flags: 39.3773ms
+  Solve: 225.7563ms
+ Island solver: 327.2659ms
+ Synchronize proxies: 73.8782ms
+ Find new contacts: 275.7075ms
+Step: 1373.9532ms
+====================================
+Loop: 214
+ Update pairs: 0.0010ms
+ Test collisions: 664.5322ms
+ Reset flags: 39.1175ms
+  Solve: 221.1590ms
+ Island solver: 322.5770ms
+ Synchronize proxies: 75.2624ms
+ Find new contacts: 279.3305ms
+Step: 1381.7894ms
+====================================
+Loop: 215
+ Update pairs: 0.0012ms
+ Test collisions: 659.5050ms
+ Reset flags: 41.5176ms
+  Solve: 219.3859ms
+ Island solver: 319.9793ms
+ Synchronize proxies: 80.9791ms
+ Find new contacts: 279.4902ms
+Step: 1382.3829ms
+====================================
+Loop: 216
+ Update pairs: 0.0011ms
+ Test collisions: 663.0839ms
+ Reset flags: 41.0679ms
+  Solve: 215.6452ms
+ Island solver: 313.0763ms
+ Synchronize proxies: 76.6754ms
+ Find new contacts: 274.3658ms
+Step: 1369.1632ms
+====================================
+Loop: 217
+ Update pairs: 0.0013ms
+ Test collisions: 660.5976ms
+ Reset flags: 44.6936ms
+  Solve: 215.2845ms
+ Island solver: 314.8268ms
+ Synchronize proxies: 78.1049ms
+ Find new contacts: 281.8834ms
+Step: 1380.9896ms
+====================================
+Loop: 218
+ Update pairs: 0.0012ms
+ Test collisions: 663.4741ms
+ Reset flags: 39.5747ms
+  Solve: 213.5603ms
+ Island solver: 320.4822ms
+ Synchronize proxies: 75.7363ms
+ Find new contacts: 285.8056ms
+Step: 1385.9684ms
+====================================
+Loop: 219
+ Update pairs: 0.0010ms
+ Test collisions: 682.6907ms
+ Reset flags: 40.7557ms
+  Solve: 215.2340ms
+ Island solver: 314.0050ms
+ Synchronize proxies: 76.8062ms
+ Find new contacts: 282.7031ms
+Step: 1397.8491ms
+====================================
+Loop: 220
+ Update pairs: 0.0011ms
+ Test collisions: 662.7466ms
+ Reset flags: 41.5584ms
+  Solve: 218.6949ms
+ Island solver: 320.0233ms
+ Synchronize proxies: 74.4816ms
+ Find new contacts: 274.7424ms
+Step: 1374.4594ms
+====================================
+Loop: 221
+ Update pairs: 0.0011ms
+ Test collisions: 665.9839ms
+ Reset flags: 39.8919ms
+  Solve: 217.1235ms
+ Island solver: 316.2966ms
+ Synchronize proxies: 75.2665ms
+ Find new contacts: 273.2440ms
+Step: 1371.5977ms
+====================================
+Loop: 222
+ Update pairs: 0.0010ms
+ Test collisions: 659.2157ms
+ Reset flags: 39.7237ms
+  Solve: 218.1406ms
+ Island solver: 320.3556ms
+ Synchronize proxies: 75.5232ms
+ Find new contacts: 264.4088ms
+Step: 1360.1498ms
+====================================
+Loop: 223
+ Update pairs: 0.0009ms
+ Test collisions: 671.4400ms
+ Reset flags: 41.0278ms
+  Solve: 211.2758ms
+ Island solver: 311.4738ms
+ Synchronize proxies: 77.1185ms
+ Find new contacts: 270.6105ms
+Step: 1372.5823ms
+====================================
+Loop: 224
+ Update pairs: 0.0011ms
+ Test collisions: 663.2299ms
+ Reset flags: 41.4050ms
+  Solve: 212.3388ms
+ Island solver: 312.6549ms
+ Synchronize proxies: 76.8069ms
+ Find new contacts: 272.0649ms
+Step: 1367.0920ms
+====================================
+Loop: 225
+ Update pairs: 0.0013ms
+ Test collisions: 666.4198ms
+ Reset flags: 39.8856ms
+  Solve: 215.7479ms
+ Island solver: 333.1827ms
+ Synchronize proxies: 74.9082ms
+ Find new contacts: 264.2368ms
+Step: 1379.5258ms
+====================================
+Loop: 226
+ Update pairs: 0.0009ms
+ Test collisions: 669.8696ms
+ Reset flags: 41.2902ms
+  Solve: 213.9894ms
+ Island solver: 315.5158ms
+ Synchronize proxies: 75.3953ms
+ Find new contacts: 270.2126ms
+Step: 1373.1821ms
+====================================
+Loop: 227
+ Update pairs: 0.0013ms
+ Test collisions: 665.1447ms
+ Reset flags: 40.2782ms
+  Solve: 232.2828ms
+ Island solver: 360.8705ms
+ Synchronize proxies: 74.3268ms
+ Find new contacts: 275.0929ms
+Step: 1416.6178ms
+====================================
+Loop: 228
+ Update pairs: 0.0010ms
+ Test collisions: 668.9610ms
+ Reset flags: 40.0429ms
+  Solve: 217.5240ms
+ Island solver: 320.9619ms
+ Synchronize proxies: 71.7315ms
+ Find new contacts: 267.6569ms
+Step: 1370.2733ms
+====================================
+Loop: 229
+ Update pairs: 0.0018ms
+ Test collisions: 662.5524ms
+ Reset flags: 40.5036ms
+  Solve: 213.3076ms
+ Island solver: 312.8418ms
+ Synchronize proxies: 73.1487ms
+ Find new contacts: 261.8343ms
+Step: 1351.7782ms
+====================================
+Loop: 230
+ Update pairs: 0.0010ms
+ Test collisions: 670.2234ms
+ Reset flags: 40.3699ms
+  Solve: 210.5266ms
+ Island solver: 307.5432ms
+ Synchronize proxies: 76.0938ms
+ Find new contacts: 264.1268ms
+Step: 1359.2762ms
+====================================
+Loop: 231
+ Update pairs: 0.0112ms
+ Test collisions: 664.8012ms
+ Reset flags: 40.2824ms
+  Solve: 233.5222ms
+ Island solver: 337.6215ms
+ Synchronize proxies: 84.8221ms
+ Find new contacts: 266.3865ms
+Step: 1394.8236ms
+====================================
+Loop: 232
+ Update pairs: 0.0019ms
+ Test collisions: 671.5682ms
+ Reset flags: 44.9615ms
+  Solve: 211.8080ms
+ Island solver: 314.8127ms
+ Synchronize proxies: 76.8657ms
+ Find new contacts: 262.5389ms
+Step: 1371.6432ms
+====================================
+Loop: 233
+ Update pairs: 0.0010ms
+ Test collisions: 667.4763ms
+ Reset flags: 41.6957ms
+  Solve: 216.0631ms
+ Island solver: 320.7290ms
+ Synchronize proxies: 74.0005ms
+ Find new contacts: 269.8823ms
+Step: 1374.6754ms
+====================================
+Loop: 234
+ Update pairs: 0.0010ms
+ Test collisions: 674.1628ms
+ Reset flags: 41.0627ms
+  Solve: 216.8237ms
+ Island solver: 319.2977ms
+ Synchronize proxies: 72.0589ms
+ Find new contacts: 266.7639ms
+Step: 1374.2496ms
+====================================
+Loop: 235
+ Update pairs: 0.0011ms
+ Test collisions: 673.9580ms
+ Reset flags: 40.5034ms
+  Solve: 223.1782ms
+ Island solver: 321.9416ms
+ Synchronize proxies: 71.1239ms
+ Find new contacts: 261.5788ms
+Step: 1370.0040ms
+====================================
+Loop: 236
+ Update pairs: 0.0097ms
+ Test collisions: 672.6062ms
+ Reset flags: 41.0993ms
+  Solve: 221.7253ms
+ Island solver: 324.8248ms
+ Synchronize proxies: 72.5033ms
+ Find new contacts: 262.5513ms
+Step: 1374.4818ms
+====================================
+Loop: 237
+ Update pairs: 0.0010ms
+ Test collisions: 683.8625ms
+ Reset flags: 40.7015ms
+  Solve: 218.1787ms
+ Island solver: 316.0165ms
+ Synchronize proxies: 75.1219ms
+ Find new contacts: 261.9699ms
+Step: 1378.5579ms
+====================================
+Loop: 238
+ Update pairs: 0.0009ms
+ Test collisions: 677.9419ms
+ Reset flags: 40.9337ms
+  Solve: 224.0724ms
+ Island solver: 325.3274ms
+ Synchronize proxies: 74.6093ms
+ Find new contacts: 260.6330ms
+Step: 1380.3323ms
+====================================
+Loop: 239
+ Update pairs: 0.0011ms
+ Test collisions: 684.7272ms
+ Reset flags: 45.6210ms
+  Solve: 219.2018ms
+ Island solver: 321.3712ms
+ Synchronize proxies: 75.5180ms
+ Find new contacts: 268.7415ms
+Step: 1396.9128ms
+====================================
+Loop: 240
+ Update pairs: 0.0011ms
+ Test collisions: 681.9533ms
+ Reset flags: 41.1523ms
+  Solve: 224.2968ms
+ Island solver: 336.0607ms
+ Synchronize proxies: 73.5743ms
+ Find new contacts: 263.2559ms
+Step: 1396.9111ms
+====================================
+Loop: 241
+ Update pairs: 0.0016ms
+ Test collisions: 680.5584ms
+ Reset flags: 42.5733ms
+  Solve: 221.8071ms
+ Island solver: 332.3578ms
+ Synchronize proxies: 72.7571ms
+ Find new contacts: 270.8525ms
+Step: 1400.0442ms
+====================================
+Loop: 242
+ Update pairs: 0.0010ms
+ Test collisions: 687.7776ms
+ Reset flags: 41.7960ms
+  Solve: 223.2749ms
+ Island solver: 326.6407ms
+ Synchronize proxies: 73.7904ms
+ Find new contacts: 268.8430ms
+Step: 1399.7410ms
+====================================
+Loop: 243
+ Update pairs: 0.0012ms
+ Test collisions: 682.8607ms
+ Reset flags: 41.5178ms
+  Solve: 224.4272ms
+ Island solver: 328.5041ms
+ Synchronize proxies: 70.7291ms
+ Find new contacts: 255.3435ms
+Step: 1379.8914ms
+====================================
+Loop: 244
+ Update pairs: 0.0009ms
+ Test collisions: 690.8263ms
+ Reset flags: 41.3930ms
+  Solve: 229.2673ms
+ Island solver: 329.4706ms
+ Synchronize proxies: 72.7006ms
+ Find new contacts: 267.8613ms
+Step: 1403.1584ms
+====================================
+Loop: 245
+ Update pairs: 0.0013ms
+ Test collisions: 683.0579ms
+ Reset flags: 42.1776ms
+  Solve: 231.8735ms
+ Island solver: 331.5286ms
+ Synchronize proxies: 71.6335ms
+ Find new contacts: 263.1831ms
+Step: 1392.5009ms
+====================================
+Loop: 246
+ Update pairs: 0.0010ms
+ Test collisions: 692.8289ms
+ Reset flags: 41.4697ms
+  Solve: 225.0404ms
+ Island solver: 324.6131ms
+ Synchronize proxies: 70.3319ms
+ Find new contacts: 258.8681ms
+Step: 1389.0078ms
+====================================
+Loop: 247
+ Update pairs: 0.0016ms
+ Test collisions: 689.5394ms
+ Reset flags: 42.0234ms
+  Solve: 223.3928ms
+ Island solver: 326.9630ms
+ Synchronize proxies: 74.2889ms
+ Find new contacts: 259.0261ms
+Step: 1392.7454ms
+====================================
+Loop: 248
+ Update pairs: 0.0010ms
+ Test collisions: 697.7840ms
+ Reset flags: 41.8963ms
+  Solve: 220.7758ms
+ Island solver: 320.4077ms
+ Synchronize proxies: 70.9473ms
+ Find new contacts: 258.3539ms
+Step: 1390.2941ms
+====================================
+Loop: 249
+ Update pairs: 0.0012ms
+ Test collisions: 692.8986ms
+ Reset flags: 44.9272ms
+  Solve: 226.0047ms
+ Island solver: 330.4150ms
+ Synchronize proxies: 75.3406ms
+ Find new contacts: 262.6015ms
+Step: 1407.0764ms
+====================================
+Loop: 250
+ Update pairs: 0.0009ms
+ Test collisions: 696.3934ms
+ Reset flags: 45.5203ms
+  Solve: 222.7642ms
+ Island solver: 327.9368ms
+ Synchronize proxies: 73.1923ms
+ Find new contacts: 263.0097ms
+Step: 1406.9573ms
+====================================
+Loop: 251
+ Update pairs: 0.0014ms
+ Test collisions: 691.4152ms
+ Reset flags: 42.0004ms
+  Solve: 228.8320ms
+ Island solver: 336.3808ms
+ Synchronize proxies: 70.9252ms
+ Find new contacts: 266.2403ms
+Step: 1407.8657ms
+====================================
+Loop: 252
+ Update pairs: 0.0011ms
+ Test collisions: 691.9328ms
+ Reset flags: 45.3112ms
+  Solve: 229.3703ms
+ Island solver: 340.2628ms
+ Synchronize proxies: 68.0820ms
+ Find new contacts: 257.9719ms
+Step: 1404.4479ms
+====================================
+Loop: 253
+ Update pairs: 0.0011ms
+ Test collisions: 694.4675ms
+ Reset flags: 43.1526ms
+  Solve: 229.6938ms
+ Island solver: 334.3489ms
+ Synchronize proxies: 70.9493ms
+ Find new contacts: 264.1639ms
+Step: 1407.9692ms
+====================================
+Loop: 254
+ Update pairs: 0.0010ms
+ Test collisions: 697.2823ms
+ Reset flags: 42.4533ms
+  Solve: 231.0683ms
+ Island solver: 339.7984ms
+ Synchronize proxies: 69.7671ms
+ Find new contacts: 262.7623ms
+Step: 1412.9581ms
+====================================
+Loop: 255
+ Update pairs: 0.0011ms
+ Test collisions: 699.0649ms
+ Reset flags: 42.1112ms
+  Solve: 231.5980ms
+ Island solver: 335.9407ms
+ Synchronize proxies: 72.4820ms
+ Find new contacts: 257.5700ms
+Step: 1408.2175ms
+====================================
+Loop: 256
+ Update pairs: 0.0011ms
+ Test collisions: 700.5458ms
+ Reset flags: 42.5823ms
+  Solve: 235.5206ms
+ Island solver: 337.1647ms
+ Synchronize proxies: 67.7800ms
+ Find new contacts: 250.3071ms
+Step: 1399.3167ms
+====================================
+Loop: 257
+ Update pairs: 0.0010ms
+ Test collisions: 698.9622ms
+ Reset flags: 44.1566ms
+  Solve: 229.0184ms
+ Island solver: 330.8073ms
+ Synchronize proxies: 72.2641ms
+ Find new contacts: 262.0164ms
+Step: 1409.3212ms
+====================================
+Loop: 258
+ Update pairs: 0.0013ms
+ Test collisions: 695.1033ms
+ Reset flags: 42.9063ms
+  Solve: 234.1945ms
+ Island solver: 336.4623ms
+ Synchronize proxies: 66.8179ms
+ Find new contacts: 243.5394ms
+Step: 1385.7185ms
+====================================
+Loop: 259
+ Update pairs: 0.0015ms
+ Test collisions: 703.6100ms
+ Reset flags: 43.2520ms
+  Solve: 227.8356ms
+ Island solver: 331.9945ms
+ Synchronize proxies: 71.7999ms
+ Find new contacts: 254.1679ms
+Step: 1405.7097ms
+====================================
+Loop: 260
+ Update pairs: 0.0009ms
+ Test collisions: 714.8398ms
+ Reset flags: 43.5325ms
+  Solve: 227.9131ms
+ Island solver: 331.6207ms
+ Synchronize proxies: 71.0768ms
+ Find new contacts: 243.6725ms
+Step: 1405.5931ms
+====================================
+Loop: 261
+ Update pairs: 0.0012ms
+ Test collisions: 705.7834ms
+ Reset flags: 42.6647ms
+  Solve: 253.2612ms
+ Island solver: 383.3250ms
+ Synchronize proxies: 72.6481ms
+ Find new contacts: 256.9608ms
+Step: 1462.2456ms
+====================================
+Loop: 262
+ Update pairs: 0.0009ms
+ Test collisions: 702.5335ms
+ Reset flags: 42.9957ms
+  Solve: 228.2976ms
+ Island solver: 333.0424ms
+ Synchronize proxies: 69.5977ms
+ Find new contacts: 248.8146ms
+Step: 1397.8926ms
+====================================
+Loop: 263
+ Update pairs: 0.0011ms
+ Test collisions: 708.0154ms
+ Reset flags: 45.7126ms
+  Solve: 226.1631ms
+ Island solver: 327.5158ms
+ Synchronize proxies: 71.0648ms
+ Find new contacts: 253.9512ms
+Step: 1407.1517ms
+====================================
+Loop: 264
+ Update pairs: 0.0011ms
+ Test collisions: 766.9705ms
+ Reset flags: 43.1814ms
+  Solve: 227.3891ms
+ Island solver: 332.4803ms
+ Synchronize proxies: 69.3003ms
+ Find new contacts: 244.8789ms
+Step: 1457.6809ms
+====================================
+Loop: 265
+ Update pairs: 0.0116ms
+ Test collisions: 704.8213ms
+ Reset flags: 48.3676ms
+  Solve: 228.2569ms
+ Island solver: 333.3150ms
+ Synchronize proxies: 72.4821ms
+ Find new contacts: 252.6642ms
+Step: 1412.5586ms
+====================================
+Loop: 266
+ Update pairs: 0.0011ms
+ Test collisions: 707.9312ms
+ Reset flags: 44.9224ms
+  Solve: 233.3678ms
+ Island solver: 342.0118ms
+ Synchronize proxies: 70.7832ms
+ Find new contacts: 248.9578ms
+Step: 1415.4690ms
+====================================
+Loop: 267
+ Update pairs: 0.0010ms
+ Test collisions: 743.4703ms
+ Reset flags: 45.1573ms
+  Solve: 232.0149ms
+ Island solver: 339.3875ms
+ Synchronize proxies: 70.1207ms
+ Find new contacts: 251.7943ms
+Step: 1450.8496ms
+====================================
+Loop: 268
+ Update pairs: 0.0009ms
+ Test collisions: 704.8199ms
+ Reset flags: 43.0328ms
+  Solve: 234.5646ms
+ Island solver: 344.4279ms
+ Synchronize proxies: 68.6524ms
+ Find new contacts: 248.4712ms
+Step: 1410.3085ms
+====================================
+Loop: 269
+ Update pairs: 0.0011ms
+ Test collisions: 711.0962ms
+ Reset flags: 45.5545ms
+  Solve: 232.6192ms
+ Island solver: 340.3907ms
+ Synchronize proxies: 69.2960ms
+ Find new contacts: 265.2489ms
+Step: 1432.4932ms
+====================================
+Loop: 270
+ Update pairs: 0.0010ms
+ Test collisions: 705.6624ms
+ Reset flags: 45.0436ms
+  Solve: 234.6767ms
+ Island solver: 342.6293ms
+ Synchronize proxies: 67.9896ms
+ Find new contacts: 299.8588ms
+Step: 1462.1348ms
+====================================
+Loop: 271
+ Update pairs: 0.0012ms
+ Test collisions: 720.9937ms
+ Reset flags: 45.5640ms
+  Solve: 239.1047ms
+ Island solver: 356.2272ms
+ Synchronize proxies: 69.4375ms
+ Find new contacts: 267.1096ms
+Step: 1460.2584ms
+====================================
+Loop: 272
+ Update pairs: 0.0023ms
+ Test collisions: 711.8871ms
+ Reset flags: 45.7070ms
+  Solve: 255.7602ms
+ Island solver: 375.3496ms
+ Synchronize proxies: 73.3949ms
+ Find new contacts: 277.9980ms
+Step: 1485.2880ms
+====================================
+Loop: 273
+ Update pairs: 0.0010ms
+ Test collisions: 719.9358ms
+ Reset flags: 49.9304ms
+  Solve: 241.4495ms
+ Island solver: 354.2099ms
+ Synchronize proxies: 70.3029ms
+ Find new contacts: 275.2213ms
+Step: 1470.5474ms
+====================================
+Loop: 274
+ Update pairs: 0.0011ms
+ Test collisions: 710.7903ms
+ Reset flags: 49.8767ms
+  Solve: 238.7234ms
+ Island solver: 350.5646ms
+ Synchronize proxies: 68.4677ms
+ Find new contacts: 272.0172ms
+Step: 1452.6653ms
+====================================
+Loop: 275
+ Update pairs: 0.0011ms
+ Test collisions: 722.5726ms
+ Reset flags: 45.8654ms
+  Solve: 241.1456ms
+ Island solver: 350.5886ms
+ Synchronize proxies: 68.7402ms
+ Find new contacts: 268.4260ms
+Step: 1457.1447ms
+====================================
+Loop: 276
+ Update pairs: 0.0010ms
+ Test collisions: 719.8495ms
+ Reset flags: 45.6068ms
+  Solve: 236.4293ms
+ Island solver: 346.4879ms
+ Synchronize proxies: 68.5730ms
+ Find new contacts: 269.3819ms
+Step: 1450.8514ms
+====================================
+Loop: 277
+ Update pairs: 0.0010ms
+ Test collisions: 723.1011ms
+ Reset flags: 45.4989ms
+  Solve: 240.1551ms
+ Island solver: 348.3619ms
+ Synchronize proxies: 70.8393ms
+ Find new contacts: 263.4043ms
+Step: 1452.1508ms
+====================================
+Loop: 278
+ Update pairs: 0.0012ms
+ Test collisions: 715.4806ms
+ Reset flags: 45.6731ms
+  Solve: 237.8586ms
+ Island solver: 348.6434ms
+ Synchronize proxies: 73.2157ms
+ Find new contacts: 271.0475ms
+Step: 1455.0077ms
+====================================
+Loop: 279
+ Update pairs: 0.0010ms
+ Test collisions: 722.7893ms
+ Reset flags: 46.0898ms
+  Solve: 240.6262ms
+ Island solver: 349.8966ms
+ Synchronize proxies: 72.9070ms
+ Find new contacts: 258.8924ms
+Step: 1451.5234ms
+====================================
+Loop: 280
+ Update pairs: 0.0011ms
+ Test collisions: 715.2354ms
+ Reset flags: 45.6086ms
+  Solve: 245.3293ms
+ Island solver: 355.9508ms
+ Synchronize proxies: 68.4864ms
+ Find new contacts: 257.6633ms
+Step: 1443.9185ms
+====================================
+Loop: 281
+ Update pairs: 0.0015ms
+ Test collisions: 721.0447ms
+ Reset flags: 46.1343ms
+  Solve: 240.9223ms
+ Island solver: 350.8261ms
+ Synchronize proxies: 71.3813ms
+ Find new contacts: 257.6658ms
+Step: 1447.9988ms
+====================================
+Loop: 282
+ Update pairs: 0.0012ms
+ Test collisions: 715.3802ms
+ Reset flags: 45.9322ms
+  Solve: 245.5699ms
+ Island solver: 360.7425ms
+ Synchronize proxies: 68.6857ms
+ Find new contacts: 268.0786ms
+Step: 1459.7799ms
+====================================
+Loop: 283
+ Update pairs: 0.0012ms
+ Test collisions: 741.0361ms
+ Reset flags: 46.1348ms
+  Solve: 242.9933ms
+ Island solver: 353.1060ms
+ Synchronize proxies: 68.9975ms
+ Find new contacts: 270.0866ms
+Step: 1480.3005ms
+====================================
+Loop: 284
+ Update pairs: 0.0010ms
+ Test collisions: 714.4527ms
+ Reset flags: 44.6364ms
+  Solve: 244.4371ms
+ Island solver: 354.9837ms
+ Synchronize proxies: 67.0067ms
+ Find new contacts: 264.4304ms
+Step: 1446.3890ms
+====================================
+Loop: 285
+ Update pairs: 0.0009ms
+ Test collisions: 719.7501ms
+ Reset flags: 46.0164ms
+  Solve: 244.4967ms
+ Island solver: 354.0944ms
+ Synchronize proxies: 67.4987ms
+ Find new contacts: 258.6565ms
+Step: 1446.9514ms
+====================================
+Loop: 286
+ Update pairs: 0.0017ms
+ Test collisions: 717.8657ms
+ Reset flags: 45.3020ms
+  Solve: 243.1766ms
+ Island solver: 355.1163ms
+ Synchronize proxies: 66.2769ms
+ Find new contacts: 254.1464ms
+Step: 1439.6544ms
+====================================
+Loop: 287
+ Update pairs: 0.0011ms
+ Test collisions: 721.6714ms
+ Reset flags: 46.0471ms
+  Solve: 243.5539ms
+ Island solver: 352.2433ms
+ Synchronize proxies: 69.1153ms
+ Find new contacts: 253.4154ms
+Step: 1443.4313ms
+====================================
+Loop: 288
+ Update pairs: 0.0011ms
+ Test collisions: 715.3209ms
+ Reset flags: 45.3958ms
+  Solve: 243.5420ms
+ Island solver: 354.5307ms
+ Synchronize proxies: 66.1065ms
+ Find new contacts: 249.7185ms
+Step: 1431.9768ms
+====================================
+Loop: 289
+ Update pairs: 0.0011ms
+ Test collisions: 719.0068ms
+ Reset flags: 46.1407ms
+  Solve: 243.3132ms
+ Island solver: 352.1298ms
+ Synchronize proxies: 69.7768ms
+ Find new contacts: 255.6086ms
+Step: 1443.6069ms
+====================================
+Loop: 290
+ Update pairs: 0.0012ms
+ Test collisions: 715.3159ms
+ Reset flags: 46.3347ms
+  Solve: 239.7601ms
+ Island solver: 350.9631ms
+ Synchronize proxies: 65.4686ms
+ Find new contacts: 246.2465ms
+Step: 1425.2300ms
+====================================
+Loop: 291
+ Update pairs: 0.0013ms
+ Test collisions: 722.0989ms
+ Reset flags: 46.1977ms
+  Solve: 240.9420ms
+ Island solver: 350.1905ms
+ Synchronize proxies: 67.8836ms
+ Find new contacts: 253.7508ms
+Step: 1441.0527ms
+====================================
+Loop: 292
+ Update pairs: 0.0012ms
+ Test collisions: 713.9468ms
+ Reset flags: 44.8498ms
+  Solve: 239.4082ms
+ Island solver: 348.8736ms
+ Synchronize proxies: 67.7449ms
+ Find new contacts: 246.7824ms
+Step: 1423.1458ms
+====================================
+Loop: 293
+ Update pairs: 0.0011ms
+ Test collisions: 717.7075ms
+ Reset flags: 45.8300ms
+  Solve: 238.8382ms
+ Island solver: 347.9087ms
+ Synchronize proxies: 68.6822ms
+ Find new contacts: 260.8957ms
+Step: 1441.9709ms
+====================================
+Loop: 294
+ Update pairs: 0.0011ms
+ Test collisions: 713.4965ms
+ Reset flags: 44.2751ms
+  Solve: 241.0607ms
+ Island solver: 352.3000ms
+ Synchronize proxies: 66.0317ms
+ Find new contacts: 248.3660ms
+Step: 1425.3876ms
+====================================
+Loop: 295
+ Update pairs: 0.0016ms
+ Test collisions: 720.6957ms
+ Reset flags: 45.8523ms
+  Solve: 238.9985ms
+ Island solver: 348.0071ms
+ Synchronize proxies: 70.7725ms
+ Find new contacts: 264.4701ms
+Step: 1450.7538ms
+====================================
+Loop: 296
+ Update pairs: 0.0011ms
+ Test collisions: 714.1292ms
+ Reset flags: 44.3315ms
+  Solve: 236.8910ms
+ Island solver: 347.7845ms
+ Synchronize proxies: 66.9686ms
+ Find new contacts: 249.6859ms
+Step: 1423.8220ms
+====================================
+Loop: 297
+ Update pairs: 0.0013ms
+ Test collisions: 719.9118ms
+ Reset flags: 45.8456ms
+  Solve: 238.9955ms
+ Island solver: 348.5699ms
+ Synchronize proxies: 69.8101ms
+ Find new contacts: 264.1924ms
+Step: 1449.3037ms
+====================================
+Loop: 298
+ Update pairs: 0.0009ms
+ Test collisions: 779.5037ms
+ Reset flags: 45.8981ms
+  Solve: 239.3402ms
+ Island solver: 356.3753ms
+ Synchronize proxies: 66.2468ms
+ Find new contacts: 267.7946ms
+Step: 1516.7703ms
+====================================
+Loop: 299
+ Update pairs: 0.0009ms
+ Test collisions: 714.2822ms
+ Reset flags: 45.8128ms
+  Solve: 239.7305ms
+ Island solver: 356.0714ms
+ Synchronize proxies: 70.9704ms
+ Find new contacts: 279.8251ms
+Step: 1467.9038ms
+====================================
+Loop: 300
+ Update pairs: 0.0011ms
+ Test collisions: 715.7546ms
+ Reset flags: 45.9810ms
+  Solve: 246.7879ms
+ Island solver: 364.3244ms
+ Synchronize proxies: 63.9837ms
+ Find new contacts: 250.5091ms
+Step: 1441.5094ms
+====================================
+Loop: 301
+ Update pairs: 0.0010ms
+ Test collisions: 717.6381ms
+ Reset flags: 45.9610ms
+  Solve: 248.3606ms
+ Island solver: 356.6236ms
+ Synchronize proxies: 67.5473ms
+ Find new contacts: 259.9584ms
+Step: 1448.6671ms
+====================================
+Loop: 302
+ Update pairs: 0.0118ms
+ Test collisions: 714.1245ms
+ Reset flags: 46.1719ms
+  Solve: 244.7387ms
+ Island solver: 364.2123ms
+ Synchronize proxies: 65.1508ms
+ Find new contacts: 251.7609ms
+Step: 1442.4354ms
+====================================
+Loop: 303
+ Update pairs: 0.0011ms
+ Test collisions: 718.1771ms
+ Reset flags: 47.4605ms
+  Solve: 249.5800ms
+ Island solver: 365.5749ms
+ Synchronize proxies: 67.8556ms
+ Find new contacts: 250.4392ms
+Step: 1450.4119ms
+====================================
+Loop: 304
+ Update pairs: 0.0015ms
+ Test collisions: 711.1783ms
+ Reset flags: 48.0810ms
+  Solve: 244.9736ms
+ Island solver: 361.8694ms
+ Synchronize proxies: 67.0995ms
+ Find new contacts: 252.3367ms
+Step: 1441.4678ms
+====================================
+Loop: 305
+ Update pairs: 0.0018ms
+ Test collisions: 714.3370ms
+ Reset flags: 48.3767ms
+  Solve: 245.1302ms
+ Island solver: 360.5503ms
+ Synchronize proxies: 68.4627ms
+ Find new contacts: 256.1123ms
+Step: 1448.7976ms
+====================================
+Loop: 306
+ Update pairs: 0.0012ms
+ Test collisions: 715.2573ms
+ Reset flags: 48.5497ms
+  Solve: 244.7438ms
+ Island solver: 360.5408ms
+ Synchronize proxies: 65.6644ms
+ Find new contacts: 262.6536ms
+Step: 1453.6298ms
+====================================
+Loop: 307
+ Update pairs: 0.0009ms
+ Test collisions: 717.7897ms
+ Reset flags: 50.6307ms
+  Solve: 244.9734ms
+ Island solver: 356.1450ms
+ Synchronize proxies: 67.7256ms
+ Find new contacts: 266.0566ms
+Step: 1459.2874ms
+====================================
+Loop: 308
+ Update pairs: 0.0017ms
+ Test collisions: 715.9374ms
+ Reset flags: 48.8979ms
+  Solve: 240.9783ms
+ Island solver: 352.0504ms
+ Synchronize proxies: 65.6963ms
+ Find new contacts: 260.9583ms
+Step: 1444.5273ms
+====================================
+Loop: 309
+ Update pairs: 0.0013ms
+ Test collisions: 736.4802ms
+ Reset flags: 46.0155ms
+  Solve: 243.0684ms
+ Island solver: 353.1042ms
+ Synchronize proxies: 68.2963ms
+ Find new contacts: 256.5490ms
+Step: 1461.3799ms
+====================================
+Loop: 310
+ Update pairs: 0.0010ms
+ Test collisions: 717.0054ms
+ Reset flags: 45.4129ms
+  Solve: 240.4562ms
+ Island solver: 350.7406ms
+ Synchronize proxies: 67.1092ms
+ Find new contacts: 252.7899ms
+Step: 1435.0779ms
+====================================
+Loop: 311
+ Update pairs: 0.0009ms
+ Test collisions: 712.9366ms
+ Reset flags: 45.7821ms
+  Solve: 241.0816ms
+ Island solver: 349.5814ms
+ Synchronize proxies: 74.0228ms
+ Find new contacts: 272.4056ms
+Step: 1455.7476ms
+====================================
+Loop: 312
+ Update pairs: 0.0014ms
+ Test collisions: 726.5839ms
+ Reset flags: 56.9448ms
+  Solve: 277.0984ms
+ Island solver: 430.5317ms
+ Synchronize proxies: 74.0467ms
+ Find new contacts: 293.1369ms
+Step: 1582.2295ms
+====================================
+Loop: 313
+ Update pairs: 0.0013ms
+ Test collisions: 922.9373ms
+ Reset flags: 55.4888ms
+  Solve: 257.8349ms
+ Island solver: 392.0998ms
+ Synchronize proxies: 72.1174ms
+ Find new contacts: 293.4540ms
+Step: 1737.0942ms
+====================================
+Loop: 314
+ Update pairs: 0.0010ms
+ Test collisions: 799.3530ms
+ Reset flags: 54.5612ms
+  Solve: 249.1642ms
+ Island solver: 381.7492ms
+ Synchronize proxies: 81.8614ms
+ Find new contacts: 289.0018ms
+Step: 1608.0215ms
+====================================
+Loop: 315
+ Update pairs: 0.0011ms
+ Test collisions: 821.3767ms
+ Reset flags: 55.1976ms
+  Solve: 254.6063ms
+ Island solver: 389.6499ms
+ Synchronize proxies: 79.7362ms
+ Find new contacts: 290.4661ms
+Step: 1637.3628ms
+====================================
+Loop: 316
+ Update pairs: 0.0026ms
+ Test collisions: 849.1296ms
+ Reset flags: 54.6566ms
+  Solve: 249.1494ms
+ Island solver: 377.6551ms
+ Synchronize proxies: 75.5621ms
+ Find new contacts: 305.8937ms
+Step: 1663.8416ms
+====================================
+Loop: 317
+ Update pairs: 0.0009ms
+ Test collisions: 816.3147ms
+ Reset flags: 53.1164ms
+  Solve: 248.7321ms
+ Island solver: 378.6665ms
+ Synchronize proxies: 73.0698ms
+ Find new contacts: 295.9715ms
+Step: 1618.0559ms
+====================================
+Loop: 318
+ Update pairs: 0.0012ms
+ Test collisions: 784.8708ms
+ Reset flags: 53.4690ms
+  Solve: 246.0228ms
+ Island solver: 384.2950ms
+ Synchronize proxies: 72.2060ms
+ Find new contacts: 267.1055ms
+Step: 1562.8303ms
+====================================
+Loop: 319
+ Update pairs: 0.0010ms
+ Test collisions: 750.7161ms
+ Reset flags: 44.4876ms
+  Solve: 224.8808ms
+ Island solver: 333.4213ms
+ Synchronize proxies: 66.3231ms
+ Find new contacts: 220.6689ms
+Step: 1416.4563ms
+====================================
+Loop: 320
+ Update pairs: 0.0010ms
+ Test collisions: 771.1988ms
+ Reset flags: 45.0670ms
+  Solve: 230.6067ms
+ Island solver: 336.1317ms
+ Synchronize proxies: 65.4656ms
+ Find new contacts: 226.0711ms
+Step: 1444.8801ms
+====================================
+Loop: 321
+ Update pairs: 0.0015ms
+ Test collisions: 710.0894ms
+ Reset flags: 49.0212ms
+  Solve: 226.1457ms
+ Island solver: 343.6059ms
+ Synchronize proxies: 66.6352ms
+ Find new contacts: 229.7054ms
+Step: 1399.9966ms
+====================================
+Loop: 322
+ Update pairs: 0.0010ms
+ Test collisions: 718.1425ms
+ Reset flags: 44.7902ms
+  Solve: 225.1544ms
+ Island solver: 330.8319ms
+ Synchronize proxies: 70.2840ms
+ Find new contacts: 235.6886ms
+Step: 1400.6689ms
+====================================
+Loop: 323
+ Update pairs: 0.0009ms
+ Test collisions: 689.2867ms
+ Reset flags: 44.5632ms
+  Solve: 224.5165ms
+ Island solver: 330.6089ms
+ Synchronize proxies: 67.0006ms
+ Find new contacts: 226.1901ms
+Step: 1358.5886ms
+====================================
+Loop: 324
+ Update pairs: 0.0009ms
+ Test collisions: 696.6219ms
+ Reset flags: 47.6875ms
+  Solve: 223.0446ms
+ Island solver: 334.9754ms
+ Synchronize proxies: 66.2963ms
+ Find new contacts: 219.4958ms
+Step: 1366.0216ms
+====================================
+Loop: 325
+ Update pairs: 0.0010ms
+ Test collisions: 688.5434ms
+ Reset flags: 46.0249ms
+  Solve: 220.9278ms
+ Island solver: 336.3154ms
+ Synchronize proxies: 67.5691ms
+ Find new contacts: 236.7764ms
+Step: 1376.1769ms
+====================================
+Loop: 326
+ Update pairs: 0.0010ms
+ Test collisions: 689.3732ms
+ Reset flags: 44.7301ms
+  Solve: 219.7697ms
+ Island solver: 327.6501ms
+ Synchronize proxies: 69.0098ms
+ Find new contacts: 229.3040ms
+Step: 1361.0107ms
+====================================
+Loop: 327
+ Update pairs: 0.0010ms
+ Test collisions: 696.6217ms
+ Reset flags: 44.6568ms
+  Solve: 226.6605ms
+ Island solver: 335.4682ms
+ Synchronize proxies: 67.4087ms
+ Find new contacts: 233.2563ms
+Step: 1378.3492ms
+====================================
+Loop: 328
+ Update pairs: 0.0010ms
+ Test collisions: 695.5334ms
+ Reset flags: 49.1975ms
+  Solve: 235.4257ms
+ Island solver: 344.9601ms
+ Synchronize proxies: 68.0541ms
+ Find new contacts: 225.5204ms
+Step: 1384.1826ms
+====================================
+Loop: 329
+ Update pairs: 0.0013ms
+ Test collisions: 749.1845ms
+ Reset flags: 45.9158ms
+  Solve: 222.5997ms
+ Island solver: 333.8649ms
+ Synchronize proxies: 68.9522ms
+ Find new contacts: 246.1063ms
+Step: 1444.9854ms
+====================================
+Loop: 330
+ Update pairs: 0.0011ms
+ Test collisions: 717.5327ms
+ Reset flags: 52.8833ms
+  Solve: 219.1574ms
+ Island solver: 330.0387ms
+ Synchronize proxies: 67.2614ms
+ Find new contacts: 242.0575ms
+Step: 1410.7120ms
+====================================
+Loop: 331
+ Update pairs: 0.0012ms
+ Test collisions: 702.8326ms
+ Reset flags: 48.2496ms
+  Solve: 212.0121ms
+ Island solver: 329.2729ms
+ Synchronize proxies: 72.4401ms
+ Find new contacts: 234.8749ms
+Step: 1388.6492ms
+====================================
+Loop: 332
+ Update pairs: 0.0012ms
+ Test collisions: 712.0355ms
+ Reset flags: 43.3873ms
+  Solve: 211.1582ms
+ Island solver: 319.5699ms
+ Synchronize proxies: 65.9988ms
+ Find new contacts: 217.8652ms
+Step: 1359.8057ms
+====================================
+Loop: 333
+ Update pairs: 0.0012ms
+ Test collisions: 711.7479ms
+ Reset flags: 49.1304ms
+  Solve: 214.2484ms
+ Island solver: 325.5367ms
+ Synchronize proxies: 67.1007ms
+ Find new contacts: 222.4821ms
+Step: 1376.9330ms
+====================================
+Loop: 334
+ Update pairs: 0.0012ms
+ Test collisions: 690.8448ms
+ Reset flags: 44.8361ms
+  Solve: 257.9965ms
+ Island solver: 374.1653ms
+ Synchronize proxies: 85.7362ms
+ Find new contacts: 275.8842ms
+Step: 1472.4528ms
+====================================
+Loop: 335
+ Update pairs: 0.0010ms
+ Test collisions: 714.5582ms
+ Reset flags: 43.9732ms
+  Solve: 217.1029ms
+ Island solver: 324.4758ms
+ Synchronize proxies: 74.9669ms
+ Find new contacts: 268.0830ms
+Step: 1426.9595ms
+====================================
+Loop: 336
+ Update pairs: 0.0013ms
+ Test collisions: 807.3615ms
+ Reset flags: 42.6628ms
+  Solve: 206.3286ms
+ Island solver: 309.3117ms
+ Synchronize proxies: 65.5366ms
+ Find new contacts: 200.6175ms
+Step: 1426.3651ms
+====================================
+Loop: 337
+ Update pairs: 0.0009ms
+ Test collisions: 771.4534ms
+ Reset flags: 53.4991ms
+  Solve: 208.2828ms
+ Island solver: 322.4437ms
+ Synchronize proxies: 67.4498ms
+ Find new contacts: 202.8791ms
+Step: 1418.6824ms
+====================================
+Loop: 338
+ Update pairs: 0.0011ms
+ Test collisions: 675.3517ms
+ Reset flags: 44.4855ms
+  Solve: 211.1153ms
+ Island solver: 320.2423ms
+ Synchronize proxies: 64.8550ms
+ Find new contacts: 240.7790ms
+Step: 1348.3046ms
+====================================
+Loop: 339
+ Update pairs: 0.0012ms
+ Test collisions: 682.8736ms
+ Reset flags: 43.2872ms
+  Solve: 209.8953ms
+ Island solver: 312.0495ms
+ Synchronize proxies: 65.4333ms
+ Find new contacts: 209.8554ms
+Step: 1314.3926ms
+====================================
+Loop: 340
+ Update pairs: 0.0009ms
+ Test collisions: 662.4742ms
+ Reset flags: 45.8951ms
+  Solve: 205.1429ms
+ Island solver: 313.5120ms
+ Synchronize proxies: 71.2191ms
+ Find new contacts: 203.8935ms
+Step: 1297.9817ms
+====================================
+Loop: 341
+ Update pairs: 0.0015ms
+ Test collisions: 659.2750ms
+ Reset flags: 46.6646ms
+  Solve: 201.3771ms
+ Island solver: 305.2198ms
+ Synchronize proxies: 67.7681ms
+ Find new contacts: 201.5743ms
+Step: 1281.4537ms
+====================================
+Loop: 342
+ Update pairs: 0.0011ms
+ Test collisions: 659.5818ms
+ Reset flags: 49.5744ms
+  Solve: 207.4990ms
+ Island solver: 342.6714ms
+ Synchronize proxies: 63.8868ms
+ Find new contacts: 193.3173ms
+Step: 1310.0157ms
+====================================
+Loop: 343
+ Update pairs: 0.0010ms
+ Test collisions: 708.9533ms
+ Reset flags: 47.9661ms
+  Solve: 212.6947ms
+ Island solver: 327.9480ms
+ Synchronize proxies: 69.4375ms
+ Find new contacts: 199.9995ms
+Step: 1355.2490ms
+====================================
+Loop: 344
+ Update pairs: 0.0010ms
+ Test collisions: 676.4509ms
+ Reset flags: 45.4684ms
+  Solve: 194.8652ms
+ Island solver: 301.3420ms
+ Synchronize proxies: 74.0078ms
+ Find new contacts: 218.4129ms
+Step: 1316.6128ms
+====================================
+Loop: 345
+ Update pairs: 0.0010ms
+ Test collisions: 699.2484ms
+ Reset flags: 41.0186ms
+  Solve: 198.9032ms
+ Island solver: 300.4395ms
+ Synchronize proxies: 70.2143ms
+ Find new contacts: 194.1512ms
+Step: 1306.0017ms
+====================================
+Loop: 346
+ Update pairs: 0.0013ms
+ Test collisions: 645.3141ms
+ Reset flags: 42.1325ms
+  Solve: 199.7350ms
+ Island solver: 303.2917ms
+ Synchronize proxies: 71.1140ms
+ Find new contacts: 212.4421ms
+Step: 1275.2258ms
+====================================
+Loop: 347
+ Update pairs: 0.0015ms
+ Test collisions: 658.8085ms
+ Reset flags: 48.4148ms
+  Solve: 202.8604ms
+ Island solver: 311.5502ms
+ Synchronize proxies: 65.5055ms
+ Find new contacts: 190.3067ms
+Step: 1275.5453ms
+====================================
+Loop: 348
+ Update pairs: 0.0010ms
+ Test collisions: 645.1775ms
+ Reset flags: 43.3224ms
+  Solve: 193.3218ms
+ Island solver: 293.6143ms
+ Synchronize proxies: 66.6312ms
+ Find new contacts: 186.0410ms
+Step: 1235.6923ms
+====================================
+Loop: 349
+ Update pairs: 0.0009ms
+ Test collisions: 639.0436ms
+ Reset flags: 41.9015ms
+  Solve: 195.3414ms
+ Island solver: 298.5625ms
+ Synchronize proxies: 67.5197ms
+ Find new contacts: 186.8257ms
+Step: 1234.8085ms
+====================================
+Loop: 350
+ Update pairs: 0.0010ms
+ Test collisions: 638.3486ms
+ Reset flags: 41.6157ms
+  Solve: 190.6020ms
+ Island solver: 296.5188ms
+ Synchronize proxies: 67.1722ms
+ Find new contacts: 191.1908ms
+Step: 1235.8129ms
+====================================
+Loop: 351
+ Update pairs: 0.0013ms
+ Test collisions: 640.0393ms
+ Reset flags: 41.9071ms
+  Solve: 184.4461ms
+ Island solver: 288.9142ms
+ Synchronize proxies: 66.4049ms
+ Find new contacts: 183.1123ms
+Step: 1221.3215ms
+====================================
+Loop: 352
+ Update pairs: 0.0098ms
+ Test collisions: 630.5499ms
+ Reset flags: 41.2817ms
+  Solve: 187.3147ms
+ Island solver: 287.3509ms
+ Synchronize proxies: 72.2562ms
+ Find new contacts: 186.6641ms
+Step: 1219.0774ms
+====================================
+Loop: 353
+ Update pairs: 0.0010ms
+ Test collisions: 626.4594ms
+ Reset flags: 41.4279ms
+  Solve: 187.8938ms
+ Island solver: 293.3177ms
+ Synchronize proxies: 66.3972ms
+ Find new contacts: 189.1822ms
+Step: 1217.7606ms
+====================================
+Loop: 354
+ Update pairs: 0.0013ms
+ Test collisions: 632.9758ms
+ Reset flags: 40.9329ms
+  Solve: 193.9582ms
+ Island solver: 315.9355ms
+ Synchronize proxies: 66.9162ms
+ Find new contacts: 180.6617ms
+Step: 1238.3319ms
+====================================
+Loop: 355
+ Update pairs: 0.0009ms
+ Test collisions: 686.4872ms
+ Reset flags: 43.9347ms
+  Solve: 224.1320ms
+ Island solver: 333.5311ms
+ Synchronize proxies: 99.4874ms
+ Find new contacts: 234.7258ms
+Step: 1399.1108ms
+====================================
+Loop: 356
+ Update pairs: 0.0009ms
+ Test collisions: 621.0758ms
+ Reset flags: 42.8596ms
+  Solve: 179.3779ms
+ Island solver: 282.8591ms
+ Synchronize proxies: 69.8301ms
+ Find new contacts: 190.8230ms
+Step: 1208.4050ms
+====================================
+Loop: 357
+ Update pairs: 0.0012ms
+ Test collisions: 634.3382ms
+ Reset flags: 41.1001ms
+  Solve: 178.4990ms
+ Island solver: 280.1292ms
+ Synchronize proxies: 64.9885ms
+ Find new contacts: 164.7032ms
+Step: 1186.2155ms
+====================================
+Loop: 358
+ Update pairs: 0.0010ms
+ Test collisions: 620.6804ms
+ Reset flags: 42.9117ms
+  Solve: 182.3421ms
+ Island solver: 286.0119ms
+ Synchronize proxies: 66.0373ms
+ Find new contacts: 177.5212ms
+Step: 1194.1938ms
+====================================
+Loop: 359
+ Update pairs: 0.0010ms
+ Test collisions: 611.5541ms
+ Reset flags: 39.9292ms
+  Solve: 184.2466ms
+ Island solver: 282.7713ms
+ Synchronize proxies: 89.1221ms
+ Find new contacts: 197.6685ms
+Step: 1222.1504ms
+====================================
+Loop: 360
+ Update pairs: 0.0010ms
+ Test collisions: 618.2499ms
+ Reset flags: 43.2820ms
+  Solve: 179.3134ms
+ Island solver: 281.7079ms
+ Synchronize proxies: 66.0715ms
+ Find new contacts: 174.2417ms
+Step: 1184.5186ms
+====================================
+Loop: 361
+ Update pairs: 0.0119ms
+ Test collisions: 656.7670ms
+ Reset flags: 39.9194ms
+  Solve: 180.8364ms
+ Island solver: 275.8141ms
+ Synchronize proxies: 70.0004ms
+ Find new contacts: 173.9116ms
+Step: 1217.3268ms
+====================================
+Loop: 362
+ Update pairs: 0.0010ms
+ Test collisions: 620.9481ms
+ Reset flags: 41.8848ms
+  Solve: 179.3301ms
+ Island solver: 277.5297ms
+ Synchronize proxies: 67.5656ms
+ Find new contacts: 168.4222ms
+Step: 1177.2618ms
+====================================
+Loop: 363
+ Update pairs: 0.0010ms
+ Test collisions: 599.1768ms
+ Reset flags: 40.2667ms
+  Solve: 177.3348ms
+ Island solver: 277.7498ms
+ Synchronize proxies: 71.7116ms
+ Find new contacts: 172.2300ms
+Step: 1162.1110ms
+====================================
+Loop: 364
+ Update pairs: 0.0009ms
+ Test collisions: 598.4924ms
+ Reset flags: 41.5790ms
+  Solve: 185.5911ms
+ Island solver: 283.6856ms
+ Synchronize proxies: 94.3179ms
+ Find new contacts: 196.6823ms
+Step: 1215.7344ms
+====================================
+Loop: 365
+ Update pairs: 0.0010ms
+ Test collisions: 612.3399ms
+ Reset flags: 38.7325ms
+  Solve: 177.7491ms
+ Island solver: 269.1521ms
+ Synchronize proxies: 68.4344ms
+ Find new contacts: 175.3088ms
+Step: 1164.9951ms
+====================================
+Loop: 366
+ Update pairs: 0.0009ms
+ Test collisions: 630.3816ms
+ Reset flags: 42.8617ms
+  Solve: 167.6579ms
+ Island solver: 257.7300ms
+ Synchronize proxies: 68.8099ms
+ Find new contacts: 165.6372ms
+Step: 1166.5508ms
+====================================
+Loop: 367
+ Update pairs: 0.0013ms
+ Test collisions: 748.6290ms
+ Reset flags: 37.1372ms
+  Solve: 174.5510ms
+ Island solver: 266.8045ms
+ Synchronize proxies: 67.0020ms
+ Find new contacts: 152.6625ms
+Step: 1273.1133ms
+====================================
+Loop: 368
+ Update pairs: 0.0010ms
+ Test collisions: 781.3837ms
+ Reset flags: 46.4815ms
+  Solve: 178.3048ms
+ Island solver: 290.5166ms
+ Synchronize proxies: 69.9069ms
+ Find new contacts: 180.8996ms
+Step: 1370.1285ms
+====================================
+Loop: 369
+ Update pairs: 0.0011ms
+ Test collisions: 639.2638ms
+ Reset flags: 41.9241ms
+  Solve: 176.3797ms
+ Island solver: 274.8255ms
+ Synchronize proxies: 65.6517ms
+ Find new contacts: 156.5216ms
+Step: 1179.1399ms
+====================================
+Loop: 370
+ Update pairs: 0.0010ms
+ Test collisions: 590.7408ms
+ Reset flags: 38.3833ms
+  Solve: 172.0442ms
+ Island solver: 264.9654ms
+ Synchronize proxies: 72.8149ms
+ Find new contacts: 162.6946ms
+Step: 1130.5212ms
+====================================
+Loop: 371
+ Update pairs: 0.0010ms
+ Test collisions: 589.7786ms
+ Reset flags: 45.6886ms
+  Solve: 174.8591ms
+ Island solver: 280.0598ms
+ Synchronize proxies: 65.8044ms
+ Find new contacts: 154.6717ms
+Step: 1136.9644ms
+====================================
+Loop: 372
+ Update pairs: 0.0010ms
+ Test collisions: 597.0399ms
+ Reset flags: 45.8888ms
+  Solve: 185.6405ms
+ Island solver: 286.4238ms
+ Synchronize proxies: 75.2516ms
+ Find new contacts: 177.6748ms
+Step: 1184.4821ms
+====================================
+Loop: 373
+ Update pairs: 0.0013ms
+ Test collisions: 703.9520ms
+ Reset flags: 38.2718ms
+  Solve: 208.2113ms
+ Island solver: 335.5151ms
+ Synchronize proxies: 67.8571ms
+ Find new contacts: 167.8050ms
+Step: 1314.3315ms
+====================================
+Loop: 374
+ Update pairs: 0.0011ms
+ Test collisions: 697.3864ms
+ Reset flags: 44.7460ms
+  Solve: 179.2220ms
+ Island solver: 290.4003ms
+ Synchronize proxies: 68.9086ms
+ Find new contacts: 183.8655ms
+Step: 1286.2134ms
+====================================
+Loop: 375
+ Update pairs: 0.0011ms
+ Test collisions: 638.0355ms
+ Reset flags: 45.6866ms
+  Solve: 171.4571ms
+ Island solver: 284.7301ms
+ Synchronize proxies: 84.9578ms
+ Find new contacts: 180.7246ms
+Step: 1235.0757ms
+====================================
+Loop: 376
+ Update pairs: 0.0009ms
+ Test collisions: 674.8530ms
+ Reset flags: 47.3238ms
+  Solve: 173.0565ms
+ Island solver: 281.5188ms
+ Synchronize proxies: 67.0039ms
+ Find new contacts: 176.2289ms
+Step: 1247.9240ms
+====================================
+Loop: 377
+ Update pairs: 0.0013ms
+ Test collisions: 690.4340ms
+ Reset flags: 45.7704ms
+  Solve: 166.9299ms
+ Island solver: 277.3795ms
+ Synchronize proxies: 91.0080ms
+ Find new contacts: 182.9288ms
+Step: 1288.4763ms
+====================================
+Loop: 378
+ Update pairs: 0.0013ms
+ Test collisions: 708.5808ms
+ Reset flags: 43.7788ms
+  Solve: 166.2382ms
+ Island solver: 265.6267ms
+ Synchronize proxies: 71.8346ms
+ Find new contacts: 144.4387ms
+Step: 1235.1665ms
+====================================
+Loop: 379
+ Update pairs: 0.0013ms
+ Test collisions: 621.2504ms
+ Reset flags: 37.3388ms
+  Solve: 165.7400ms
+ Island solver: 258.1076ms
+ Synchronize proxies: 71.3606ms
+ Find new contacts: 143.1504ms
+Step: 1132.0615ms
+====================================
+Loop: 380
+ Update pairs: 0.0009ms
+ Test collisions: 608.1315ms
+ Reset flags: 46.7760ms
+  Solve: 161.8490ms
+ Island solver: 268.0345ms
+ Synchronize proxies: 70.2754ms
+ Find new contacts: 149.7888ms
+Step: 1143.9332ms
+====================================
+Loop: 381
+ Update pairs: 0.0011ms
+ Test collisions: 572.2216ms
+ Reset flags: 36.8835ms
+  Solve: 163.9731ms
+ Island solver: 261.6539ms
+ Synchronize proxies: 85.9636ms
+ Find new contacts: 177.0877ms
+Step: 1134.7876ms
+====================================
+Loop: 382
+ Update pairs: 0.0009ms
+ Test collisions: 599.3580ms
+ Reset flags: 36.8985ms
+  Solve: 163.8752ms
+ Island solver: 259.9945ms
+ Synchronize proxies: 69.2305ms
+ Find new contacts: 136.2433ms
+Step: 1102.6372ms
+====================================
+Loop: 383
+ Update pairs: 0.0012ms
+ Test collisions: 593.3002ms
+ Reset flags: 39.5508ms
+  Solve: 161.9761ms
+ Island solver: 251.3310ms
+ Synchronize proxies: 71.0920ms
+ Find new contacts: 155.7184ms
+Step: 1112.1136ms
+====================================
+Loop: 384
+ Update pairs: 0.0019ms
+ Test collisions: 630.4449ms
+ Reset flags: 41.0821ms
+  Solve: 163.3079ms
+ Island solver: 253.9348ms
+ Synchronize proxies: 71.9960ms
+ Find new contacts: 133.8008ms
+Step: 1132.2188ms
+====================================
+Loop: 385
+ Update pairs: 0.0012ms
+ Test collisions: 573.2130ms
+ Reset flags: 36.2389ms
+  Solve: 163.3026ms
+ Island solver: 259.2514ms
+ Synchronize proxies: 70.4908ms
+ Find new contacts: 140.0559ms
+Step: 1080.1764ms
+====================================
+Loop: 386
+ Update pairs: 0.0014ms
+ Test collisions: 564.7506ms
+ Reset flags: 36.1144ms
+  Solve: 158.5926ms
+ Island solver: 241.8151ms
+ Synchronize proxies: 69.1902ms
+ Find new contacts: 140.4470ms
+Step: 1053.2814ms
+====================================
+Loop: 387
+ Update pairs: 0.0009ms
+ Test collisions: 620.1184ms
+ Reset flags: 43.4677ms
+  Solve: 168.5610ms
+ Island solver: 272.1869ms
+ Synchronize proxies: 75.0114ms
+ Find new contacts: 151.1731ms
+Step: 1162.8994ms
+====================================
+Loop: 388
+ Update pairs: 0.0010ms
+ Test collisions: 564.5228ms
+ Reset flags: 36.6289ms
+  Solve: 165.5744ms
+ Island solver: 255.2838ms
+ Synchronize proxies: 70.9646ms
+ Find new contacts: 135.9543ms
+Step: 1064.3091ms
+====================================
+Loop: 389
+ Update pairs: 0.0010ms
+ Test collisions: 571.8390ms
+ Reset flags: 43.5551ms
+  Solve: 170.7604ms
+ Island solver: 269.9380ms
+ Synchronize proxies: 71.2127ms
+ Find new contacts: 142.4371ms
+Step: 1099.9281ms
+====================================
+Loop: 390
+ Update pairs: 0.0010ms
+ Test collisions: 576.0574ms
+ Reset flags: 40.6255ms
+  Solve: 160.3434ms
+ Island solver: 252.5130ms
+ Synchronize proxies: 75.5059ms
+ Find new contacts: 139.3015ms
+Step: 1084.9449ms
+====================================
+Loop: 391
+ Update pairs: 0.0011ms
+ Test collisions: 557.5794ms
+ Reset flags: 36.1102ms
+  Solve: 165.0713ms
+ Island solver: 252.8177ms
+ Synchronize proxies: 71.2209ms
+ Find new contacts: 131.2919ms
+Step: 1049.9667ms
+====================================
+Loop: 392
+ Update pairs: 0.0012ms
+ Test collisions: 584.8358ms
+ Reset flags: 40.6397ms
+  Solve: 162.2481ms
+ Island solver: 267.3485ms
+ Synchronize proxies: 77.1991ms
+ Find new contacts: 154.6582ms
+Step: 1125.6460ms
+====================================
+Loop: 393
+ Update pairs: 0.0018ms
+ Test collisions: 578.9833ms
+ Reset flags: 40.3084ms
+  Solve: 167.7001ms
+ Island solver: 268.9987ms
+ Synchronize proxies: 81.5983ms
+ Find new contacts: 159.6816ms
+Step: 1130.5409ms
+====================================
+Loop: 394
+ Update pairs: 0.0012ms
+ Test collisions: 591.9539ms
+ Reset flags: 41.3897ms
+  Solve: 170.0432ms
+ Island solver: 272.3022ms
+ Synchronize proxies: 77.0943ms
+ Find new contacts: 128.9184ms
+Step: 1112.5775ms
+====================================
+Loop: 395
+ Update pairs: 0.0011ms
+ Test collisions: 602.8600ms
+ Reset flags: 43.0364ms
+  Solve: 164.8416ms
+ Island solver: 267.9299ms
+ Synchronize proxies: 79.3418ms
+ Find new contacts: 150.6679ms
+Step: 1144.7889ms
+====================================
+Loop: 396
+ Update pairs: 0.0011ms
+ Test collisions: 591.9212ms
+ Reset flags: 35.2962ms
+  Solve: 163.6235ms
+ Island solver: 263.8048ms
+ Synchronize proxies: 80.8839ms
+ Find new contacts: 148.5694ms
+Step: 1121.3831ms
+====================================
+Loop: 397
+ Update pairs: 0.0011ms
+ Test collisions: 594.8147ms
+ Reset flags: 43.2716ms
+  Solve: 166.8454ms
+ Island solver: 270.5451ms
+ Synchronize proxies: 78.5222ms
+ Find new contacts: 139.6916ms
+Step: 1127.7843ms
+====================================
+Loop: 398
+ Update pairs: 0.0012ms
+ Test collisions: 572.8749ms
+ Reset flags: 46.0642ms
+  Solve: 159.8130ms
+ Island solver: 253.6521ms
+ Synchronize proxies: 74.1683ms
+ Find new contacts: 128.7613ms
+Step: 1076.4570ms
+====================================
+Loop: 399
+ Update pairs: 0.0011ms
+ Test collisions: 540.4748ms
+ Reset flags: 35.0449ms
+  Solve: 158.6891ms
+ Island solver: 246.2293ms
+ Synchronize proxies: 74.0705ms
+ Find new contacts: 123.3673ms
+Step: 1020.1277ms
+====================================
+Loop: 400
+ Update pairs: 0.0012ms
+ Test collisions: 534.9713ms
+ Reset flags: 34.6587ms
+  Solve: 164.8661ms
+ Island solver: 251.3189ms
+ Synchronize proxies: 77.0315ms
+ Find new contacts: 121.5140ms
+Step: 1020.4396ms
+====================================
+Loop: 401
+ Update pairs: 0.0013ms
+ Test collisions: 526.5135ms
+ Reset flags: 34.5992ms
+  Solve: 157.0287ms
+ Island solver: 242.5528ms
+ Synchronize proxies: 73.6582ms
+ Find new contacts: 109.3954ms
+Step: 987.6531ms
+====================================
+Loop: 402
+ Update pairs: 0.0009ms
+ Test collisions: 526.0610ms
+ Reset flags: 34.8437ms
+  Solve: 163.1972ms
+ Island solver: 250.6723ms
+ Synchronize proxies: 71.7700ms
+ Find new contacts: 106.9485ms
+Step: 991.2735ms
+====================================
+Loop: 403
+ Update pairs: 0.0010ms
+ Test collisions: 524.1317ms
+ Reset flags: 34.5536ms
+  Solve: 157.6061ms
+ Island solver: 246.9626ms
+ Synchronize proxies: 72.9804ms
+ Find new contacts: 112.6911ms
+Step: 992.2465ms
+====================================
+Loop: 404
+ Update pairs: 0.0010ms
+ Test collisions: 537.9648ms
+ Reset flags: 37.4675ms
+  Solve: 163.6483ms
+ Island solver: 257.0765ms
+ Synchronize proxies: 72.9289ms
+ Find new contacts: 111.7312ms
+Step: 1018.1321ms
+====================================
+Loop: 405
+ Update pairs: 0.0011ms
+ Test collisions: 527.2747ms
+ Reset flags: 34.9294ms
+  Solve: 149.0307ms
+ Island solver: 231.3966ms
+ Synchronize proxies: 73.1920ms
+ Find new contacts: 112.8327ms
+Step: 980.5758ms
+====================================
+Loop: 406
+ Update pairs: 0.0013ms
+ Test collisions: 525.2983ms
+ Reset flags: 32.9555ms
+  Solve: 151.9930ms
+ Island solver: 236.7876ms
+ Synchronize proxies: 75.3202ms
+ Find new contacts: 116.6296ms
+Step: 987.9244ms
+====================================
+Loop: 407
+ Update pairs: 0.0012ms
+ Test collisions: 538.3967ms
+ Reset flags: 37.0322ms
+  Solve: 149.5202ms
+ Island solver: 236.0906ms
+ Synchronize proxies: 74.5575ms
+ Find new contacts: 123.4891ms
+Step: 1010.5280ms
+====================================
+Loop: 408
+ Update pairs: 0.0011ms
+ Test collisions: 527.1475ms
+ Reset flags: 34.2765ms
+  Solve: 154.5480ms
+ Island solver: 238.1493ms
+ Synchronize proxies: 77.7001ms
+ Find new contacts: 106.6097ms
+Step: 984.8110ms
+====================================
+Loop: 409
+ Update pairs: 0.0011ms
+ Test collisions: 525.8022ms
+ Reset flags: 33.9973ms
+  Solve: 154.3670ms
+ Island solver: 237.8210ms
+ Synchronize proxies: 76.9202ms
+ Find new contacts: 107.4804ms
+Step: 982.9252ms
+====================================
+Loop: 410
+ Update pairs: 0.0011ms
+ Test collisions: 520.5223ms
+ Reset flags: 34.1580ms
+  Solve: 153.6161ms
+ Island solver: 236.3905ms
+ Synchronize proxies: 74.9283ms
+ Find new contacts: 107.6439ms
+Step: 974.5497ms
+====================================
+Loop: 411
+ Update pairs: 0.0013ms
+ Test collisions: 546.9908ms
+ Reset flags: 41.2191ms
+  Solve: 155.2761ms
+ Island solver: 254.1497ms
+ Synchronize proxies: 74.9318ms
+ Find new contacts: 109.7884ms
+Step: 1028.0378ms
+====================================
+Loop: 412
+ Update pairs: 0.0013ms
+ Test collisions: 523.0637ms
+ Reset flags: 34.5162ms
+  Solve: 154.3331ms
+ Island solver: 238.4725ms
+ Synchronize proxies: 75.9830ms
+ Find new contacts: 104.2020ms
+Step: 977.1747ms
+====================================
+Loop: 413
+ Update pairs: 0.0011ms
+ Test collisions: 512.3220ms
+ Reset flags: 33.2452ms
+  Solve: 150.5439ms
+ Island solver: 239.9981ms
+ Synchronize proxies: 75.6439ms
+ Find new contacts: 101.0359ms
+Step: 963.1783ms
+====================================
+Loop: 414
+ Update pairs: 0.0010ms
+ Test collisions: 507.1205ms
+ Reset flags: 33.1638ms
+  Solve: 152.4643ms
+ Island solver: 243.2722ms
+ Synchronize proxies: 74.9352ms
+ Find new contacts: 100.4426ms
+Step: 959.8628ms
+====================================
+Loop: 415
+ Update pairs: 0.0012ms
+ Test collisions: 502.8108ms
+ Reset flags: 34.4584ms
+  Solve: 150.2722ms
+ Island solver: 236.6548ms
+ Synchronize proxies: 76.6709ms
+ Find new contacts: 98.4325ms
+Step: 949.9677ms
+====================================
+Loop: 416
+ Update pairs: 0.0012ms
+ Test collisions: 502.3010ms
+ Reset flags: 35.5995ms
+  Solve: 149.4358ms
+ Island solver: 235.1905ms
+ Synchronize proxies: 75.8343ms
+ Find new contacts: 102.3671ms
+Step: 952.2054ms
+====================================
+Loop: 417
+ Update pairs: 0.0018ms
+ Test collisions: 503.8636ms
+ Reset flags: 35.6169ms
+  Solve: 148.7103ms
+ Island solver: 235.5170ms
+ Synchronize proxies: 75.5456ms
+ Find new contacts: 100.0313ms
+Step: 951.5334ms
+====================================
+Loop: 418
+ Update pairs: 0.0011ms
+ Test collisions: 497.8399ms
+ Reset flags: 36.1497ms
+  Solve: 146.3496ms
+ Island solver: 231.1129ms
+ Synchronize proxies: 76.8165ms
+ Find new contacts: 103.3535ms
+Step: 946.2136ms
+====================================
+Loop: 419
+ Update pairs: 0.0009ms
+ Test collisions: 497.7531ms
+ Reset flags: 41.2637ms
+  Solve: 145.8273ms
+ Island solver: 229.0135ms
+ Synchronize proxies: 76.4207ms
+ Find new contacts: 102.0972ms
+Step: 947.4835ms
+====================================
+Loop: 420
+ Update pairs: 0.0016ms
+ Test collisions: 492.3857ms
+ Reset flags: 38.2341ms
+  Solve: 150.0034ms
+ Island solver: 234.4911ms
+ Synchronize proxies: 77.5260ms
+ Find new contacts: 96.0455ms
+Step: 939.6204ms
+====================================
+Loop: 421
+ Update pairs: 0.0016ms
+ Test collisions: 498.7784ms
+ Reset flags: 39.8799ms
+  Solve: 145.0984ms
+ Island solver: 231.6938ms
+ Synchronize proxies: 77.5609ms
+ Find new contacts: 100.6351ms
+Step: 949.5310ms
+====================================
+Loop: 422
+ Update pairs: 0.0010ms
+ Test collisions: 496.5526ms
+ Reset flags: 34.6298ms
+  Solve: 144.6679ms
+ Island solver: 222.4263ms
+ Synchronize proxies: 76.6421ms
+ Find new contacts: 96.5478ms
+Step: 927.6827ms
+====================================
+Loop: 423
+ Update pairs: 0.0016ms
+ Test collisions: 487.5228ms
+ Reset flags: 35.6781ms
+  Solve: 143.8221ms
+ Island solver: 224.2980ms
+ Synchronize proxies: 77.0523ms
+ Find new contacts: 96.2176ms
+Step: 921.7094ms
+====================================
+Loop: 424
+ Update pairs: 0.0023ms
+ Test collisions: 491.5332ms
+ Reset flags: 33.1218ms
+  Solve: 144.2413ms
+ Island solver: 224.6226ms
+ Synchronize proxies: 78.9182ms
+ Find new contacts: 88.6390ms
+Step: 917.7510ms
+====================================
+Loop: 425
+ Update pairs: 0.0009ms
+ Test collisions: 490.4917ms
+ Reset flags: 30.2505ms
+  Solve: 141.2257ms
+ Island solver: 222.7822ms
+ Synchronize proxies: 76.8685ms
+ Find new contacts: 86.7353ms
+Step: 907.9711ms
+====================================
+Loop: 426
+ Update pairs: 0.0010ms
+ Test collisions: 487.5924ms
+ Reset flags: 31.0635ms
+  Solve: 144.3589ms
+ Island solver: 220.7368ms
+ Synchronize proxies: 77.6598ms
+ Find new contacts: 87.8341ms
+Step: 905.7620ms
+====================================
+Loop: 427
+ Update pairs: 0.0012ms
+ Test collisions: 491.2290ms
+ Reset flags: 30.6171ms
+  Solve: 144.5169ms
+ Island solver: 219.0151ms
+ Synchronize proxies: 79.9244ms
+ Find new contacts: 87.2800ms
+Step: 908.9451ms
+====================================
+Loop: 428
+ Update pairs: 0.0010ms
+ Test collisions: 488.7423ms
+ Reset flags: 32.8820ms
+  Solve: 144.7575ms
+ Island solver: 220.6488ms
+ Synchronize proxies: 81.2981ms
+ Find new contacts: 85.1391ms
+Step: 909.5784ms
+====================================
+Loop: 429
+ Update pairs: 0.0010ms
+ Test collisions: 488.8212ms
+ Reset flags: 30.2057ms
+  Solve: 143.1876ms
+ Island solver: 216.7196ms
+ Synchronize proxies: 78.0922ms
+ Find new contacts: 80.9415ms
+Step: 895.6815ms
+====================================
+Loop: 430
+ Update pairs: 0.0010ms
+ Test collisions: 489.2058ms
+ Reset flags: 29.5259ms
+  Solve: 141.8115ms
+ Island solver: 215.6397ms
+ Synchronize proxies: 81.6010ms
+ Find new contacts: 86.0621ms
+Step: 902.9487ms
+====================================
+Loop: 431
+ Update pairs: 0.0012ms
+ Test collisions: 485.9665ms
+ Reset flags: 30.2110ms
+  Solve: 142.1689ms
+ Island solver: 213.3849ms
+ Synchronize proxies: 84.4776ms
+ Find new contacts: 83.4802ms
+Step: 898.4036ms
+====================================
+Loop: 432
+ Update pairs: 0.0011ms
+ Test collisions: 486.1070ms
+ Reset flags: 31.0213ms
+  Solve: 140.5061ms
+ Island solver: 221.0722ms
+ Synchronize proxies: 79.8010ms
+ Find new contacts: 84.6319ms
+Step: 903.5247ms
+====================================
+Loop: 433
+ Update pairs: 0.0009ms
+ Test collisions: 481.8397ms
+ Reset flags: 32.0393ms
+  Solve: 139.0560ms
+ Island solver: 214.6156ms
+ Synchronize proxies: 82.3774ms
+ Find new contacts: 84.8205ms
+Step: 896.6091ms
+====================================
+Loop: 434
+ Update pairs: 0.0009ms
+ Test collisions: 484.8511ms
+ Reset flags: 29.6024ms
+  Solve: 140.4265ms
+ Island solver: 215.6161ms
+ Synchronize proxies: 79.9595ms
+ Find new contacts: 86.2557ms
+Step: 897.1830ms
+====================================
+Loop: 435
+ Update pairs: 0.0010ms
+ Test collisions: 478.8356ms
+ Reset flags: 29.7522ms
+  Solve: 139.8378ms
+ Island solver: 216.4533ms
+ Synchronize proxies: 80.3050ms
+ Find new contacts: 83.5898ms
+Step: 890.0252ms
+====================================
+Loop: 436
+ Update pairs: 0.0010ms
+ Test collisions: 478.7072ms
+ Reset flags: 32.9799ms
+  Solve: 140.7756ms
+ Island solver: 218.2625ms
+ Synchronize proxies: 80.9896ms
+ Find new contacts: 81.2746ms
+Step: 893.0970ms
+====================================
+Loop: 437
+ Update pairs: 0.0011ms
+ Test collisions: 475.5341ms
+ Reset flags: 32.1929ms
+  Solve: 140.3157ms
+ Island solver: 221.6922ms
+ Synchronize proxies: 83.3021ms
+ Find new contacts: 77.7677ms
+Step: 891.3375ms
+====================================
+Loop: 438
+ Update pairs: 0.0013ms
+ Test collisions: 465.5476ms
+ Reset flags: 30.1149ms
+  Solve: 146.2174ms
+ Island solver: 223.2869ms
+ Synchronize proxies: 82.2102ms
+ Find new contacts: 77.6667ms
+Step: 879.6893ms
+====================================
+Loop: 439
+ Update pairs: 0.0009ms
+ Test collisions: 468.5678ms
+ Reset flags: 30.4546ms
+  Solve: 146.7437ms
+ Island solver: 218.2953ms
+ Synchronize proxies: 82.1819ms
+ Find new contacts: 80.8302ms
+Step: 881.2466ms
+====================================
+Loop: 440
+ Update pairs: 0.0009ms
+ Test collisions: 468.8017ms
+ Reset flags: 29.5811ms
+  Solve: 144.9438ms
+ Island solver: 216.3745ms
+ Synchronize proxies: 86.0798ms
+ Find new contacts: 77.3987ms
+Step: 879.1358ms
+====================================
+Loop: 441
+ Update pairs: 0.0009ms
+ Test collisions: 464.9034ms
+ Reset flags: 29.0784ms
+  Solve: 142.2753ms
+ Island solver: 212.5029ms
+ Synchronize proxies: 89.2978ms
+ Find new contacts: 91.1587ms
+Step: 887.8429ms
+====================================
+Loop: 442
+ Update pairs: 0.0009ms
+ Test collisions: 462.0095ms
+ Reset flags: 29.0528ms
+  Solve: 138.1649ms
+ Island solver: 212.1360ms
+ Synchronize proxies: 88.5106ms
+ Find new contacts: 90.5526ms
+Step: 884.5906ms
+====================================
+Loop: 443
+ Update pairs: 0.0011ms
+ Test collisions: 472.9236ms
+ Reset flags: 29.0884ms
+  Solve: 138.7172ms
+ Island solver: 209.0354ms
+ Synchronize proxies: 84.7661ms
+ Find new contacts: 83.8617ms
+Step: 880.6428ms
+====================================
+Loop: 444
+ Update pairs: 0.0010ms
+ Test collisions: 456.0630ms
+ Reset flags: 32.9584ms
+  Solve: 140.8876ms
+ Island solver: 220.6678ms
+ Synchronize proxies: 84.4052ms
+ Find new contacts: 72.4819ms
+Step: 867.4946ms
+====================================
+Loop: 445
+ Update pairs: 0.0009ms
+ Test collisions: 461.7015ms
+ Reset flags: 29.4829ms
+  Solve: 150.1167ms
+ Island solver: 250.9649ms
+ Synchronize proxies: 83.9678ms
+ Find new contacts: 75.6617ms
+Step: 902.7564ms
+====================================
+Loop: 446
+ Update pairs: 0.0115ms
+ Test collisions: 462.4258ms
+ Reset flags: 28.6110ms
+  Solve: 143.4788ms
+ Island solver: 216.5089ms
+ Synchronize proxies: 85.6404ms
+ Find new contacts: 75.2605ms
+Step: 869.3146ms
+====================================
+Loop: 447
+ Update pairs: 0.0011ms
+ Test collisions: 464.5189ms
+ Reset flags: 28.8739ms
+  Solve: 140.8065ms
+ Island solver: 209.7849ms
+ Synchronize proxies: 84.9152ms
+ Find new contacts: 78.6400ms
+Step: 867.6296ms
+====================================
+Loop: 448
+ Update pairs: 0.0011ms
+ Test collisions: 467.3011ms
+ Reset flags: 28.4709ms
+  Solve: 138.1098ms
+ Island solver: 206.6262ms
+ Synchronize proxies: 115.7616ms
+ Find new contacts: 95.4351ms
+Step: 914.5015ms
+====================================
+Loop: 449
+ Update pairs: 0.0009ms
+ Test collisions: 462.9956ms
+ Reset flags: 28.5350ms
+  Solve: 138.1498ms
+ Island solver: 209.0045ms
+ Synchronize proxies: 85.5573ms
+ Find new contacts: 72.4433ms
+Step: 859.4199ms
+====================================
+Loop: 450
+ Update pairs: 0.0009ms
+ Test collisions: 464.3922ms
+ Reset flags: 28.4323ms
+  Solve: 137.5461ms
+ Island solver: 209.9960ms
+ Synchronize proxies: 87.7348ms
+ Find new contacts: 70.2226ms
+Step: 861.7010ms
+====================================
+Loop: 451
+ Update pairs: 0.0009ms
+ Test collisions: 459.3613ms
+ Reset flags: 30.6795ms
+  Solve: 140.4408ms
+ Island solver: 212.2762ms
+ Synchronize proxies: 84.9055ms
+ Find new contacts: 74.4214ms
+Step: 862.5289ms
+====================================
+Loop: 452
+ Update pairs: 0.0011ms
+ Test collisions: 455.7998ms
+ Reset flags: 28.5508ms
+  Solve: 139.2695ms
+ Island solver: 214.0547ms
+ Synchronize proxies: 86.5373ms
+ Find new contacts: 70.5349ms
+Step: 856.3598ms
+====================================
+Loop: 453
+ Update pairs: 0.0011ms
+ Test collisions: 454.4033ms
+ Reset flags: 28.5928ms
+  Solve: 143.2418ms
+ Island solver: 220.4260ms
+ Synchronize proxies: 88.7163ms
+ Find new contacts: 67.4767ms
+Step: 860.5324ms
+====================================
+Loop: 454
+ Update pairs: 0.0011ms
+ Test collisions: 453.1239ms
+ Reset flags: 28.0660ms
+  Solve: 145.8343ms
+ Island solver: 216.2556ms
+ Synchronize proxies: 90.6113ms
+ Find new contacts: 66.2009ms
+Step: 855.1614ms
+====================================
+Loop: 455
+ Update pairs: 0.0010ms
+ Test collisions: 449.3996ms
+ Reset flags: 28.2998ms
+  Solve: 139.1017ms
+ Island solver: 211.8832ms
+ Synchronize proxies: 89.0996ms
+ Find new contacts: 74.1515ms
+Step: 853.7034ms
+====================================
+Loop: 456
+ Update pairs: 0.0011ms
+ Test collisions: 452.9969ms
+ Reset flags: 27.9591ms
+  Solve: 140.0853ms
+ Island solver: 208.4384ms
+ Synchronize proxies: 91.4252ms
+ Find new contacts: 73.1051ms
+Step: 854.8188ms
+====================================
+Loop: 457
+ Update pairs: 0.0010ms
+ Test collisions: 440.9893ms
+ Reset flags: 31.9468ms
+  Solve: 138.5822ms
+ Island solver: 212.5146ms
+ Synchronize proxies: 86.5918ms
+ Find new contacts: 68.5280ms
+Step: 841.4589ms
+====================================
+Loop: 458
+ Update pairs: 0.0010ms
+ Test collisions: 443.7961ms
+ Reset flags: 28.5419ms
+  Solve: 141.3972ms
+ Island solver: 209.8358ms
+ Synchronize proxies: 89.2269ms
+ Find new contacts: 64.8121ms
+Step: 837.1071ms
+====================================
+Loop: 459
+ Update pairs: 0.0012ms
+ Test collisions: 449.6566ms
+ Reset flags: 28.0243ms
+  Solve: 138.7291ms
+ Island solver: 206.4723ms
+ Synchronize proxies: 87.7421ms
+ Find new contacts: 66.7521ms
+Step: 839.5549ms
+====================================
+Loop: 460
+ Update pairs: 0.0011ms
+ Test collisions: 452.1855ms
+ Reset flags: 27.9701ms
+  Solve: 137.9483ms
+ Island solver: 205.0653ms
+ Synchronize proxies: 89.7315ms
+ Find new contacts: 71.6903ms
+Step: 847.5287ms
+====================================
+Loop: 461
+ Update pairs: 0.0010ms
+ Test collisions: 446.0086ms
+ Reset flags: 27.3628ms
+  Solve: 140.9270ms
+ Island solver: 211.0002ms
+ Synchronize proxies: 91.0573ms
+ Find new contacts: 64.8457ms
+Step: 841.1626ms
+====================================
+Loop: 462
+ Update pairs: 0.0009ms
+ Test collisions: 450.8626ms
+ Reset flags: 31.1218ms
+  Solve: 138.1602ms
+ Island solver: 212.4960ms
+ Synchronize proxies: 87.0869ms
+ Find new contacts: 62.7987ms
+Step: 845.3256ms
+====================================
+Loop: 463
+ Update pairs: 0.0011ms
+ Test collisions: 440.0775ms
+ Reset flags: 35.0847ms
+  Solve: 142.9124ms
+ Island solver: 213.2808ms
+ Synchronize proxies: 89.8969ms
+ Find new contacts: 62.0566ms
+Step: 841.2999ms
+====================================
+Loop: 464
+ Update pairs: 0.0013ms
+ Test collisions: 438.2528ms
+ Reset flags: 27.7125ms
+  Solve: 143.9138ms
+ Island solver: 214.1368ms
+ Synchronize proxies: 90.9552ms
+ Find new contacts: 62.7068ms
+Step: 834.6736ms
+====================================
+Loop: 465
+ Update pairs: 0.0025ms
+ Test collisions: 438.0142ms
+ Reset flags: 27.9520ms
+  Solve: 140.5132ms
+ Island solver: 207.9945ms
+ Synchronize proxies: 90.0514ms
+ Find new contacts: 69.0792ms
+Step: 833.9981ms
+====================================
+Loop: 466
+ Update pairs: 0.0010ms
+ Test collisions: 439.9132ms
+ Reset flags: 27.4589ms
+  Solve: 138.9944ms
+ Island solver: 207.2075ms
+ Synchronize proxies: 93.7979ms
+ Find new contacts: 71.3120ms
+Step: 840.5905ms
+====================================
+Loop: 467
+ Update pairs: 0.0009ms
+ Test collisions: 429.9571ms
+ Reset flags: 27.2980ms
+  Solve: 138.8813ms
+ Island solver: 214.9451ms
+ Synchronize proxies: 89.1573ms
+ Find new contacts: 61.2705ms
+Step: 823.5137ms
+====================================
+Loop: 468
+ Update pairs: 0.0010ms
+ Test collisions: 441.4499ms
+ Reset flags: 27.9707ms
+  Solve: 139.5514ms
+ Island solver: 208.2277ms
+ Synchronize proxies: 89.7411ms
+ Find new contacts: 63.7129ms
+Step: 831.9740ms
+====================================
+Loop: 469
+ Update pairs: 0.0012ms
+ Test collisions: 463.6721ms
+ Reset flags: 28.7383ms
+  Solve: 149.9992ms
+ Island solver: 222.1190ms
+ Synchronize proxies: 93.0832ms
+ Find new contacts: 62.9973ms
+Step: 871.5449ms
+====================================
+Loop: 470
+ Update pairs: 0.0010ms
+ Test collisions: 446.0416ms
+ Reset flags: 27.5561ms
+  Solve: 144.4002ms
+ Island solver: 217.5224ms
+ Synchronize proxies: 92.9500ms
+ Find new contacts: 68.5073ms
+Step: 853.5151ms
+====================================
+Loop: 471
+ Update pairs: 0.0011ms
+ Test collisions: 452.3623ms
+ Reset flags: 28.3688ms
+  Solve: 144.3563ms
+ Island solver: 216.6837ms
+ Synchronize proxies: 91.8544ms
+ Find new contacts: 60.6826ms
+Step: 850.8881ms
+====================================
+Loop: 472
+ Update pairs: 0.0010ms
+ Test collisions: 437.0899ms
+ Reset flags: 30.3890ms
+  Solve: 147.7800ms
+ Island solver: 227.3178ms
+ Synchronize proxies: 94.3703ms
+ Find new contacts: 59.4787ms
+Step: 849.5823ms
+====================================
+Loop: 473
+ Update pairs: 0.0010ms
+ Test collisions: 433.1384ms
+ Reset flags: 28.4738ms
+  Solve: 150.1295ms
+ Island solver: 224.3430ms
+ Synchronize proxies: 91.2637ms
+ Find new contacts: 56.7879ms
+Step: 834.9175ms
+====================================
+Loop: 474
+ Update pairs: 0.0009ms
+ Test collisions: 485.4432ms
+ Reset flags: 28.4472ms
+  Solve: 143.7756ms
+ Island solver: 222.9006ms
+ Synchronize proxies: 94.2410ms
+ Find new contacts: 55.5261ms
+Step: 887.5077ms
+====================================
+Loop: 475
+ Update pairs: 0.0011ms
+ Test collisions: 430.9925ms
+ Reset flags: 27.7881ms
+  Solve: 147.5412ms
+ Island solver: 219.5054ms
+ Synchronize proxies: 96.6904ms
+ Find new contacts: 53.9558ms
+Step: 829.8209ms
+====================================
+Loop: 476
+ Update pairs: 0.0010ms
+ Test collisions: 429.7894ms
+ Reset flags: 27.7936ms
+  Solve: 138.3457ms
+ Island solver: 208.7262ms
+ Synchronize proxies: 96.9033ms
+ Find new contacts: 56.6661ms
+Step: 820.8089ms
+====================================
+Loop: 477
+ Update pairs: 0.0024ms
+ Test collisions: 423.5373ms
+ Reset flags: 35.0777ms
+  Solve: 142.4194ms
+ Island solver: 221.6557ms
+ Synchronize proxies: 94.3576ms
+ Find new contacts: 57.7940ms
+Step: 833.3687ms
+====================================
+Loop: 478
+ Update pairs: 0.0009ms
+ Test collisions: 419.2871ms
+ Reset flags: 28.0564ms
+  Solve: 151.6741ms
+ Island solver: 226.5374ms
+ Synchronize proxies: 93.4398ms
+ Find new contacts: 56.0305ms
+Step: 824.2761ms
+====================================
+Loop: 479
+ Update pairs: 0.0009ms
+ Test collisions: 430.9079ms
+ Reset flags: 28.0773ms
+  Solve: 147.7801ms
+ Island solver: 217.8480ms
+ Synchronize proxies: 95.1796ms
+ Find new contacts: 55.6086ms
+Step: 828.5443ms
+====================================
+Loop: 480
+ Update pairs: 0.0010ms
+ Test collisions: 430.3392ms
+ Reset flags: 27.8428ms
+  Solve: 144.9264ms
+ Island solver: 215.8578ms
+ Synchronize proxies: 93.1384ms
+ Find new contacts: 58.2823ms
+Step: 826.4231ms
+====================================
+Loop: 481
+ Update pairs: 0.0013ms
+ Test collisions: 428.7011ms
+ Reset flags: 29.4997ms
+  Solve: 143.2483ms
+ Island solver: 215.2427ms
+ Synchronize proxies: 92.2378ms
+ Find new contacts: 54.7296ms
+Step: 821.3018ms
+====================================
+Loop: 482
+ Update pairs: 0.0011ms
+ Test collisions: 427.1491ms
+ Reset flags: 27.9300ms
+  Solve: 145.4757ms
+ Island solver: 217.8183ms
+ Synchronize proxies: 94.6943ms
+ Find new contacts: 53.1973ms
+Step: 821.7039ms
+====================================
+Loop: 483
+ Update pairs: 0.0012ms
+ Test collisions: 423.2397ms
+ Reset flags: 27.7687ms
+  Solve: 145.6878ms
+ Island solver: 216.5643ms
+ Synchronize proxies: 95.4380ms
+ Find new contacts: 52.5186ms
+Step: 816.4564ms
+====================================
+Loop: 484
+ Update pairs: 0.0011ms
+ Test collisions: 419.8333ms
+ Reset flags: 28.0059ms
+  Solve: 144.6920ms
+ Island solver: 213.0467ms
+ Synchronize proxies: 94.0217ms
+ Find new contacts: 55.2663ms
+Step: 811.0968ms
+====================================
+Loop: 485
+ Update pairs: 0.0012ms
+ Test collisions: 419.7167ms
+ Reset flags: 31.0533ms
+  Solve: 144.4388ms
+ Island solver: 216.9432ms
+ Synchronize proxies: 97.6258ms
+ Find new contacts: 59.6879ms
+Step: 825.9359ms
+====================================
+Loop: 486
+ Update pairs: 0.0009ms
+ Test collisions: 414.6982ms
+ Reset flags: 28.5285ms
+  Solve: 145.9204ms
+ Island solver: 215.6268ms
+ Synchronize proxies: 95.3237ms
+ Find new contacts: 50.5584ms
+Step: 805.6654ms
+====================================
+Loop: 487
+ Update pairs: 0.0011ms
+ Test collisions: 426.7183ms
+ Reset flags: 26.1338ms
+  Solve: 140.5572ms
+ Island solver: 206.6416ms
+ Synchronize proxies: 97.9077ms
+ Find new contacts: 52.5983ms
+Step: 810.8770ms
+====================================
+Loop: 488
+ Update pairs: 0.0011ms
+ Test collisions: 427.9834ms
+ Reset flags: 25.8857ms
+  Solve: 138.4507ms
+ Island solver: 205.0605ms
+ Synchronize proxies: 98.0508ms
+ Find new contacts: 50.5258ms
+Step: 808.4636ms
+====================================
+Loop: 489
+ Update pairs: 0.0010ms
+ Test collisions: 422.5397ms
+ Reset flags: 30.7149ms
+  Solve: 141.1326ms
+ Island solver: 209.3633ms
+ Synchronize proxies: 94.9427ms
+ Find new contacts: 50.8669ms
+Step: 809.3096ms
+====================================
+Loop: 490
+ Update pairs: 0.0011ms
+ Test collisions: 422.7740ms
+ Reset flags: 26.7355ms
+  Solve: 143.7989ms
+ Island solver: 211.3586ms
+ Synchronize proxies: 96.1100ms
+ Find new contacts: 48.2841ms
+Step: 806.1471ms
+====================================
+Loop: 491
+ Update pairs: 0.0009ms
+ Test collisions: 416.8467ms
+ Reset flags: 26.3913ms
+  Solve: 142.6118ms
+ Island solver: 211.1308ms
+ Synchronize proxies: 102.0099ms
+ Find new contacts: 51.1812ms
+Step: 808.4713ms
+====================================
+Loop: 492
+ Update pairs: 0.0010ms
+ Test collisions: 417.2959ms
+ Reset flags: 25.9837ms
+  Solve: 142.4618ms
+ Island solver: 209.1344ms
+ Synchronize proxies: 100.0789ms
+ Find new contacts: 50.3955ms
+Step: 803.7931ms
+====================================
+Loop: 493
+ Update pairs: 0.0012ms
+ Test collisions: 410.8465ms
+ Reset flags: 25.8318ms
+  Solve: 159.4831ms
+ Island solver: 229.0034ms
+ Synchronize proxies: 100.3324ms
+ Find new contacts: 54.3709ms
+Step: 821.4066ms
+====================================
+Loop: 494
+ Update pairs: 0.0010ms
+ Test collisions: 415.1588ms
+ Reset flags: 26.1406ms
+  Solve: 139.6738ms
+ Island solver: 203.4411ms
+ Synchronize proxies: 95.3347ms
+ Find new contacts: 49.0020ms
+Step: 789.9752ms
+====================================
+Loop: 495
+ Update pairs: 0.0011ms
+ Test collisions: 417.6501ms
+ Reset flags: 26.4867ms
+  Solve: 138.5101ms
+ Island solver: 202.9377ms
+ Synchronize proxies: 97.0419ms
+ Find new contacts: 56.7582ms
+Step: 801.7775ms
+====================================
+Loop: 496
+ Update pairs: 0.0009ms
+ Test collisions: 424.8823ms
+ Reset flags: 26.4600ms
+  Solve: 139.6869ms
+ Island solver: 205.5431ms
+ Synchronize proxies: 95.8692ms
+ Find new contacts: 48.3931ms
+Step: 802.1241ms
+====================================
+Loop: 497
+ Update pairs: 0.0011ms
+ Test collisions: 417.3665ms
+ Reset flags: 26.6268ms
+  Solve: 144.5040ms
+ Island solver: 210.6769ms
+ Synchronize proxies: 99.6971ms
+ Find new contacts: 53.2184ms
+Step: 808.4548ms
+====================================
+Loop: 498
+ Update pairs: 0.0014ms
+ Test collisions: 416.9474ms
+ Reset flags: 26.0680ms
+  Solve: 141.7286ms
+ Island solver: 208.6611ms
+ Synchronize proxies: 105.4110ms
+ Find new contacts: 54.6708ms
+Step: 812.6263ms
+====================================
+Loop: 499
+ Update pairs: 0.0013ms
+ Test collisions: 411.2854ms
+ Reset flags: 25.6427ms
+  Solve: 142.0105ms
+ Island solver: 208.7164ms
+ Synchronize proxies: 99.6760ms
+ Find new contacts: 49.0514ms
+Step: 795.4376ms
+====================================
+Loop: 500
+ Update pairs: 0.0010ms
+ Test collisions: 408.0444ms
+ Reset flags: 25.6448ms
+  Solve: 138.9863ms
+ Island solver: 212.7908ms
+ Synchronize proxies: 101.6698ms
+ Find new contacts: 56.6943ms
+Step: 805.7422ms
+====================================
