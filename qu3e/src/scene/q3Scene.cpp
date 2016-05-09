@@ -85,7 +85,7 @@ q3Scene::~q3Scene( )
 void q3Scene::Step( )
 {
     q3TimerStart("step");
-    q3TimerStart("subStep");
+    // q3TimerStart("subStep");
 
     if ( m_newBox )
     {
@@ -93,15 +93,15 @@ void q3Scene::Step( )
         m_newBox = false;
     }
 
-    q3TimerStop("subStep");
-    q3TimerPrint("subStep", " Update pairs");
-    q3TimerStart("subStep");
+    // q3TimerStop("subStep");
+    // q3TimerPrint("subStep", " Update pairs");
+    // q3TimerStart("subStep");
 
     m_contactManager.TestCollisions( );
 
-    q3TimerStop("subStep");
-    q3TimerPrint("subStep", " Test collisions");
-    q3TimerStart("subStep");
+    // q3TimerStop("subStep");
+    // q3TimerPrint("subStep", " Test collisions");
+    // q3TimerStart("subStep");
 
     for ( q3Body* body = m_bodyList; body; body = body->m_next )
         body->m_flags &= ~q3Body::eIsland;
@@ -109,15 +109,15 @@ void q3Scene::Step( )
     for ( q3ContactConstraint* c = m_contactManager.m_contactList; c; c = c->next )
         c->m_flags &= ~q3ContactConstraint::eIsland;
 
-    q3TimerStop("subStep");
-    q3TimerPrint("subStep", " Reset flags");
-    q3TimerStart("subStep");
+    // q3TimerStop("subStep");
+    // q3TimerPrint("subStep", " Reset flags");
+    // q3TimerStart("subStep");
 
     m_islandSolver->Solve(this);
 
-    q3TimerStop("subStep");
-    q3TimerPrint("subStep", " Island solver");
-    q3TimerStart("subStep");
+    // q3TimerStop("subStep");
+    // q3TimerPrint("subStep", " Island solver");
+    // q3TimerStart("subStep");
 
     // Update the broadphase AABBs
     for ( q3Body* body = m_bodyList; body; body = body->m_next )
@@ -128,16 +128,16 @@ void q3Scene::Step( )
         body->SynchronizeProxies( );
     }
 
-    q3TimerStop("subStep");
-    q3TimerPrint("subStep", " Synchronize proxies");
-    q3TimerStart("subStep");
+    // q3TimerStop("subStep");
+    // q3TimerPrint("subStep", " Synchronize proxies");
+    // q3TimerStart("subStep");
 
     // Look for new contacts
     m_contactManager.FindNewContacts( );
 
-    q3TimerStop("subStep");
-    q3TimerPrint("subStep", " Find new contacts");
-    q3TimerStart("subStep");
+    // q3TimerStop("subStep");
+    // q3TimerPrint("subStep", " Find new contacts");
+    // q3TimerStart("subStep");
 
     // Clear all forces
     for ( q3Body* body = m_bodyList; body; body = body->m_next )
@@ -145,6 +145,10 @@ void q3Scene::Step( )
         q3Identity( body->m_force );
         q3Identity( body->m_torque );
     }
+
+
+    q3TimerPrint("solve", "  Solve");
+    q3TimerClear("solve");
 
     q3TimerStop("step");
     q3TimerPrint("step", "Step");

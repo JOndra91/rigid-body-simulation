@@ -158,9 +158,6 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
         }
     }
 
-    q3TimerPrint("solve", "  Solve");
-    q3TimerClear("solve");
-
     s_stack->Free( stack );
     s_stack->Free( island.m_contactStates );
     s_stack->Free( island.m_contacts );

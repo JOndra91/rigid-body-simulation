@@ -89,9 +89,9 @@ void q3Island::Solve( )
     for ( i32 i = 0; i < m_iterations; ++i )
         contactSolver.Solve( );
 
-    q3TimerPause("solve");
-
     contactSolver.ShutDown( );
+
+    q3TimerPause("solve");
 
 
     // Copy back state buffers

@@ -318,7 +318,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     }
 
     q3TimerStop("solve");
-    q3TimerPrint("solve", "  Solve");
 
     q3ContactStateOcl *cs = m_contactStates;
     for ( i32 i = 0; i < m_contactCount; ++i )
