@@ -111,7 +111,7 @@ const q3BoxRef& q3BodyRef::AddBox( const q3BoxDef& def )
     ref = &m_boxes.back();
     ref->setBodyIndex(m_body->m_containerIndex);
     ref->setContainerIndex(index);
-    m_container->m_boxRefs.push_back(ref);
+    m_container->m_boxPtrs.push_back(ref);
 
     q3AABB aabb;
     box->m_containerIndex = index;
@@ -134,80 +134,18 @@ const q3BoxRef& q3BodyRef::AddBox( const q3BoxDef& def )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3BodyRef::RemoveBox( const q3BoxRef &box )
+void q3BodyRef::RemoveBox( q3BoxRef &box )
 {
-    u32 boxIndex = box.m_box->m_containerIndex;
-    u32 bodyIndex = box.m_box->m_bodyIndex;
-    vector<q3Box> *boxes = &m_container->m_boxes;
-
-
-
-    // assert( box );
-    // assert( box->body == this );
-    //
-    // q3Box* node = m_boxes;
-    // q3Box* list = m_boxes;
-    //
-    // bool found = false;
-    // if ( node == box )
-    // {
-    //     list = node->next;
-    //     found = true;
-    // }
-    //
-    // else
-    // {
-    //     while ( node )
-    //     {
-    //         if ( node->next == box )
-    //         {
-    //             node->next = box->next;
-    //             found = true;
-    //             break;
-    //         }
-    //
-    //         node = node->next;
-    //     }
-    // }
-    //
-    // // This shape was not connected to this body.
-    // assert( found );
-    //
-    // // Remove all contacts associated with this shape
-    // q3ContactEdge* edge = m_contactList;
-    // while ( edge )
-    // {
-    //     q3ContactConstraint* contact = edge->constraint;
-    //     edge = edge->next;
-    //
-    //     q3Box* A = contact->A;
-    //     q3Box* B = contact->B;
-    //
-    //     if ( box == A || box == B )
-    //         m_scene->m_contactManager.RemoveContact( contact );
-    // }
-    //
-    // m_scene->m_contactManager.m_broadphase.RemoveBox( box );
-    //
-    // CalculateMassData( );
-    //
-    // m_scene->m_heap.Free( (void*)box );
+    m_container->remove( *this, box);
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::RemoveAllBoxes( )
 {
-    // while ( m_boxes )
-    // {
-    //     q3Box* next = m_boxes->next;
-    //
-    //     m_scene->m_contactManager.m_broadphase.RemoveBox( m_boxes );
-    //     m_scene->m_heap.Free( (void*)m_boxes );
-    //
-    //     m_boxes = next;
-    // }
-    //
-    // m_scene->m_contactManager.RemoveContactsFromBody( this );
+    for(auto &box : m_boxes) {
+        m_container->remove(*this, box);
+    }
+    m_boxes.clear();
 }
 
 //--------------------------------------------------------------------------------------------------

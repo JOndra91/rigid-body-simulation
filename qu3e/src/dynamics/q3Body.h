@@ -217,7 +217,7 @@ public:
     // Removes this box from the body and broadphase. Forces the body
     // to recompute its mass if the body is dynamic. Frees the memory
     // pointed to by the box pointer.
-    void RemoveBox( const q3BoxRef &box );
+    void RemoveBox( q3BoxRef &box );
 
     // Removes all boxes from this body and the broadphase.
     void RemoveAllBoxes( );
