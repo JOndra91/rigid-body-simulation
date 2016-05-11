@@ -136,8 +136,8 @@ const q3BoxRef& q3BodyRef::AddBox( const q3BoxDef& def )
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::RemoveBox( const q3BoxRef &box )
 {
-    u32 boxIndex = box()->m_containerIndex;
-    u32 bodyIndex = box()->m_bodyIndex;
+    u32 boxIndex = box.m_box->m_containerIndex;
+    u32 bodyIndex = box.m_box->m_bodyIndex;
     vector<q3Box> *boxes = &m_container->m_boxes;
 
 
@@ -456,17 +456,18 @@ void q3BodyRef::Dump( FILE* file, i32 index ) const
     fprintf( file, "\tbd.lockAxisZ = bool( %d );\n", b.m_flags & q3Body::eLockAxisZ );
     fprintf( file, "\tbodies[ %d ] = scene.CreateBody( bd );\n\n", index );
 
-    for(auto &box : boxes())
+    for(auto &boxRef : boxes())
     {
+        q3Box *box = boxRef.m_box;
         fprintf( file, "\t{\n" );
         fprintf( file, "\t\tq3BoxDef sd;\n" );
-        fprintf( file, "\t\tsd.SetFriction( r32( %.15lf ) );\n", box()->friction );
-        fprintf( file, "\t\tsd.SetRestitution( r32( %.15lf ) );\n", box()->restitution );
-        fprintf( file, "\t\tsd.SetDensity( r32( %.15lf ) );\n", box()->density );
-        i32 sensor = (int)box()->sensor;
+        fprintf( file, "\t\tsd.SetFriction( r32( %.15lf ) );\n", box->friction );
+        fprintf( file, "\t\tsd.SetRestitution( r32( %.15lf ) );\n", box->restitution );
+        fprintf( file, "\t\tsd.SetDensity( r32( %.15lf ) );\n", box->density );
+        i32 sensor = (int)box->sensor;
         fprintf( file, "\t\tsd.SetSensor( bool( %d ) );\n", sensor );
         fprintf( file, "\t\tq3Transform boxTx;\n" );
-        q3Transform boxTx = box()->local;
+        q3Transform boxTx = box->local;
         q3Vec3 xAxis = boxTx.rotation.ex;
         q3Vec3 yAxis = boxTx.rotation.ey;
         q3Vec3 zAxis = boxTx.rotation.ez;
@@ -475,7 +476,7 @@ void q3BodyRef::Dump( FILE* file, i32 index ) const
         fprintf( file, "\t\tq3Vec3 zAxis( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", zAxis.x, zAxis.y, zAxis.z );
         fprintf( file, "\t\tboxTx.rotation.SetRows( xAxis, yAxis, zAxis );\n" );
         fprintf( file, "\t\tboxTx.position.Set( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", boxTx.position.x, boxTx.position.y, boxTx.position.z );
-        fprintf( file, "\t\tsd.Set( boxTx, q3Vec3( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) ) );\n", box()->e.x * 2.0f, box()->e.y * 2.0f, box()->e.z * 2.0f );
+        fprintf( file, "\t\tsd.Set( boxTx, q3Vec3( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) ) );\n", box->e.x * 2.0f, box->e.y * 2.0f, box->e.z * 2.0f );
         fprintf( file, "\t\tbodies[ %d ]->AddBox( sd );\n", index );
         fprintf( file, "\t}\n" );
     }
@@ -505,7 +506,7 @@ void q3BodyRef::CalculateMassData( )
     q3Identity( lc );
 
     for(auto &box : boxes()) {
-        if ( box()->density == r32( 0.0 ) )
+        if ( box.m_box->density == r32( 0.0 ) )
             continue;
 
         q3MassData md;
@@ -565,7 +566,7 @@ void q3BodyRef::SynchronizeProxies( )
     for(auto &box : boxes())
     {
         box.ComputeAABB( tx, &aabb );
-        broadphase->Update( box()->broadPhaseIndex, aabb );
+        broadphase->Update( box.m_box->broadPhaseIndex, aabb );
     }
 }
 

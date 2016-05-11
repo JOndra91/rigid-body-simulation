@@ -187,7 +187,6 @@ class q3BodyRef
 
     q3Container *m_container;
     q3Scene *m_scene;
-    q3Body *m_body;
     void *m_userData;
     list<q3BoxRef> m_boxes;
 
@@ -203,6 +202,9 @@ class q3BodyRef
     friend class q3Scene;
 
 public:
+
+    q3Body *m_body;
+
     list<q3BoxRef>& boxes();
     const list<q3BoxRef>& boxes() const;
 
@@ -326,10 +328,6 @@ public:
     // Dump this rigid body and its shapes into a log file. The log can be
     // used as C++ code to re-create an initial scene setup.
     void Dump( FILE* file, i32 index ) const;
-
-    q3Body* operator()() {
-        return m_body;
-    }
 };
 
 //--------------------------------------------------------------------------------------------------

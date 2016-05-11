@@ -122,7 +122,7 @@ void q3Scene::Step( )
 
     // Update the broadphase AABBs
     for(auto &body : m_bodyContainer.m_bodyRefs) {
-        if ( body()->m_flags & q3Body::eStatic )
+        if ( body.m_body->m_flags & q3Body::eStatic )
             continue;
 
         body.SynchronizeProxies( );

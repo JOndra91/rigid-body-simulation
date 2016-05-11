@@ -78,14 +78,12 @@ struct q3Box
 //--------------------------------------------------------------------------------------------------
 class q3BoxRef
 {
-    q3Box *m_box;
-    q3Body *m_body;
     q3Container *m_container;
     // q3Scene *m_scene;
     mutable void *m_userData;
 
     q3BoxRef(q3Container *container);
-    q3BoxRef(const q3BoxRef &other); // Disable public copy constructor
+    // q3BoxRef(const q3BoxRef &other);
 
     void setBodyIndex(u32 bodyIndex);
     void setContainerIndex(u32 index);
@@ -94,6 +92,9 @@ class q3BoxRef
     friend class q3BodyRef;
 
 public:
+
+    q3Box *m_box;
+    q3Body *m_body;
 
     void SetUserdata( void* data ) const;
     void* GetUserdata( ) const;
