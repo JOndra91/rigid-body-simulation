@@ -54,11 +54,9 @@ class q3Container {
 
     vector<q3Body> m_bodies;
     vector<q3Box> m_boxes;
-    // vector<q3ContactEdge> m_contactList;
-    // vector<q3BodyRef*> m_bodyRefPointers;
-    // vector<q3BoxRef*> m_boxRefPointers;
     list<q3BodyRef> m_bodyRefs;
-    vector<q3BoxRef*> m_boxRefs;
+    vector<q3BodyRef*> m_bodyPtrs;
+    vector<q3BoxRef*> m_boxPtrs;
 
     friend class q3BodyRef;
     friend class q3BoxRef;
@@ -71,6 +69,22 @@ public:
     void remove( q3BodyRef &body );
     void remove( q3BodyRef &body, q3BoxRef &box );
     void clear();
+
+    inline q3BodyRef* getBodyRef(u32 index) const {
+        return m_bodyPtrs[index];
+    }
+
+    inline q3BoxRef* getBoxRef(u32 index) const {
+        return m_boxPtrs[index];
+    }
+
+    inline q3BodyRef* getRef(const q3Body* body) const {
+        return getBodyRef(body->m_containerIndex);
+    }
+
+    inline q3BoxRef* getRef(const q3Box* box) const {
+        return getBoxRef(box->m_containerIndex);
+    }
 
     list<q3BodyRef>::iterator begin();
     list<q3BodyRef>::iterator end();

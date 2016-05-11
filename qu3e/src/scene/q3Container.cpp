@@ -64,13 +64,14 @@ void q3Container::remove( q3BodyRef &body ) {
     }
 
     m_bodies[index] = m_bodies.back();
-    ref = &m_bodyRefs.back();
+    ref = m_bodyPtrs[index] = m_bodyPtrs.back();
 
     assert(ref->m_body->m_containerIndex == m_bodies.back().m_containerIndex);
 
     ref->setContainerIndex(index);
 
     m_bodies.pop_back();
+    m_bodyPtrs.pop_back();
     m_bodyRefs.pop_back();
 }
 
@@ -79,19 +80,21 @@ void q3Container::remove( q3BodyRef &body, q3BoxRef &box ) {
     q3BoxRef *ref;
 
     m_boxes[index] = m_boxes.back();
-    ref = m_boxRefs[index] = m_boxRefs.back();
+    ref = m_boxPtrs[index] = m_boxPtrs.back();
 
     ref->setContainerIndex(index);
 
+    body.m_boxes.remove(box);
     m_boxes.pop_back();
-    m_boxRefs.pop_back();
+    m_boxPtrs.pop_back();
 }
 
 void q3Container::clear() {
     m_bodies.clear();
     m_boxes.clear();
     m_bodyRefs.clear();
-    m_boxRefs.clear();
+    m_bodyPtrs.clear();
+    m_boxPtrs.clear();
 }
 
 list<q3BodyRef>::iterator q3Container::begin() {
