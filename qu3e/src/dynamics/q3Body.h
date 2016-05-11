@@ -27,6 +27,8 @@
 #ifndef Q3BODY_H
 #define Q3BODY_H
 
+#include <vector>
+#include <list>
 #include "../math/q3Math.h"
 #include "../math/q3Transform.h"
 
@@ -39,6 +41,8 @@ class q3BoxDef;
 struct q3ContactEdge;
 class q3Render;
 struct q3Box;
+class q3BoxRef;
+class q3Container;
 
 enum q3BodyType
 {
@@ -50,19 +54,19 @@ enum q3BodyType
 class q3Body
 {
 public:
-    // Adds a box to this body. Boxes are all defined in local space
-    // of their owning body. Boxes cannot be defined relative to one
-    // another. The body will recalculate its mass values. No contacts
-    // will be created until the next q3Scene::Step( ) call.
-    const q3Box* AddBox( const q3BoxDef& def );
-
-    // Removes this box from the body and broadphase. Forces the body
-    // to recompute its mass if the body is dynamic. Frees the memory
-    // pointed to by the box pointer.
-    void RemoveBox( const q3Box* box );
-
-    // Removes all boxes from this body and the broadphase.
-    void RemoveAllBoxes( );
+    // // Adds a box to this body. Boxes are all defined in local space
+    // // of their owning body. Boxes cannot be defined relative to one
+    // // another. The body will recalculate its mass values. No contacts
+    // // will be created until the next q3Scene::Step( ) call.
+    // const q3Box* AddBox( const q3BoxDef& def );
+    //
+    // // Removes this box from the body and broadphase. Forces the body
+    // // to recompute its mass if the body is dynamic. Frees the memory
+    // // pointed to by the box pointer.
+    // void RemoveBox( const q3Box* box );
+    //
+    // // Removes all boxes from this body and the broadphase.
+    // void RemoveAllBoxes( );
 
     void ApplyLinearForce( const q3Vec3& force );
     void ApplyForceAtWorldPoint( const q3Vec3& force, const q3Vec3& point );
@@ -87,19 +91,19 @@ public:
     i32 GetLayers( ) const;
     const q3Quaternion GetQuaternion( ) const;
 
-    // Manipulating the transformation of a body manually will result in
-    // non-physical behavior. Contacts are updated upon the next call to
-    // q3Scene::Step( ). Parameters are in world space. All body types
-    // can be updated.
-    void SetTransform( const q3Vec3& position );
-    void SetTransform( const q3Vec3& position, const q3Vec3& axis, r32 angle );
+    // // Manipulating the transformation of a body manually will result in
+    // // non-physical behavior. Contacts are updated upon the next call to
+    // // q3Scene::Step( ). Parameters are in world space. All body types
+    // // can be updated.
+    // void SetTransform( const q3Vec3& position );
+    // void SetTransform( const q3Vec3& position, const q3Vec3& axis, r32 angle );
 
-    // Used for debug rendering lines, triangles and basic lighting
-    void Render( q3Render* render ) const;
+    // // Used for debug rendering lines, triangles and basic lighting
+    // void Render( q3Render* render ) const;
 
-    // Dump this rigid body and its shapes into a log file. The log can be
-    // used as C++ code to re-create an initial scene setup.
-    void Dump( FILE* file, i32 index ) const;
+    // // Dump this rigid body and its shapes into a log file. The log can be
+    // // used as C++ code to re-create an initial scene setup.
+    // void Dump( FILE* file, i32 index ) const;
 
 private:
     // m_flags
@@ -134,14 +138,15 @@ private:
     i32 m_layers;
     i32 m_flags;
 
-    q3Box* m_boxes;
-    void *m_userData;
-    q3Scene* m_scene;
-    q3Body* m_next;
-    q3Body* m_prev;
+    // q3Box* m_boxes;
+    // void *m_userData;
+    // q3Scene* m_scene;
+    // q3Body* m_next;
+    // q3Body* m_prev;
+    u32 m_containerIndex;
     i32 m_islandIndex;
 
-    q3ContactEdge* m_contactList;
+    // q3ContactEdge* m_contactList;
 
     friend class q3Scene;
     friend struct q3Manifold;
@@ -150,11 +155,181 @@ private:
     friend struct q3IslandSolverCpu;
     friend struct q3IslandSolverOcl;
     friend struct q3ContactSolver;
+    friend class q3Container;
+    friend class q3BodyRef;
 
-    q3Body( const q3BodyDef& def, q3Scene* scene );
+    q3Body( const q3BodyDef& def);
 
-    void CalculateMassData( );
+    // void SynchronizeProxies( );
+    // void CalculateMassData( );
+};
+
+
+using std::vector;
+using std::list;
+class q3BodyRef
+{
+    // template<typename T>
+    // class iteratorFactory {
+    //     T m_begin;
+    //     T m_end;
+    //
+    //     iteratorFactory(T begin, T end) : m_begin(begin), m_end(end) {};
+    //
+    //     T begin() {
+    //         return m_begin;
+    //     }
+    //
+    //     T end() {
+    //         return m_end;
+    //     }
+    // };
+
+    q3Container *m_container;
+    q3Scene *m_scene;
+    q3Body *m_body;
+    void *m_userData;
+    list<q3BoxRef> m_boxes;
+
+    q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer);
+    q3BodyRef(const q3BodyRef &other); // Disable public copy constructor
+
     void SynchronizeProxies( );
+    void CalculateMassData( );
+
+    void setContainerIndex(u32 index);
+
+    friend class q3Container;
+    friend class q3Scene;
+
+public:
+    list<q3BoxRef>& boxes();
+    const list<q3BoxRef>& boxes() const;
+
+    // Adds a box to this body. Boxes are all defined in local space
+    // of their owning body. Boxes cannot be defined relative to one
+    // another. The body will recalculate its mass values. No contacts
+    // will be created until the next q3Scene::Step( ) call.
+    const q3BoxRef& AddBox( const q3BoxDef& def );
+
+    // Removes this box from the body and broadphase. Forces the body
+    // to recompute its mass if the body is dynamic. Frees the memory
+    // pointed to by the box pointer.
+    void RemoveBox( const q3BoxRef &box );
+
+    // Removes all boxes from this body and the broadphase.
+    void RemoveAllBoxes( );
+
+    //-------------------------------------------------------------------------
+
+    inline void ApplyLinearForce( const q3Vec3& force ) {
+        m_body->ApplyLinearForce( force );
+    }
+
+    inline void ApplyForceAtWorldPoint( const q3Vec3& force, const q3Vec3& point ) {
+        m_body->ApplyForceAtWorldPoint( force, point );
+    }
+
+    inline void ApplyTorque( const q3Vec3& torque ) {
+        m_body->ApplyTorque( torque );
+    }
+
+    inline void SetToAwake( ) {
+        m_body->SetToAwake( );
+    }
+
+    inline void SetToSleep( ) {
+        m_body->SetToSleep( );
+    }
+
+    inline bool IsAwake( ) const {
+        return m_body->IsAwake( );
+    }
+
+    inline r32 GetGravityScale( ) const {
+        return m_body->GetGravityScale( );
+    }
+
+    inline void SetGravityScale( r32 scale ) {
+        m_body->SetGravityScale( scale );
+    }
+
+    inline const q3Vec3 GetLocalPoint( const q3Vec3& p ) const {
+        return m_body->GetLocalPoint( p );
+    }
+
+    inline const q3Vec3 GetLocalVector( const q3Vec3& v ) const {
+        return m_body->GetLocalVector( v );
+    }
+
+    inline const q3Vec3 GetWorldPoint( const q3Vec3& p ) const {
+        return m_body->GetWorldPoint( p );
+    }
+
+    inline const q3Vec3 GetWorldVector( const q3Vec3& v ) const {
+        return m_body->GetWorldVector( v );
+    }
+
+    inline const q3Vec3 GetLinearVelocity( ) const {
+        return m_body->GetLinearVelocity( );
+    }
+
+    inline void SetLinearVelocity( const q3Vec3& v ) {
+        m_body->SetLinearVelocity( v );
+    }
+
+    inline const q3Vec3 GetAngularVelocity( ) const {
+        return m_body->GetAngularVelocity( );
+    }
+
+    inline void SetAngularVelocity( const q3Vec3 v ) {
+        m_body->SetAngularVelocity( v );
+    }
+
+    inline bool CanCollide( const q3Body *other ) const {
+        return m_body->CanCollide( other );
+    }
+
+    inline const q3Transform GetTransform( ) const {
+        return m_body->GetTransform( );
+    }
+
+    inline i32 GetFlags( ) const {
+        return m_body->GetFlags( );
+    }
+
+    inline void SetLayers( i32 layers ) {
+        m_body->SetLayers( layers );
+    }
+
+    inline i32 GetLayers( ) const {
+        return m_body->GetLayers( );
+    }
+
+    inline const q3Quaternion GetQuaternion( ) const {
+        return m_body->GetQuaternion( );
+    }
+
+
+    //-------------------------------------------------------------------------
+
+    // Manipulating the transformation of a body manually will result in
+    // non-physical behavior. Contacts are updated upon the next call to
+    // q3Scene::Step( ). Parameters are in world space. All body types
+    // can be updated.
+    void SetTransform( const q3Vec3& position );
+    void SetTransform( const q3Vec3& position, const q3Vec3& axis, r32 angle );
+
+    // Used for debug rendering lines, triangles and basic lighting
+    void Render( q3Render* render ) const;
+
+    // Dump this rigid body and its shapes into a log file. The log can be
+    // used as C++ code to re-create an initial scene setup.
+    void Dump( FILE* file, i32 index ) const;
+
+    q3Body* operator()() {
+        return m_body;
+    }
 };
 
 //--------------------------------------------------------------------------------------------------

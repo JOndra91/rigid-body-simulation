@@ -40,6 +40,7 @@ struct q3Box;
 class q3Body;
 class q3Render;
 class q3Stack;
+class q3BodyRef;
 
 class q3ContactManager
 {
@@ -80,6 +81,7 @@ private:
     friend class q3Scene;
     friend struct q3Box;
     friend class q3Body;
+    friend class q3BodyRef;
     friend struct q3IslandSolverCpu;
     friend struct q3IslandSolverOcl;
 };

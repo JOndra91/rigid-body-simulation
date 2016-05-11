@@ -81,10 +81,12 @@ set(qu3e_math_hdrs
 )
 
 set(qu3e_scene_srcs
+	scene/q3Container.cpp
 	scene/q3Scene.cpp
 )
 
 set(qu3e_scene_hdrs
+	scene/q3Container.h
 	scene/q3Scene.h
 )
 

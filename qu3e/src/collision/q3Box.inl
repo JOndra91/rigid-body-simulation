@@ -22,15 +22,15 @@
 //--------------------------------------------------------------------------------------------------
 // q3Box
 //--------------------------------------------------------------------------------------------------
-inline void q3Box::SetUserdata( void* data ) const
+inline void q3BoxRef::SetUserdata( void* data ) const
 {
-	userData = data;
+	m_userData = data;
 }
 
 //--------------------------------------------------------------------------------------------------
-inline void* q3Box::GetUserdata( ) const
+inline void* q3BoxRef::GetUserdata( ) const
 {
-	return userData;
+	return m_userData;
 }
 
 //--------------------------------------------------------------------------------------------------

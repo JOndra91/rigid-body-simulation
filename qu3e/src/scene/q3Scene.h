@@ -27,6 +27,7 @@
 #ifndef Q3SCENE_H
 #define Q3SCENE_H
 
+#include "q3Container.h"
 #include "../common/q3Settings.h"
 #include "../common/q3Memory.h"
 #include "../common/q3OpenCL.h"
@@ -41,6 +42,7 @@ struct q3BodyDef;
 struct q3ContactConstraint;
 class q3Render;
 struct q3IslandSolver;
+class q3BodyRef;
 
 // This listener is used to gather information about two shapes colliding. This
 // can be used for game logic and sounds. Physics objects created in these
@@ -84,11 +86,11 @@ public:
 
     // Construct a new rigid body. The BodyDef can be reused at the user's
     // discretion, as no reference to the BodyDef is kept.
-    q3Body* CreateBody( const q3BodyDef& def );
+    q3BodyRef* CreateBody( const q3BodyDef& def );
 
     // Frees a body, removes all shapes associated with the body and frees
     // all shapes and contacts associated and attached to this body.
-    void RemoveBody( q3Body* body );
+    void RemoveBody( q3BodyRef* body );
     void RemoveAllBodies( );
 
     // Enables or disables rigid body sleeping. Sleeping is an effective CPU
@@ -154,7 +156,7 @@ private:
     q3IslandSolver *m_islandSolver;
 
     i32 m_bodyCount;
-    q3Body* m_bodyList;
+    q3Container m_bodyContainer;
 
     q3Stack m_stack;
     q3Heap m_heap;
@@ -170,6 +172,7 @@ private:
     friend class q3Body;
     friend struct q3IslandSolverCpu;
     friend struct q3IslandSolverOcl;
+    friend class q3BodyRef;
 };
 
 #endif // Q3SCENE_H

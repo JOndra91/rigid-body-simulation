@@ -25,6 +25,7 @@
 //--------------------------------------------------------------------------------------------------
 
 #include "q3Box.h"
+#include "../scene/q3Container.h"
 #include "../math/q3Vec3.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -215,4 +216,18 @@ void q3Box::Render( const q3Transform& tx, bool awake, q3Render* render ) const
         render->SetTriNormal( n.x, n.y, n.z );
         render->Triangle( a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z );
     }
+}
+
+q3BoxRef::q3BoxRef(q3Container *container)
+ : m_container(container)
+{}
+
+void q3BoxRef::setBodyIndex(u32 bodyIndex) {
+    m_body = &m_container->m_bodies[bodyIndex];
+    m_box->m_bodyIndex = bodyIndex;
+}
+
+void q3BoxRef::setContainerIndex(u32 index) {
+    m_box = &m_container->m_boxes[index];
+    m_box->m_containerIndex = index;
 }

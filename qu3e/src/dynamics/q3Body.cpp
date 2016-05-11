@@ -26,6 +26,7 @@
 
 #include "q3Body.h"
 #include "../scene/q3Scene.h"
+#include "../scene/q3Container.h"
 #include "q3Contact.h"
 #include "../broadphase/q3BroadPhase.h"
 #include "../collision/q3Box.h"
@@ -33,7 +34,7 @@
 //--------------------------------------------------------------------------------------------------
 // q3Body
 //--------------------------------------------------------------------------------------------------
-q3Body::q3Body( const q3BodyDef& def, q3Scene* scene )
+q3Body::q3Body( const q3BodyDef& def)
 {
     m_linearVelocity = def.linearVelocity;
     m_angularVelocity = def.angularVelocity;
@@ -45,8 +46,8 @@ q3Body::q3Body( const q3BodyDef& def, q3Scene* scene )
     m_sleepTime = r32( 0.0 );
     m_gravityScale = def.gravityScale;
     m_layers = def.layers;
-    m_userData = def.userData;
-    m_scene = scene;
+    // m_userData = def.userData;
+    // m_scene = scene;
     m_flags = 0;
 
     if ( def.bodyType == eDynamicBody )
@@ -68,39 +69,57 @@ q3Body::q3Body( const q3BodyDef& def, q3Scene* scene )
     }
 
     if ( def.allowSleep )
-        m_flags |= eAllowSleep;
+        m_flags |= q3Body::eAllowSleep;
 
     if ( def.awake )
-        m_flags |= eAwake;
+        m_flags |= q3Body::eAwake;
 
     if ( def.active )
-        m_flags |= eActive;
+        m_flags |= q3Body::eActive;
 
     if ( def.lockAxisX )
-        m_flags |= eLockAxisX;
+        m_flags |= q3Body::eLockAxisX;
 
     if ( def.lockAxisY )
-        m_flags |= eLockAxisY;
+        m_flags |= q3Body::eLockAxisY;
 
     if ( def.lockAxisZ )
-        m_flags |= eLockAxisZ;
+        m_flags |= q3Body::eLockAxisZ;
 
-    m_boxes = NULL;
-    m_contactList = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
-const q3Box* q3Body::AddBox( const q3BoxDef& def )
+void q3BodyRef::setContainerIndex(u32 index) {
+    m_body = &m_container->m_bodies[index];
+    m_body->m_containerIndex = index;
+
+    for(auto &box : m_boxes) {
+        box.setBodyIndex(index);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+const q3BoxRef& q3BodyRef::AddBox( const q3BoxDef& def )
 {
+    q3Box *box;
+    q3BoxRef *ref;
+    u32 index = m_container->m_boxes.size();
+    m_container->m_boxes.push_back(q3Box());
+    box = &m_container->m_boxes.back();
+
+    m_boxes.push_back(q3BoxRef(m_container));
+    ref = &m_boxes.back();
+    ref->setBodyIndex(m_body->m_containerIndex);
+    ref->setContainerIndex(index);
+    m_container->m_boxRefs.push_back(ref);
+
     q3AABB aabb;
-    q3Box* box = (q3Box*)m_scene->m_heap.Allocate( sizeof( q3Box ) );
+    box->m_containerIndex = index;
+    box->m_bodyIndex = m_body->m_containerIndex;
     box->local = def.m_tx;
     box->e = def.m_e;
-    box->next = m_boxes;
-    m_boxes = box;
-    box->ComputeAABB( m_tx, &aabb );
+    box->ComputeAABB( m_body->m_tx, &aabb );
 
-    box->body = this;
     box->friction = def.m_friction;
     box->restitution = def.m_restitution;
     box->density = def.m_density;
@@ -111,78 +130,84 @@ const q3Box* q3Body::AddBox( const q3BoxDef& def )
     m_scene->m_contactManager.m_broadphase.InsertBox( box, aabb );
     m_scene->m_newBox = true;
 
-    return box;
+    return *ref;
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3Body::RemoveBox( const q3Box* box )
+void q3BodyRef::RemoveBox( const q3BoxRef &box )
 {
-    assert( box );
-    assert( box->body == this );
+    u32 boxIndex = box()->m_containerIndex;
+    u32 bodyIndex = box()->m_bodyIndex;
+    vector<q3Box> *boxes = &m_container->m_boxes;
 
-    q3Box* node = m_boxes;
-    q3Box* list = m_boxes;
 
-    bool found = false;
-    if ( node == box )
-    {
-        list = node->next;
-        found = true;
-    }
 
-    else
-    {
-        while ( node )
-        {
-            if ( node->next == box )
-            {
-                node->next = box->next;
-                found = true;
-                break;
-            }
-
-            node = node->next;
-        }
-    }
-
-    // This shape was not connected to this body.
-    assert( found );
-
-    // Remove all contacts associated with this shape
-    q3ContactEdge* edge = m_contactList;
-    while ( edge )
-    {
-        q3ContactConstraint* contact = edge->constraint;
-        edge = edge->next;
-
-        q3Box* A = contact->A;
-        q3Box* B = contact->B;
-
-        if ( box == A || box == B )
-            m_scene->m_contactManager.RemoveContact( contact );
-    }
-
-    m_scene->m_contactManager.m_broadphase.RemoveBox( box );
-
-    CalculateMassData( );
-
-    m_scene->m_heap.Free( (void*)box );
+    // assert( box );
+    // assert( box->body == this );
+    //
+    // q3Box* node = m_boxes;
+    // q3Box* list = m_boxes;
+    //
+    // bool found = false;
+    // if ( node == box )
+    // {
+    //     list = node->next;
+    //     found = true;
+    // }
+    //
+    // else
+    // {
+    //     while ( node )
+    //     {
+    //         if ( node->next == box )
+    //         {
+    //             node->next = box->next;
+    //             found = true;
+    //             break;
+    //         }
+    //
+    //         node = node->next;
+    //     }
+    // }
+    //
+    // // This shape was not connected to this body.
+    // assert( found );
+    //
+    // // Remove all contacts associated with this shape
+    // q3ContactEdge* edge = m_contactList;
+    // while ( edge )
+    // {
+    //     q3ContactConstraint* contact = edge->constraint;
+    //     edge = edge->next;
+    //
+    //     q3Box* A = contact->A;
+    //     q3Box* B = contact->B;
+    //
+    //     if ( box == A || box == B )
+    //         m_scene->m_contactManager.RemoveContact( contact );
+    // }
+    //
+    // m_scene->m_contactManager.m_broadphase.RemoveBox( box );
+    //
+    // CalculateMassData( );
+    //
+    // m_scene->m_heap.Free( (void*)box );
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3Body::RemoveAllBoxes( )
+void q3BodyRef::RemoveAllBoxes( )
 {
-    while ( m_boxes )
-    {
-        q3Box* next = m_boxes->next;
-
-        m_scene->m_contactManager.m_broadphase.RemoveBox( m_boxes );
-        m_scene->m_heap.Free( (void*)m_boxes );
-
-        m_boxes = next;
-    }
-
-    m_scene->m_contactManager.RemoveContactsFromBody( this );
+    // while ( m_boxes )
+    // {
+    //     q3Box* next = m_boxes->next;
+    //
+    //     m_scene->m_contactManager.m_broadphase.RemoveBox( m_boxes );
+    //     m_scene->m_heap.Free( (void*)m_boxes );
+    //
+    //     m_boxes = next;
+    // }
+    //
+    // m_scene->m_contactManager.RemoveContactsFromBody( this );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -211,9 +236,9 @@ void q3Body::ApplyTorque( const q3Vec3& torque )
 //--------------------------------------------------------------------------------------------------
 void q3Body::SetToAwake( )
 {
-    if( !(m_flags & eAwake) )
+    if( !(m_flags & q3Body::eAwake) )
     {
-        m_flags |= eAwake;
+        m_flags |= q3Body::eAwake;
         m_sleepTime = r32( 0.0 );
     }
 }
@@ -221,7 +246,7 @@ void q3Body::SetToAwake( )
 //--------------------------------------------------------------------------------------------------
 void q3Body::SetToSleep( )
 {
-    m_flags &= ~eAwake;
+    m_flags &= ~q3Body::eAwake;
     m_sleepTime = r32( 0.0 );
     q3Identity( m_linearVelocity );
     q3Identity( m_angularVelocity );
@@ -232,7 +257,7 @@ void q3Body::SetToSleep( )
 //--------------------------------------------------------------------------------------------------
 bool q3Body::IsAwake( ) const
 {
-    return m_flags & eAwake ? true : false;
+    return m_flags & q3Body::eAwake ? true : false;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -282,7 +307,7 @@ const q3Vec3 q3Body::GetLinearVelocity( ) const
 void q3Body::SetLinearVelocity( const q3Vec3& v )
 {
     // Velocity of static bodies cannot be adjusted
-    if ( m_flags & eStatic )
+    if ( m_flags & q3Body::eStatic )
         assert( false );
 
     if ( q3Dot( v, v ) > r32( 0.0 ) )
@@ -303,7 +328,7 @@ const q3Vec3 q3Body::GetAngularVelocity( ) const
 void q3Body::SetAngularVelocity( const q3Vec3 v )
 {
     // Velocity of static bodies cannot be adjusted
-    if ( m_flags & eStatic )
+    if ( m_flags & q3Body::eStatic )
         assert( false );
 
     if ( q3Dot( v, v ) > r32( 0.0 ) )
@@ -321,7 +346,7 @@ bool q3Body::CanCollide( const q3Body *other ) const
         return false;
 
     // Every collision must have at least one dynamic body involved
-    if ( !(m_flags & eDynamic) && !(other->m_flags & eDynamic) )
+    if ( !(m_flags & q3Body::eDynamic) && !(other->m_flags & q3Body::eDynamic) )
         return false;
 
     if ( !(m_layers & other->m_layers) )
@@ -337,19 +362,19 @@ const q3Transform q3Body::GetTransform( ) const
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3Body::SetTransform( const q3Vec3& position )
+void q3BodyRef::SetTransform( const q3Vec3& position )
 {
-    m_worldCenter = position;
+    m_body->m_worldCenter = position;
 
     SynchronizeProxies( );
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3Body::SetTransform( const q3Vec3& position, const q3Vec3& axis, r32 angle )
+void q3BodyRef::SetTransform( const q3Vec3& position, const q3Vec3& axis, r32 angle )
 {
-    m_worldCenter = position;
-    m_q.Set( axis, angle );
-    m_tx.rotation = m_q.ToMat3( );
+    m_body->m_worldCenter = position;
+    m_body->m_q.Set( axis, angle );
+    m_body->m_tx.rotation = m_body->m_q.ToMat3( );
 
     SynchronizeProxies( );
 }
@@ -379,71 +404,69 @@ const q3Quaternion q3Body::GetQuaternion( ) const
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3Body::Render( q3Render* render ) const
+void q3BodyRef::Render( q3Render* render ) const
 {
-    q3Transform tx = m_tx;
-    bool awake = IsAwake( );
-    q3Box* box = m_boxes;
+    q3Transform tx = m_body->m_tx;
+    bool awake = m_body->IsAwake( );
 
-    while ( box )
+    for (auto box : boxes())
     {
-        box->Render( m_tx, awake, render );
-        box = box->next;
+        box.Render( tx, awake, render );
     }
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3Body::Dump( FILE* file, i32 index ) const
+void q3BodyRef::Dump( FILE* file, i32 index ) const
 {
+    q3Body b = *m_body;
+
     fprintf( file, "{\n" );
     fprintf( file, "\tq3BodyDef bd;\n" );
 
-    switch ( m_flags & (eStatic | eDynamic | eKinematic) )
+    switch ( b.m_flags & (q3Body::eStatic | q3Body::eDynamic | q3Body::eKinematic) )
     {
-    case eStatic:
+    case q3Body::eStatic:
         fprintf( file, "\tbd.bodyType = q3BodyType( %d );\n", eStaticBody );
         break;
 
-    case eDynamic:
+    case q3Body::eDynamic:
         fprintf( file, "\tbd.bodyType = q3BodyType( %d );\n", eDynamicBody );
         break;
 
-    case eKinematic:
+    case q3Body::eKinematic:
         fprintf( file, "\tbd.bodyType = q3BodyType( %d );\n", eKinematicBody );
         break;
     }
 
-    fprintf( file, "\tbd.position.Set( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", m_tx.position.x, m_tx.position.y, m_tx.position.z );
+    fprintf( file, "\tbd.position.Set( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", b.m_tx.position.x, b.m_tx.position.y, b.m_tx.position.z );
     q3Vec3 axis;
     r32 angle;
-    m_q.ToAxisAngle( &axis, &angle );
+    b.m_q.ToAxisAngle( &axis, &angle );
     fprintf( file, "\tbd.axis.Set( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", axis.x, axis.y, axis.z );
     fprintf( file, "\tbd.angle = r32( %.15lf );\n", angle );
-    fprintf( file, "\tbd.linearVelocity.Set( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", m_linearVelocity.x, m_linearVelocity.y, m_linearVelocity.z );
-    fprintf( file, "\tbd.angularVelocity.Set( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", m_angularVelocity.x, m_angularVelocity.y, m_angularVelocity.z );
-    fprintf( file, "\tbd.gravityScale = r32( %.15lf );\n", m_gravityScale );
-    fprintf( file, "\tbd.layers = %d;\n", m_layers );
-    fprintf( file, "\tbd.allowSleep = bool( %d );\n", m_flags & eAllowSleep );
-    fprintf( file, "\tbd.awake = bool( %d );\n", m_flags & eAwake );
-    fprintf( file, "\tbd.awake = bool( %d );\n", m_flags & eAwake );
-    fprintf( file, "\tbd.lockAxisX = bool( %d );\n", m_flags & eLockAxisX );
-    fprintf( file, "\tbd.lockAxisY = bool( %d );\n", m_flags & eLockAxisY );
-    fprintf( file, "\tbd.lockAxisZ = bool( %d );\n", m_flags & eLockAxisZ );
+    fprintf( file, "\tbd.linearVelocity.Set( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", b.m_linearVelocity.x, b.m_linearVelocity.y, b.m_linearVelocity.z );
+    fprintf( file, "\tbd.angularVelocity.Set( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", b.m_angularVelocity.x, b.m_angularVelocity.y, b.m_angularVelocity.z );
+    fprintf( file, "\tbd.gravityScale = r32( %.15lf );\n", b.m_gravityScale );
+    fprintf( file, "\tbd.layers = %d;\n", b.m_layers );
+    fprintf( file, "\tbd.allowSleep = bool( %d );\n", b.m_flags & q3Body::eAllowSleep );
+    fprintf( file, "\tbd.awake = bool( %d );\n", b.m_flags & q3Body::eAwake );
+    fprintf( file, "\tbd.awake = bool( %d );\n", b.m_flags & q3Body::eAwake );
+    fprintf( file, "\tbd.lockAxisX = bool( %d );\n", b.m_flags & q3Body::eLockAxisX );
+    fprintf( file, "\tbd.lockAxisY = bool( %d );\n", b.m_flags & q3Body::eLockAxisY );
+    fprintf( file, "\tbd.lockAxisZ = bool( %d );\n", b.m_flags & q3Body::eLockAxisZ );
     fprintf( file, "\tbodies[ %d ] = scene.CreateBody( bd );\n\n", index );
 
-    q3Box* box = m_boxes;
-
-    while ( box )
+    for(auto &box : boxes())
     {
         fprintf( file, "\t{\n" );
         fprintf( file, "\t\tq3BoxDef sd;\n" );
-        fprintf( file, "\t\tsd.SetFriction( r32( %.15lf ) );\n", box->friction );
-        fprintf( file, "\t\tsd.SetRestitution( r32( %.15lf ) );\n", box->restitution );
-        fprintf( file, "\t\tsd.SetDensity( r32( %.15lf ) );\n", box->density );
-        i32 sensor = (int)box->sensor;
+        fprintf( file, "\t\tsd.SetFriction( r32( %.15lf ) );\n", box()->friction );
+        fprintf( file, "\t\tsd.SetRestitution( r32( %.15lf ) );\n", box()->restitution );
+        fprintf( file, "\t\tsd.SetDensity( r32( %.15lf ) );\n", box()->density );
+        i32 sensor = (int)box()->sensor;
         fprintf( file, "\t\tsd.SetSensor( bool( %d ) );\n", sensor );
         fprintf( file, "\t\tq3Transform boxTx;\n" );
-        q3Transform boxTx = box->local;
+        q3Transform boxTx = box()->local;
         q3Vec3 xAxis = boxTx.rotation.ex;
         q3Vec3 yAxis = boxTx.rotation.ey;
         q3Vec3 zAxis = boxTx.rotation.ez;
@@ -452,42 +475,41 @@ void q3Body::Dump( FILE* file, i32 index ) const
         fprintf( file, "\t\tq3Vec3 zAxis( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", zAxis.x, zAxis.y, zAxis.z );
         fprintf( file, "\t\tboxTx.rotation.SetRows( xAxis, yAxis, zAxis );\n" );
         fprintf( file, "\t\tboxTx.position.Set( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) );\n", boxTx.position.x, boxTx.position.y, boxTx.position.z );
-        fprintf( file, "\t\tsd.Set( boxTx, q3Vec3( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) ) );\n", box->e.x * 2.0f, box->e.y * 2.0f, box->e.z * 2.0f );
+        fprintf( file, "\t\tsd.Set( boxTx, q3Vec3( r32( %.15lf ), r32( %.15lf ), r32( %.15lf ) ) );\n", box()->e.x * 2.0f, box()->e.y * 2.0f, box()->e.z * 2.0f );
         fprintf( file, "\t\tbodies[ %d ]->AddBox( sd );\n", index );
         fprintf( file, "\t}\n" );
-        box = box->next;
     }
 
     fprintf( file, "}\n\n" );
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3Body::CalculateMassData( )
+void q3BodyRef::CalculateMassData( )
 {
+    q3Body b = *m_body;
     q3Mat3 inertia = q3Diagonal( r32( 0.0 ) );
-    m_invInertiaModel = q3Diagonal( r32( 0.0 ) );
-    m_invInertiaWorld = q3Diagonal( r32( 0.0 ) );
-    m_invMass = r32( 0.0 );
-    m_mass = r32( 0.0 );
+    b.m_invInertiaModel = q3Diagonal( r32( 0.0 ) );
+    b.m_invInertiaWorld = q3Diagonal( r32( 0.0 ) );
+    b.m_invMass = r32( 0.0 );
+    b.m_mass = r32( 0.0 );
     r32 mass = r32( 0.0 );
 
-    if ( m_flags & eStatic || m_flags &eKinematic )
+    if ( b.m_flags & q3Body::eStatic || b.m_flags & q3Body::eKinematic )
     {
-        q3Identity( m_localCenter );
-        m_worldCenter = m_tx.position;
+        q3Identity( b.m_localCenter );
+        b.m_worldCenter = b.m_tx.position;
         return;
     }
 
     q3Vec3 lc;
     q3Identity( lc );
 
-    for ( q3Box* box = m_boxes; box; box = box->next)
-    {
-        if ( box->density == r32( 0.0 ) )
+    for(auto &box : boxes()) {
+        if ( box()->density == r32( 0.0 ) )
             continue;
 
         q3MassData md;
-        box->ComputeMass( &md );
+        box.ComputeMass( &md );
         mass += md.mass;
         inertia += md.inertia;
         lc += md.center * md.mass;
@@ -495,50 +517,67 @@ void q3Body::CalculateMassData( )
 
     if ( mass > r32( 0.0 ) )
     {
-        m_mass = mass;
-        m_invMass = r32( 1.0 ) / mass;
-        lc *= m_invMass;
+        b.m_mass = mass;
+        b.m_invMass = r32( 1.0 ) / mass;
+        lc *= b.m_invMass;
         q3Mat3 identity;
         q3Identity( identity );
         inertia -= (identity * q3Dot( lc, lc ) - q3OuterProduct( lc, lc )) * mass;
-        m_invInertiaModel = q3Inverse( inertia );
+        b.m_invInertiaModel = q3Inverse( inertia );
 
-        if ( m_flags & eLockAxisX )
-            q3Identity( m_invInertiaModel.ex );
+        if ( b.m_flags & q3Body::eLockAxisX )
+            q3Identity( b.m_invInertiaModel.ex );
 
-        if ( m_flags & eLockAxisY )
-            q3Identity( m_invInertiaModel.ey );
+        if ( b.m_flags & q3Body::eLockAxisY )
+            q3Identity( b.m_invInertiaModel.ey );
 
-        if ( m_flags & eLockAxisZ )
-            q3Identity( m_invInertiaModel.ez );
+        if ( b.m_flags & q3Body::eLockAxisZ )
+            q3Identity( b.m_invInertiaModel.ez );
     }
     else
     {
         // Force all dynamic bodies to have some mass
-        m_invMass = r32( 1.0 );
-        m_invInertiaModel = q3Diagonal( r32( 0.0 ) );
-        m_invInertiaWorld = q3Diagonal( r32( 0.0 ) );
+        b.m_invMass = r32( 1.0 );
+        b.m_invInertiaModel = q3Diagonal( r32( 0.0 ) );
+        b.m_invInertiaWorld = q3Diagonal( r32( 0.0 ) );
     }
 
-    m_localCenter = lc;
-    m_worldCenter = q3Mul( m_tx, lc );
+    b.m_localCenter = lc;
+    b.m_worldCenter = q3Mul( b.m_tx, lc );
+
+    *m_body = b;
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3Body::SynchronizeProxies( )
+// q3BodyRef
+//--------------------------------------------------------------------------------------------------
+
+void q3BodyRef::SynchronizeProxies( )
 {
     q3BroadPhase* broadphase = &m_scene->m_contactManager.m_broadphase;
 
-    m_tx.position = m_worldCenter - q3Mul( m_tx.rotation, m_localCenter );
+    m_body->m_tx.position = m_body->m_worldCenter -
+        q3Mul( m_body->m_tx.rotation, m_body->m_localCenter );
 
     q3AABB aabb;
-    q3Transform tx = m_tx;
+    q3Transform tx = m_body->m_tx;
 
-    q3Box* box = m_boxes;
-    while ( box )
+    for(auto &box : boxes())
     {
-        box->ComputeAABB( tx, &aabb );
-        broadphase->Update( box->broadPhaseIndex, aabb );
-        box = box->next;
+        box.ComputeAABB( tx, &aabb );
+        broadphase->Update( box()->broadPhaseIndex, aabb );
     }
 }
+
+std::list<q3BoxRef>& q3BodyRef::boxes() {
+    return m_boxes;
+}
+
+const std::list<q3BoxRef>& q3BodyRef::boxes() const {
+    return m_boxes;
+}
+
+q3BodyRef::q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer)
+    : m_container(m_bodyContainer)
+    , m_scene(scene)
+{};

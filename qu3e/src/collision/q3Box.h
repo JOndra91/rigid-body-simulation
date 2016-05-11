@@ -32,6 +32,9 @@
 #include "../math/q3Transform.h"
 #include "../debug/q3Render.h"
 
+class q3Body;
+class q3Container;
+
 //--------------------------------------------------------------------------------------------------
 // q3MassData
 //--------------------------------------------------------------------------------------------------
@@ -50,17 +53,17 @@ struct q3Box
     q3Transform local;
     q3Vec3 e;
 
-    q3Box* next;
-    class q3Body* body;
+    // q3Box* next;
+    // class q3Body* body;
     r32 friction;
     r32 restitution;
     r32 density;
     i32 broadPhaseIndex;
-    mutable void* userData;
+    // mutable void* userData;
     mutable bool sensor;
+    u32 m_containerIndex;
+    u32 m_bodyIndex;
 
-    void SetUserdata( void* data ) const;
-    void* GetUserdata( ) const;
     void SetSensor( bool isSensor );
 
     bool TestPoint( const q3Transform& tx, const q3Vec3& p ) const;
@@ -68,6 +71,60 @@ struct q3Box
     void ComputeAABB( const q3Transform& tx, q3AABB* aabb ) const;
     void ComputeMass( q3MassData* md ) const;
     void Render( const q3Transform& tx, bool awake, q3Render* render ) const;
+};
+
+//--------------------------------------------------------------------------------------------------
+// q3BoxRef
+//--------------------------------------------------------------------------------------------------
+class q3BoxRef
+{
+    q3Box *m_box;
+    q3Body *m_body;
+    q3Container *m_container;
+    // q3Scene *m_scene;
+    mutable void *m_userData;
+
+    q3BoxRef(q3Container *container);
+    q3BoxRef(const q3BoxRef &other); // Disable public copy constructor
+
+    void setBodyIndex(u32 bodyIndex);
+    void setContainerIndex(u32 index);
+
+    friend class q3Container;
+    friend class q3BodyRef;
+
+public:
+
+    void SetUserdata( void* data ) const;
+    void* GetUserdata( ) const;
+
+    inline void SetSensor( bool isSensor ) {
+        m_box->SetSensor(isSensor);
+    }
+
+    //-------------------------------------------------------------------------
+
+    inline bool TestPoint( const q3Transform& tx, const q3Vec3& p ) const {
+        return m_box->TestPoint( tx, p );
+    }
+
+    inline bool Raycast( const q3Transform& tx, q3RaycastData* raycast ) const {
+        return m_box->Raycast( tx, raycast );
+    }
+
+    inline void ComputeAABB( const q3Transform& tx, q3AABB* aabb ) const {
+        m_box->ComputeAABB( tx, aabb );
+    }
+
+    inline void ComputeMass( q3MassData* md ) const {
+        m_box->ComputeMass( md );
+    }
+
+    inline void Render( const q3Transform& tx, bool awake, q3Render* render ) const {
+        m_box->Render( tx, awake, render );
+    }
+
+    //-------------------------------------------------------------------------
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -102,6 +159,7 @@ private:
     bool m_sensor;
 
     friend class q3Body;
+    friend class q3BodyRef;
 };
 
 #include "q3Box.inl"
