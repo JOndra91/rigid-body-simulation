@@ -36,7 +36,9 @@
 // q3Contact
 //--------------------------------------------------------------------------------------------------
 class q3Body;
+class q3BodyRef;
 struct q3Box;
+class q3BoxRef;
 struct q3ContactConstraint;
 
 // Restitution mixing. The idea is to use the maximum bounciness, so bouncy
@@ -81,10 +83,10 @@ struct q3Contact
 
 struct q3Manifold
 {
-    void SetPair( q3Box *a, q3Box *b );
+    void SetPair( q3BoxRef *a, q3BoxRef *b );
 
-    q3Box *A;
-    q3Box *B;
+    q3BoxRef *A;
+    q3BoxRef *B;
 
     q3Vec3 normal;                // From A to B
     q3Vec3 tangentVectors[ 2 ];    // Tangent vectors
@@ -109,8 +111,8 @@ struct q3ContactConstraint
 {
     void SolveCollision( void );
 
-    q3Box *A, *B;
-    q3Body *bodyA, *bodyB;
+    q3BoxRef *A, *B;
+    q3BodyRef *bodyA, *bodyB;
 
     q3ContactEdge edgeA;
     q3ContactEdge edgeB;

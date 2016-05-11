@@ -127,7 +127,7 @@ const q3BoxRef& q3BodyRef::AddBox( const q3BoxDef& def )
 
     CalculateMassData( );
 
-    m_scene->m_contactManager.m_broadphase.InsertBox( box, aabb );
+    m_scene->m_contactManager.m_broadphase.InsertBox( ref, aabb );
     m_scene->m_newBox = true;
 
     return *ref;
@@ -137,6 +137,57 @@ const q3BoxRef& q3BodyRef::AddBox( const q3BoxDef& def )
 void q3BodyRef::RemoveBox( q3BoxRef &box )
 {
     m_container->remove( *this, box);
+
+    // assert( box );
+    // assert( box->body == this );
+    //
+    // q3Box* node = m_boxes;
+    // q3Box* list = m_boxes;
+    //
+    // bool found = false;
+    // if ( node == box )
+    // {
+    //     list = node->next;
+    //     found = true;
+    // }
+    //
+    // else
+    // {
+    //     while ( node )
+    //     {
+    //         if ( node->next == box )
+    //         {
+    //             node->next = box->next;
+    //             found = true;
+    //             break;
+    //         }
+    //
+    //         node = node->next;
+    //     }
+    // }
+    //
+    // // This shape was not connected to this body.
+    // assert( found );
+    //
+    // // Remove all contacts associated with this shape
+    // q3ContactEdge* edge = m_contactList;
+    // while ( edge )
+    // {
+    //     q3ContactConstraint* contact = edge->constraint;
+    //     edge = edge->next;
+    //
+    //     q3Box* A = contact->A;
+    //     q3Box* B = contact->B;
+    //
+    //     if ( box == A || box == B )
+    //         m_scene->m_contactManager.RemoveContact( contact );
+    // }
+    //
+    // m_scene->m_contactManager.m_broadphase.RemoveBox( box );
+    //
+    // CalculateMassData( );
+    //
+    // m_scene->m_heap.Free( (void*)box );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -146,6 +197,18 @@ void q3BodyRef::RemoveAllBoxes( )
         m_container->remove(*this, box);
     }
     m_boxes.clear();
+
+    // while ( m_boxes )
+    // {
+    //     q3Box* next = m_boxes->next;
+    //
+    //     m_scene->m_contactManager.m_broadphase.RemoveBox( m_boxes );
+    //     m_scene->m_heap.Free( (void*)m_boxes );
+    //
+    //     m_boxes = next;
+    // }
+    //
+    // m_scene->m_contactManager.RemoveContactsFromBody( this );
 }
 
 //--------------------------------------------------------------------------------------------------

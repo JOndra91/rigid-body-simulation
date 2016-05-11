@@ -45,23 +45,23 @@ q3ContactManager::q3ContactManager( q3Stack* stack )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3ContactManager::AddContact( q3Box *A, q3Box *B )
+void q3ContactManager::AddContact( q3BoxRef *A, q3BoxRef *B )
 {
-    q3Body *bodyA = A->body;
-    q3Body *bodyB = B->body;
-    if ( !bodyA->CanCollide( bodyB ) )
+    q3BodyRef *bodyA = A->getBodyRef();
+    q3BodyRef *bodyB = B->getBodyRef();
+    if ( !bodyA->CanCollide( bodyB->m_body ) )
         return;
 
     // Search for existing matching contact
     // Return if found duplicate to avoid duplicate constraints
     // Mark pre-existing duplicates as active
-    q3ContactEdge* edge = A->body->m_contactList;
+    q3ContactEdge* edge = A->getBodyRef()->m_contactList;
     while ( edge )
     {
-        if ( edge->other == bodyB )
+        if ( edge->other == bodyB->m_body )
         {
-            q3Box *shapeA = edge->constraint->A;
-            q3Box *shapeB = edge->constraint->B;
+            q3BoxRef *shapeA = edge->constraint->A;
+            q3BoxRef *shapeB = edge->constraint->B;
 
             // @TODO: Verify this against Box2D; not sure if this is all we need here
             if( (A == shapeA) && (B == shapeB) )
@@ -75,12 +75,12 @@ void q3ContactManager::AddContact( q3Box *A, q3Box *B )
     q3ContactConstraint *contact = (q3ContactConstraint*)m_allocator.Allocate( );
     contact->A = A;
     contact->B = B;
-    contact->bodyA = A->body;
-    contact->bodyB = B->body;
+    contact->bodyA = bodyA;
+    contact->bodyB = bodyB;
     contact->manifold.SetPair( A, B );
     contact->m_flags = 0;
-    contact->friction = q3MixFriction( A, B );
-    contact->restitution = q3MixRestitution( A, B );
+    contact->friction = q3MixFriction( A->m_box, B->m_box );
+    contact->restitution = q3MixRestitution( A->m_box, B->m_box );
     contact->manifold.contactCount = 0;
 
     for ( i32 i = 0; i < 8; ++i )
@@ -94,7 +94,7 @@ void q3ContactManager::AddContact( q3Box *A, q3Box *B )
 
     // Connect A
     contact->edgeA.constraint = contact;
-    contact->edgeA.other = bodyB;
+    contact->edgeA.other = bodyB->m_body;
 
     contact->edgeA.prev = NULL;
     contact->edgeA.next = bodyA->m_contactList;
@@ -104,7 +104,7 @@ void q3ContactManager::AddContact( q3Box *A, q3Box *B )
 
     // Connect B
     contact->edgeB.constraint = contact;
-    contact->edgeB.other = bodyA;
+    contact->edgeB.other = bodyA->m_body;
 
     contact->edgeB.prev = NULL;
     contact->edgeB.next = bodyB->m_contactList;
@@ -127,8 +127,8 @@ void q3ContactManager::FindNewContacts( )
 //--------------------------------------------------------------------------------------------------
 void q3ContactManager::RemoveContact( q3ContactConstraint *contact )
 {
-    q3Body *A = contact->bodyA;
-    q3Body *B = contact->bodyB;
+    q3BodyRef *A = contact->bodyA;
+    q3BodyRef *B = contact->bodyB;
 
     // Remove from A
     if ( contact->edgeA.prev )
@@ -169,7 +169,7 @@ void q3ContactManager::RemoveContact( q3ContactConstraint *contact )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3ContactManager::RemoveContactsFromBody( q3Body *body )
+void q3ContactManager::RemoveContactsFromBody( q3BodyRef *body )
 {
     q3ContactEdge* edge = body->m_contactList;
 
@@ -182,14 +182,10 @@ void q3ContactManager::RemoveContactsFromBody( q3Body *body )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3ContactManager::RemoveFromBroadphase( q3Body *body )
+void q3ContactManager::RemoveFromBroadphase( q3BodyRef *body )
 {
-    q3Box* box = body->m_boxes;
-
-    while ( box )
-    {
-        m_broadphase.RemoveBox( box );
-        box = box->next;
+    for(auto &box : body->boxes()) {
+        m_broadphase.RemoveBox(box);
     }
 }
 
@@ -200,10 +196,10 @@ void q3ContactManager::TestCollisions( void )
 
     while( constraint )
     {
-        q3Box *A = constraint->A;
-        q3Box *B = constraint->B;
-        q3Body *bodyA = A->body;
-        q3Body *bodyB = B->body;
+        q3BoxRef *A = constraint->A;
+        q3BoxRef *B = constraint->B;
+        q3Body *bodyA = A->m_body;
+        q3Body *bodyB = B->m_body;
 
         if ( !bodyA->CanCollide( bodyB ) )
         {
@@ -220,7 +216,7 @@ void q3ContactManager::TestCollisions( void )
         }
 
         // Check if contact should persist
-        if ( !m_broadphase.TestOverlap( A->broadPhaseIndex, B->broadPhaseIndex ) )
+        if ( !m_broadphase.TestOverlap( A->m_box->broadPhaseIndex, B->m_box->broadPhaseIndex ) )
         {
             q3ContactConstraint* next = constraint->next;
             RemoveContact( constraint );
@@ -307,7 +303,7 @@ void q3ContactManager::RenderContacts( q3Render* render ) const
             render->SetPenPosition( c->position.x, c->position.y, c->position.z );
             render->Point( );
 
-            if ( m->A->body->IsAwake( ) )
+            if ( m->A->m_body->IsAwake( ) )
                 render->SetPenColor( 1.0f, 1.0f, 1.0f );
             else
                 render->SetPenColor( 0.2f, 0.2f, 0.2f );

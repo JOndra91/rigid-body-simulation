@@ -36,6 +36,7 @@
 //--------------------------------------------------------------------------------------------------
 class q3ContactManager;
 struct q3Box;
+class q3BoxRef;
 struct q3Transform;
 struct q3AABB;
 
@@ -51,8 +52,8 @@ public:
     q3BroadPhase( q3ContactManager *manager );
     ~q3BroadPhase( );
 
-    void InsertBox( q3Box *shape, const q3AABB& aabb );
-    void RemoveBox( const q3Box *shape );
+    void InsertBox( q3BoxRef *shape, const q3AABB& aabb );
+    void RemoveBox( const q3BoxRef *shape );
 
     // Generates the contact list. All previous contacts are returned to the allocator
     // before generation occurs.

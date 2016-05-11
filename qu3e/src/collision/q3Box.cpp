@@ -231,3 +231,7 @@ void q3BoxRef::setContainerIndex(u32 index) {
     m_box = &m_container->m_boxes[index];
     m_box->m_containerIndex = index;
 }
+
+q3BodyRef* q3BoxRef::getBodyRef() const {
+    return m_container->getRef(m_body);
+}

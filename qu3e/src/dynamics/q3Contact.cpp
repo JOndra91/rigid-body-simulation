@@ -25,16 +25,17 @@
 //--------------------------------------------------------------------------------------------------
 
 #include "q3Contact.h"
+#include "q3Body.h"
 
 //--------------------------------------------------------------------------------------------------
 // q3Contact
 //--------------------------------------------------------------------------------------------------
-void q3Manifold::SetPair( q3Box *a, q3Box *b )
+void q3Manifold::SetPair( q3BoxRef *a, q3BoxRef *b )
 {
     A = a;
     B = b;
 
-    sensor = A->sensor || B->sensor;
+    sensor = A->m_box->sensor || B->m_box->sensor;
 }
 
 // Generate contact information

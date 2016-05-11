@@ -34,6 +34,6 @@
 //--------------------------------------------------------------------------------------------------
 struct q3Manifold;
 
-void q3BoxtoBox( q3Manifold* m, q3Box* a, q3Box* b );
+void q3BoxtoBox( q3Manifold* m, q3BoxRef* a, q3BoxRef* b );
 
 #endif // Q3COLLIDE_H

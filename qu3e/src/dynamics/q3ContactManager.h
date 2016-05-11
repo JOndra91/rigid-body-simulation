@@ -37,6 +37,7 @@
 struct q3ContactConstraint;
 class q3ContactListener;
 struct q3Box;
+class q3BoxRef;
 class q3Body;
 class q3Render;
 class q3Stack;
@@ -49,7 +50,7 @@ public:
 
     // Add a new contact constraint for a pair of objects
     // unless the contact constraint already exists
-    void AddContact( q3Box *A, q3Box *B );
+    void AddContact( q3BoxRef *A, q3BoxRef *B );
 
     // Has broadphase find all contacts and call AddContact on the
     // ContactManager for each pair found
@@ -59,8 +60,8 @@ public:
     void RemoveContact( q3ContactConstraint *contact );
 
     // Remove all contacts from a body
-    void RemoveContactsFromBody( q3Body *body );
-    void RemoveFromBroadphase( q3Body *body );
+    void RemoveContactsFromBody( q3BodyRef *body );
+    void RemoveFromBroadphase( q3BodyRef *body );
 
     // Remove contacts without broadphase overlap
     // Solves contact manifolds

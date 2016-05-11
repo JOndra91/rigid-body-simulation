@@ -477,16 +477,16 @@ void q3SupportEdge( const q3Transform& tx, const q3Vec3& e, q3Vec3 n, q3Vec3* aO
 // http://www.randygaul.net/2014/05/22/deriving-obb-to-obb-intersection-sat/
 // https://box2d.googlecode.com/files/GDC2007_ErinCatto.zip
 // https://box2d.googlecode.com/files/Box2D_Lite.zip
-void q3BoxtoBox( q3Manifold* m, q3Box* a, q3Box* b )
+void q3BoxtoBox( q3Manifold* m, q3BoxRef* a, q3BoxRef* b )
 {
-    q3Transform atx = a->body->GetTransform( );
-    q3Transform btx = b->body->GetTransform( );
-    q3Transform aL = a->local;
-    q3Transform bL = b->local;
+    q3Transform atx = a->m_body->GetTransform( );
+    q3Transform btx = b->m_body->GetTransform( );
+    q3Transform aL = a->m_box->local;
+    q3Transform bL = b->m_box->local;
     atx = q3Mul( atx, aL );
     btx = q3Mul( btx, bL );
-    q3Vec3 eA = a->e;
-    q3Vec3 eB = b->e;
+    q3Vec3 eA = a->m_box->e;
+    q3Vec3 eB = b->m_box->e;
 
     // B's frame in A's space
     q3Mat3 C = q3Transpose( atx.rotation ) * btx.rotation;

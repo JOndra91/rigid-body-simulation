@@ -146,8 +146,6 @@ private:
     u32 m_containerIndex;
     i32 m_islandIndex;
 
-    // q3ContactEdge* m_contactList;
-
     friend class q3Scene;
     friend struct q3Manifold;
     friend class q3ContactManager;
@@ -204,6 +202,8 @@ class q3BodyRef
 public:
 
     q3Body *m_body;
+
+    q3ContactEdge* m_contactList;
 
     list<q3BoxRef>& boxes();
     const list<q3BoxRef>& boxes() const;

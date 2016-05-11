@@ -29,10 +29,10 @@
 
 #include <vector>
 #include <list>
-#include "../dynamics/q3Body.h"
-#include "../collision/q3Box.h"
 #include "../math/q3Math.h"
 #include "../math/q3Transform.h"
+#include "../dynamics/q3Body.h"
+#include "../collision/q3Box.h"
 
 //--------------------------------------------------------------------------------------------------
 // q3Container
@@ -42,10 +42,6 @@ struct q3BodyDef;
 class q3BoxDef;
 struct q3ContactEdge;
 class q3Render;
-struct q3Box;
-class q3BoxRef;
-class q3Body;
-class q3BodyRef;
 
 using std::vector;
 using std::list;
@@ -70,21 +66,10 @@ public:
     void remove( q3BodyRef &body, q3BoxRef &box );
     void clear();
 
-    inline q3BodyRef* getBodyRef(u32 index) const {
-        return m_bodyPtrs[index];
-    }
-
-    inline q3BoxRef* getBoxRef(u32 index) const {
-        return m_boxPtrs[index];
-    }
-
-    inline q3BodyRef* getRef(const q3Body* body) const {
-        return getBodyRef(body->m_containerIndex);
-    }
-
-    inline q3BoxRef* getRef(const q3Box* box) const {
-        return getBoxRef(box->m_containerIndex);
-    }
+    q3BodyRef* getBodyRef(u32 index) const;
+    q3BoxRef* getBoxRef(u32 index) const;
+    q3BodyRef* getRef(const q3Body* body) const;
+    q3BoxRef* getRef(const q3Box* box) const;
 
     list<q3BodyRef>::iterator begin();
     list<q3BodyRef>::iterator end();
@@ -92,5 +77,24 @@ public:
     list<q3BodyRef>::const_iterator begin() const;
     list<q3BodyRef>::const_iterator end() const;
 };
+
+// --------------------------------- INLINE -----------------------------------
+
+q3BodyRef* q3Container::getBodyRef(u32 index) const {
+    return m_bodyPtrs[index];
+}
+
+q3BoxRef* q3Container::getBoxRef(u32 index) const {
+    return m_boxPtrs[index];
+}
+
+q3BodyRef* q3Container::getRef(const q3Body* body) const {
+    return getBodyRef(body->m_containerIndex);
+}
+
+q3BoxRef* q3Container::getRef(const q3Box* box) const {
+    return getBoxRef(box->m_containerIndex);
+}
+
 
 #endif // Q3BODY_CONTAINER_H

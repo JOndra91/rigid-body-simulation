@@ -33,6 +33,7 @@
 #include "../debug/q3Render.h"
 
 class q3Body;
+class q3BodyRef;
 class q3Container;
 
 //--------------------------------------------------------------------------------------------------
@@ -102,6 +103,8 @@ public:
     inline void SetSensor( bool isSensor ) {
         m_box->SetSensor(isSensor);
     }
+
+    q3BodyRef* getBodyRef() const;
 
     //-------------------------------------------------------------------------
 

@@ -53,17 +53,17 @@ q3BroadPhase::~q3BroadPhase( )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3BroadPhase::InsertBox( q3Box *box, const q3AABB& aabb )
+void q3BroadPhase::InsertBox( q3BoxRef *box, const q3AABB& aabb )
 {
     i32 id = m_tree.Insert( aabb, box );
-    box->broadPhaseIndex = id;
+    box->m_box->broadPhaseIndex = id;
     BufferMove( id );
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3BroadPhase::RemoveBox( const q3Box *box )
+void q3BroadPhase::RemoveBox( const q3BoxRef *box )
 {
-    m_tree.Remove( box->broadPhaseIndex );
+    m_tree.Remove( box->m_box->broadPhaseIndex );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -109,8 +109,8 @@ void q3BroadPhase::UpdatePairs( )
         {
             // Add contact to manager
             q3ContactPair* pair = m_pairBuffer + i;
-            q3Box *A = (q3Box*)m_tree.GetUserData( pair->A );
-            q3Box *B = (q3Box*)m_tree.GetUserData( pair->B );
+            q3BoxRef *A = (q3BoxRef*)m_tree.GetUserData( pair->A );
+            q3BoxRef *B = (q3BoxRef*)m_tree.GetUserData( pair->B );
             m_manager->AddContact( A, B );
 
             ++i;
