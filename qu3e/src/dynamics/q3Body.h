@@ -191,7 +191,7 @@ class q3BodyRef
     list<q3BoxRef> m_boxes;
 
     q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer);
-    q3BodyRef(const q3BodyRef &other); // Disable public copy constructor
+    // q3BodyRef(const q3BodyRef &other); // Disable public copy constructor
 
     void SynchronizeProxies( );
     void CalculateMassData( );
