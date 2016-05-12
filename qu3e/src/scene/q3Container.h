@@ -65,7 +65,7 @@ public:
     void remove( q3BodyRef *body, q3BoxRef *box );
     void clear();
 
-    inline vector<q3BodyRef*> bodies() const {
+    inline const vector<q3BodyRef*>& bodies() const {
         return m_bodyPtrs;
     }
 
