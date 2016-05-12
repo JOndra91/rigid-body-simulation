@@ -82,6 +82,9 @@ void q3ContactManager::AddContact( q3BoxRef *A, q3BoxRef *B )
     contact->friction = q3MixFriction( A->box(), B->box() );
     contact->restitution = q3MixRestitution( A->box(), B->box() );
     contact->manifold.contactCount = 0;
+    contact->manifold.normal = q3Vec3(0,1,0);
+    contact->manifold.tangentVectors[0] = q3Vec3(0,1,0);
+    contact->manifold.tangentVectors[1] = q3Vec3(0,1,0);
 
     for ( i32 i = 0; i < 8; ++i )
         contact->manifold.contacts[ i ].warmStarted = 0;
