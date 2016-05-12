@@ -68,10 +68,10 @@ IEventListener::EventResponse Camera::onEvent(SDL_Event* evt) {
             case SDLK_d:
                 negative.x = active;
                 break;
-            case SDLK_LSHIFT:
+            case SDLK_e:
                 positive.y = active;
                 break;
-            case SDLK_LCTRL:
+            case SDLK_q:
                 negative.y = active;
                 break;
             default:
