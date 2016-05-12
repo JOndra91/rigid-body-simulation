@@ -1,0 +1,8 @@
+-D_REENTRANT
+-I/usr/include/libdrm
+-I/usr/include/c++/4.9
+-I/usr/include/x86_64-linux-gnu/c++/4.9/
+-I./qu3e/oclUtils
+-I./qu3e/src
+-DNO_KERNEL_SOURCE
+-DWITH_OCL
