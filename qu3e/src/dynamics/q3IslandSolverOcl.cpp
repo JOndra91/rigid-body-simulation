@@ -92,8 +92,15 @@ q3IslandSolverOcl::q3IslandSolverOcl(cl_device_type dev)
 
     assert(kernels.size() == 2);
 
-    m_clKernelPreSolve = kernels[0];
-    m_clKernelSolve = kernels[1];
+    for(auto &kernel : kernels) {
+        std::string name = kernel.getInfo<CL_KERNEL_FUNCTION_NAME>();
+        if(name == "preSolve") {
+            m_clKernelPreSolve = kernel;
+        }
+        else if(name == "solve") {
+            m_clKernelSolve = kernel;
+        }
+    }
 
     std::vector<cl::Device> devices;
 
