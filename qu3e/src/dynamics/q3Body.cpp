@@ -162,7 +162,6 @@ void q3BodyRef::RemoveAllBoxes( )
     for(auto box : *m_boxRefPtrs) {
         m_scene->m_contactManager.m_broadphase.RemoveBox( box );
         m_container->remove(this, box);
-        delete box;
     }
     m_boxRefPtrs->clear();
 
