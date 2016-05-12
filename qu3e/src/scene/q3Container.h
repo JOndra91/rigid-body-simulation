@@ -50,7 +50,6 @@ class q3Container {
 
     vector<q3Body> m_bodies;
     vector<q3Box> m_boxes;
-    list<q3BodyRef> m_bodyRefs;
     vector<q3BodyRef*> m_bodyPtrs;
     vector<q3BoxRef*> m_boxPtrs;
 
@@ -62,8 +61,8 @@ public:
     q3Container(q3Scene *scene);
 
     q3BodyRef* create( const q3BodyDef& def );
-    void remove( q3BodyRef &body );
-    void remove( q3BodyRef &body, q3BoxRef &box );
+    void remove( q3BodyRef *body );
+    void remove( q3BodyRef *body, q3BoxRef *box );
     void clear();
 
     inline vector<q3BodyRef*> bodies() const {
@@ -79,11 +78,11 @@ public:
     }
 
     inline q3BodyRef* getRef(const q3Body* body) const {
-        return getBodyRef(body->m_containerIndex);
+        return getBodyRef(body->m_bodyIndex);
     }
 
     inline q3BoxRef* getRef(const q3Box* box) const {
-        return getBoxRef(box->m_containerIndex);
+        return getBoxRef(box->m_boxIndex);
     }
 };
 

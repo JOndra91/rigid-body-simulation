@@ -184,8 +184,8 @@ void q3ContactManager::RemoveContactsFromBody( q3BodyRef *body )
 //--------------------------------------------------------------------------------------------------
 void q3ContactManager::RemoveFromBroadphase( q3BodyRef *body )
 {
-    for(auto &box : body->boxes()) {
-        m_broadphase.RemoveBox(&box);
+    for(auto box : *body->boxes()) {
+        m_broadphase.RemoveBox(box);
     }
 }
 

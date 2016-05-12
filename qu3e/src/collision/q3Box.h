@@ -62,7 +62,7 @@ struct q3Box
     i32 broadPhaseIndex;
     // mutable void* userData;
     mutable bool sensor;
-    u32 m_containerIndex;
+    u32 m_boxIndex;
     u32 m_bodyIndex;
 
     void SetSensor( bool isSensor );
@@ -88,7 +88,7 @@ class q3BoxRef
     q3BoxRef(q3Container *container);
 
     void setBodyIndex(u32 bodyIndex);
-    void setContainerIndex(u32 index);
+    void setBoxIndex(u32 index);
 
     friend class q3Container;
     friend class q3BodyRef;

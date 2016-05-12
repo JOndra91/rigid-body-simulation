@@ -89,13 +89,13 @@ q3Body::q3Body( const q3BodyDef& def)
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3BodyRef::setContainerIndex(u32 index) {
+void q3BodyRef::setBodyIndex(u32 index) {
     q3Body *body = &m_container->m_bodies[index];
-    body->m_containerIndex = index;
+    body->m_bodyIndex = index;
     m_bodyIndex = index;
 
-    for(auto &box : *m_boxes) {
-        box.setBodyIndex(index);
+    for(auto &box : *m_boxRefPtrs) {
+        box->setBodyIndex(index);
     }
 }
 
@@ -108,15 +108,13 @@ const q3BoxRef* q3BodyRef::AddBox( const q3BoxDef& def )
     m_container->m_boxes.push_back(q3Box());
     box = &m_container->m_boxes.back();
 
-    m_boxes->push_back(q3BoxRef(m_container));
-    ref = &m_boxes->back();
-    ref->setContainerIndex(index);
-    ref->setBodyIndex(body()->m_containerIndex);
+    ref = new q3BoxRef(m_container);
+    m_boxRefPtrs->push_back(ref);
     m_container->m_boxPtrs.push_back(ref);
+    ref->setBoxIndex(index);
+    ref->setBodyIndex(body()->m_bodyIndex);
 
     q3AABB aabb;
-    box->m_containerIndex = index;
-    box->m_bodyIndex = body()->m_containerIndex;
     box->local = def.m_tx;
     box->e = def.m_e;
     box->ComputeAABB( body()->m_tx, &aabb );
@@ -138,7 +136,7 @@ const q3BoxRef* q3BodyRef::AddBox( const q3BoxDef& def )
 void q3BodyRef::RemoveBox( q3BoxRef &box_ )
 {
     q3BoxRef *box = &box_;
-    m_container->remove( *this, box_);
+    m_container->remove( this, &box_);
 
     // Remove all contacts associated with this shape
     q3ContactEdge* edge = m_contactList;
@@ -157,18 +155,17 @@ void q3BodyRef::RemoveBox( q3BoxRef &box_ )
     m_scene->m_contactManager.m_broadphase.RemoveBox( box );
 
     CalculateMassData( );
-
-    m_scene->m_heap.Free( (void*)box );
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::RemoveAllBoxes( )
 {
-    for(auto &box : *m_boxes) {
-        m_scene->m_contactManager.m_broadphase.RemoveBox( &box );
-        m_container->remove(*this, box);
+    for(auto box : *m_boxRefPtrs) {
+        m_scene->m_contactManager.m_broadphase.RemoveBox( box );
+        m_container->remove(this, box);
+        delete box;
     }
-    m_boxes->clear();
+    m_boxRefPtrs->clear();
 
     m_scene->m_contactManager.RemoveContactsFromBody( this );
 }
@@ -372,9 +369,9 @@ void q3BodyRef::Render( q3Render* render ) const
     q3Transform tx = body()->m_tx;
     bool awake = body()->IsAwake( );
 
-    for (auto box : boxes())
+    for (auto box : *boxes())
     {
-        box.Render( tx, awake, render );
+        box->Render( tx, awake, render );
     }
 }
 
@@ -419,9 +416,9 @@ void q3BodyRef::Dump( FILE* file, i32 index ) const
     fprintf( file, "\tbd.lockAxisZ = bool( %d );\n", b.m_flags & q3Body::eLockAxisZ );
     fprintf( file, "\tbodies[ %d ] = scene.CreateBody( bd );\n\n", index );
 
-    for(auto &boxRef : boxes())
+    for(auto boxRef : *boxes())
     {
-        q3Box *box = boxRef.box();
+        q3Box *box = boxRef->box();
         fprintf( file, "\t{\n" );
         fprintf( file, "\t\tq3BoxDef sd;\n" );
         fprintf( file, "\t\tsd.SetFriction( r32( %.15lf ) );\n", box->friction );
@@ -468,12 +465,12 @@ void q3BodyRef::CalculateMassData( )
     q3Vec3 lc;
     q3Identity( lc );
 
-    for(auto &box : boxes()) {
-        if ( box.box()->density == r32( 0.0 ) )
+    for(auto box : *boxes()) {
+        if ( box->box()->density == r32( 0.0 ) )
             continue;
 
         q3MassData md;
-        box.ComputeMass( &md );
+        box->ComputeMass( &md );
         mass += md.mass;
         inertia += md.inertia;
         lc += md.center * md.mass;
@@ -526,26 +523,26 @@ void q3BodyRef::SynchronizeProxies( )
     q3AABB aabb;
     q3Transform tx = body()->m_tx;
 
-    for(auto &box : boxes())
+    for(auto box : *boxes())
     {
-        box.ComputeAABB( tx, &aabb );
-        broadphase->Update( box.box()->broadPhaseIndex, aabb );
+        box->ComputeAABB( tx, &aabb );
+        broadphase->Update( box->box()->broadPhaseIndex, aabb );
     }
 }
 
-std::list<q3BoxRef>& q3BodyRef::boxes() {
-    return *m_boxes;
+std::list<q3BoxRef*>* q3BodyRef::boxes() {
+    return m_boxRefPtrs;
 }
 
-const std::list<q3BoxRef>& q3BodyRef::boxes() const {
-    return *m_boxes;
+const std::list<q3BoxRef*>* q3BodyRef::boxes() const {
+    return m_boxRefPtrs;
 }
 
 q3BodyRef::q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer)
     : m_container(m_bodyContainer)
     , m_scene(scene)
 {
-    m_boxes = new list<q3BoxRef>();
+    m_boxRefPtrs = new list<q3BoxRef*>();
 };
 
 q3Body* q3BodyRef::body() const {
@@ -553,5 +550,6 @@ q3Body* q3BodyRef::body() const {
 }
 
 q3BodyRef::~q3BodyRef() {
-    delete m_boxes;
+    RemoveAllBoxes();
+    delete m_boxRefPtrs;
 }

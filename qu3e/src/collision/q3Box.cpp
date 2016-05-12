@@ -227,9 +227,9 @@ void q3BoxRef::setBodyIndex(u32 index) {
     box()->m_bodyIndex = index;
 }
 
-void q3BoxRef::setContainerIndex(u32 index) {
+void q3BoxRef::setBoxIndex(u32 index) {
     m_boxIndex = index;
-    box()->m_containerIndex = index;
+    box()->m_boxIndex = index;
 }
 
 q3BodyRef* q3BoxRef::getBodyRef() const {

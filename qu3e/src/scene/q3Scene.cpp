@@ -121,11 +121,11 @@ void q3Scene::Step( )
     q3TimerStart("subStep");
 
     // Update the broadphase AABBs
-    for(auto &body : m_container.m_bodyRefs) {
-        if ( body.body()->m_flags & q3Body::eStatic )
+    for(auto body : m_container.m_bodyPtrs) {
+        if ( body->body()->m_flags & q3Body::eStatic )
             continue;
 
-        body.SynchronizeProxies( );
+        body->SynchronizeProxies( );
     }
 
     q3TimerStop("subStep");
@@ -156,45 +156,12 @@ void q3Scene::Step( )
 q3BodyRef* q3Scene::CreateBody( const q3BodyDef& def )
 {
     return m_container.create(def);
-    // q3Body* body = (q3Body*)m_heap.Allocate( sizeof( q3Body ) );
-    // new (body) q3Body( def, this );
-    //
-    // // Add body to scene bodyList
-    // body->m_prev = NULL;
-    // body->m_next = m_bodyList;
-    //
-    // if ( m_bodyList )
-    //     m_bodyList->m_prev = body;
-    //
-    // m_bodyList = body;
-    // ++m_bodyCount;
-    //
-    // return body;
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::RemoveBody( q3BodyRef *body )
 {
-    m_container.remove(*body);
-    // assert( m_bodyCount > 0 );
-    //
-    // m_contactManager.RemoveContactsFromBody( body );
-    //
-    // body->RemoveAllBoxes( );
-    //
-    // // Remove body from scene bodyList
-    // if ( body->m_next )
-    //     body->m_next->m_prev = body->m_prev;
-    //
-    // if ( body->m_prev )
-    //     body->m_prev->m_next = body->m_next;
-    //
-    // if ( body == m_bodyList )
-    //     m_bodyList = body->m_next;
-    //
-    // --m_bodyCount;
-    //
-    // m_heap.Free( body );
+    m_container.remove(body);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -273,15 +240,15 @@ void q3Scene::QueryAABB( q3QueryCallback *cb, const q3AABB& aabb ) const
     {
         bool TreeCallBack( i32 id )
         {
-            // q3AABB aabb;
-            // q3Box *box = (q3Box *)broadPhase->m_tree.GetUserData( id );
-            //
-            // box->ComputeAABB( box->body->GetTransform( ), &aabb );
-            //
-            // if ( q3AABBtoAABB( m_aabb, aabb ) )
-            // {
-            //     return cb->ReportShape( box );
-            // }
+            q3AABB aabb;
+            q3BoxRef *box = (q3BoxRef *)broadPhase->m_tree.GetUserData( id );
+
+            box->ComputeAABB( box->body()->GetTransform( ), &aabb );
+
+            if ( q3AABBtoAABB( m_aabb, aabb ) )
+            {
+                return cb->ReportShape( box->box() );
+            }
 
             return true;
         }
@@ -305,12 +272,12 @@ void q3Scene::QueryPoint( q3QueryCallback *cb, const q3Vec3& point ) const
     {
         bool TreeCallBack( i32 id )
         {
-            // q3Box *box = (q3Box *)broadPhase->m_tree.GetUserData( id );
-            //
-            // if ( box->TestPoint( box->body->GetTransform( ), m_point ) )
-            // {
-            //     cb->ReportShape( box );
-            // }
+            q3BoxRef *box = (q3BoxRef *)broadPhase->m_tree.GetUserData( id );
+
+            if ( box->TestPoint( box->body()->GetTransform( ), m_point ) )
+            {
+                cb->ReportShape( box->box() );
+            }
 
             return true;
         }
@@ -339,12 +306,12 @@ void q3Scene::RayCast( q3QueryCallback *cb, q3RaycastData& rayCast ) const
     {
         bool TreeCallBack( i32 id )
         {
-            // q3Box *box = (q3Box *)broadPhase->m_tree.GetUserData( id );
-            //
-            // if ( box->Raycast( box->body->GetTransform( ), m_rayCast ) )
-            // {
-            //     return cb->ReportShape( box );
-            // }
+            q3BoxRef *box = (q3BoxRef *)broadPhase->m_tree.GetUserData( id );
+
+            if ( box->Raycast( box->body()->GetTransform( ), m_rayCast ) )
+            {
+                return cb->ReportShape( box->box() );
+            }
 
             return true;
         }

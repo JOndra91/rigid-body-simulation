@@ -143,7 +143,7 @@ private:
     // q3Scene* m_scene;
     // q3Body* m_next;
     // q3Body* m_prev;
-    u32 m_containerIndex;
+    u32 m_bodyIndex;
     i32 m_islandIndex;
 
     friend class q3Scene;
@@ -186,15 +186,16 @@ class q3BodyRef
     q3Container *m_container;
     q3Scene *m_scene;
     void *m_userData;
-    list<q3BoxRef> *m_boxes;
+    list<q3BoxRef*> *m_boxRefPtrs;
     u32 m_bodyIndex;
 
     q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer);
+    q3BodyRef(const q3BodyRef&); // Disable copy constructor
 
     void SynchronizeProxies( );
     void CalculateMassData( );
 
-    void setContainerIndex(u32 index);
+    void setBodyIndex(u32 index);
 
     friend class q3Container;
     friend class q3Scene;
@@ -205,10 +206,10 @@ public:
 
     q3Body* body() const;
 
-    q3ContactEdge* m_contactList;
+    q3ContactEdge* m_contactList = NULL;
 
-    list<q3BoxRef>& boxes();
-    const list<q3BoxRef>& boxes() const;
+    list<q3BoxRef*>* boxes();
+    const list<q3BoxRef*>* boxes() const;
 
     // Adds a box to this body. Boxes are all defined in local space
     // of their owning body. Boxes cannot be defined relative to one
