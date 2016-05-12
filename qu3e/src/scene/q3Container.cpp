@@ -93,6 +93,11 @@ void q3Container::remove( q3BodyRef *body, q3BoxRef *box ) {
 }
 
 void q3Container::clear() {
+
+    for(auto body : m_bodyPtrs) {
+        remove(body);
+    }
+
     m_bodies.clear();
     m_boxes.clear();
     m_bodyPtrs.clear();
