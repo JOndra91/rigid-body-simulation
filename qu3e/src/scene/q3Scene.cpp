@@ -344,7 +344,7 @@ void q3Scene::Dump( FILE* file ) const
 
     i32 i = 0;
     for(auto body : m_container.bodies()) {
-        body->Dump(file, i);
+        body->Dump(file, i++);
     }
 
     fprintf( file, "q3Free( bodies );\n" );
