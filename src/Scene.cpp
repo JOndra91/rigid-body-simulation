@@ -131,7 +131,7 @@ void Scene::prepareScene() {
     bodyDef.bodyType = eDynamicBody;
     boxDef.Set( tx, q3Vec3( 1.0f, 1.0f, 1.0f ) );
 
-    int width = 2, height = 2, depth = 2;
+    int width = 8, height = 16, depth = 8;
 
     for ( int i = 0; i < height; ++i )
     {
