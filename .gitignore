@@ -2,6 +2,5 @@ bin/
 build/
 build-release/
 nbproject/
-.clang_complete
 demo
 dump/
