@@ -109,8 +109,8 @@ const q3BoxRef* q3BodyRef::AddBox( const q3BoxDef& def )
 
     m_boxes.push_back(q3BoxRef(m_container));
     ref = &m_boxes.back();
-    ref->setBodyIndex(m_body->m_containerIndex);
     ref->setContainerIndex(index);
+    ref->setBodyIndex(m_body->m_containerIndex);
     m_container->m_boxPtrs.push_back(ref);
 
     q3AABB aabb;
