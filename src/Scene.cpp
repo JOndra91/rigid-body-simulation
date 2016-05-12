@@ -111,8 +111,11 @@ void Scene::prepareScene() {
     int numColors = (sizeof(Scene::colors) / sizeof(u8vec3)) - 1;
     int colorIndex = 0;
 
+    int width = 2, height = 4, depth = 2;
+
     boxes.clear();
-    boxes.reserve(16*16*10 + 1);
+    boxes.reserve(width*height*depth + 1);
+    scene.Shutdown();
 
     q3BodyDef bodyDef;
 
@@ -122,24 +125,38 @@ void Scene::prepareScene() {
     boxDef.SetRestitution(0.0f);
     q3Transform tx;
     q3Identity(tx);
-    boxDef.Set(tx, q3Vec3(50.0f, 1.0f, 50.0f));
+    q3Vec3 baseSize(1.0f, 1.0f, 1.0f);
+    tx.position = -baseSize / 2.0;
+    tx.position.y = 0.0f;
+    boxDef.Set(tx, baseSize);
     box = b->AddBox(boxDef);
     box->SetUserdata((void*)(Scene::colors + numColors));
 
     boxes.push_back(box);
 
-    bodyDef.bodyType = eDynamicBody;
-    boxDef.Set( tx, q3Vec3( 1.0f, 1.0f, 1.0f ) );
+    q3Vec3 blockSize( 1.0f, 1.0f, 1.0f );
+    q3Vec3 blockMargin( 0.1f, 0.1f, 0.1f);
+    q3Vec3 blockSpace = blockSize + blockMargin;
 
-    int width = 8, height = 16, depth = 8;
+    bodyDef.bodyType = eDynamicBody;
+    boxDef.Set( tx, blockSize );
+
+    q3Vec3 off;
+    off.x = -((width - 1) * blockSpace.x)/2.0;
+    off.y = 5.0f;
+    off.z = -((depth - 1) * blockSpace.y)/2.0;
 
     for ( int i = 0; i < height; ++i )
     {
-        for ( int j = -width/2; j < width/2; ++j )
+        for ( int j = 0; j < width; ++j )
         {
-            for ( int k = -depth/2; k < depth/2; ++k )
+            for ( int k = 0; k < depth; ++k )
             {
-                bodyDef.position.Set( 1.1f * j, 1.1f * i + 5.0f, 1.1f * k );
+                bodyDef.position.Set
+                    ( off.x + blockSpace.x * j
+                    , off.y + blockSpace.y * i
+                    , off.z + blockSpace.z * k
+                    );
                 b = scene.CreateBody( bodyDef );
                 box = b->AddBox( boxDef );
 
