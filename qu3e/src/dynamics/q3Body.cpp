@@ -90,8 +90,9 @@ q3Body::q3Body( const q3BodyDef& def)
 
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::setContainerIndex(u32 index) {
-    m_body = &m_container->m_bodies[index];
-    m_body->m_containerIndex = index;
+    q3Body *body = &m_container->m_bodies[index];
+    body->m_containerIndex = index;
+    m_bodyIndex = index;
 
     for(auto &box : m_boxes) {
         box.setBodyIndex(index);
@@ -110,15 +111,15 @@ const q3BoxRef* q3BodyRef::AddBox( const q3BoxDef& def )
     m_boxes.push_back(q3BoxRef(m_container));
     ref = &m_boxes.back();
     ref->setContainerIndex(index);
-    ref->setBodyIndex(m_body->m_containerIndex);
+    ref->setBodyIndex(body()->m_containerIndex);
     m_container->m_boxPtrs.push_back(ref);
 
     q3AABB aabb;
     box->m_containerIndex = index;
-    box->m_bodyIndex = m_body->m_containerIndex;
+    box->m_bodyIndex = body()->m_containerIndex;
     box->local = def.m_tx;
     box->e = def.m_e;
-    box->ComputeAABB( m_body->m_tx, &aabb );
+    box->ComputeAABB( body()->m_tx, &aabb );
 
     box->friction = def.m_friction;
     box->restitution = def.m_restitution;
@@ -326,7 +327,7 @@ const q3Transform q3Body::GetTransform( ) const
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::SetTransform( const q3Vec3& position )
 {
-    m_body->m_worldCenter = position;
+    body()->m_worldCenter = position;
 
     SynchronizeProxies( );
 }
@@ -334,9 +335,9 @@ void q3BodyRef::SetTransform( const q3Vec3& position )
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::SetTransform( const q3Vec3& position, const q3Vec3& axis, r32 angle )
 {
-    m_body->m_worldCenter = position;
-    m_body->m_q.Set( axis, angle );
-    m_body->m_tx.rotation = m_body->m_q.ToMat3( );
+    body()->m_worldCenter = position;
+    body()->m_q.Set( axis, angle );
+    body()->m_tx.rotation = body()->m_q.ToMat3( );
 
     SynchronizeProxies( );
 }
@@ -368,8 +369,8 @@ const q3Quaternion q3Body::GetQuaternion( ) const
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::Render( q3Render* render ) const
 {
-    q3Transform tx = m_body->m_tx;
-    bool awake = m_body->IsAwake( );
+    q3Transform tx = body()->m_tx;
+    bool awake = body()->IsAwake( );
 
     for (auto box : boxes())
     {
@@ -380,7 +381,7 @@ void q3BodyRef::Render( q3Render* render ) const
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::Dump( FILE* file, i32 index ) const
 {
-    q3Body b = *m_body;
+    q3Body b = *body();
 
     fprintf( file, "{\n" );
     fprintf( file, "\tq3BodyDef bd;\n" );
@@ -420,7 +421,7 @@ void q3BodyRef::Dump( FILE* file, i32 index ) const
 
     for(auto &boxRef : boxes())
     {
-        q3Box *box = boxRef.m_box;
+        q3Box *box = boxRef.box();
         fprintf( file, "\t{\n" );
         fprintf( file, "\t\tq3BoxDef sd;\n" );
         fprintf( file, "\t\tsd.SetFriction( r32( %.15lf ) );\n", box->friction );
@@ -449,7 +450,7 @@ void q3BodyRef::Dump( FILE* file, i32 index ) const
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::CalculateMassData( )
 {
-    q3Body b = *m_body;
+    q3Body b = *body();
     q3Mat3 inertia = q3Diagonal( r32( 0.0 ) );
     b.m_invInertiaModel = q3Diagonal( r32( 0.0 ) );
     b.m_invInertiaWorld = q3Diagonal( r32( 0.0 ) );
@@ -468,7 +469,7 @@ void q3BodyRef::CalculateMassData( )
     q3Identity( lc );
 
     for(auto &box : boxes()) {
-        if ( box.m_box->density == r32( 0.0 ) )
+        if ( box.box()->density == r32( 0.0 ) )
             continue;
 
         q3MassData md;
@@ -508,7 +509,7 @@ void q3BodyRef::CalculateMassData( )
     b.m_localCenter = lc;
     b.m_worldCenter = q3Mul( b.m_tx, lc );
 
-    *m_body = b;
+    *body() = b;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -519,16 +520,16 @@ void q3BodyRef::SynchronizeProxies( )
 {
     q3BroadPhase* broadphase = &m_scene->m_contactManager.m_broadphase;
 
-    m_body->m_tx.position = m_body->m_worldCenter -
-        q3Mul( m_body->m_tx.rotation, m_body->m_localCenter );
+    body()->m_tx.position = body()->m_worldCenter -
+        q3Mul( body()->m_tx.rotation, body()->m_localCenter );
 
     q3AABB aabb;
-    q3Transform tx = m_body->m_tx;
+    q3Transform tx = body()->m_tx;
 
     for(auto &box : boxes())
     {
         box.ComputeAABB( tx, &aabb );
-        broadphase->Update( box.m_box->broadPhaseIndex, aabb );
+        broadphase->Update( box.box()->broadPhaseIndex, aabb );
     }
 }
 
@@ -544,3 +545,7 @@ q3BodyRef::q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer)
     : m_container(m_bodyContainer)
     , m_scene(scene)
 {};
+
+q3Body* q3BodyRef::body() const {
+   return &m_container->m_bodies[m_bodyIndex];
+}

@@ -56,7 +56,7 @@ q3BodyRef* q3Container::create( const q3BodyDef& def ) {
 }
 
 void q3Container::remove( q3BodyRef &body ) {
-    u32 index = body.m_body->m_containerIndex;
+    u32 index = body.m_bodyIndex;
     q3BodyRef *ref;
 
     for(auto box : body.m_boxes) {
@@ -66,7 +66,7 @@ void q3Container::remove( q3BodyRef &body ) {
     m_bodies[index] = m_bodies.back();
     ref = m_bodyPtrs[index] = m_bodyPtrs.back();
 
-    assert(ref->m_body->m_containerIndex == m_bodies.back().m_containerIndex);
+    assert(ref->body()->m_containerIndex == m_bodies.back().m_containerIndex);
 
     ref->setContainerIndex(index);
 
@@ -76,7 +76,7 @@ void q3Container::remove( q3BodyRef &body ) {
 }
 
 void q3Container::remove( q3BodyRef &body, q3BoxRef &box ) {
-    u32 index = box.m_box->m_containerIndex;
+    u32 index = box.m_boxIndex;
     q3BoxRef *ref;
 
     m_boxes[index] = m_boxes.back();

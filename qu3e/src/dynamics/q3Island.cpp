@@ -48,7 +48,7 @@ void q3Island::Solve( )
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
     {
         q3BodyRef *bodyRef = m_bodies[ i ];
-        q3Body *body = bodyRef->m_body;
+        q3Body *body = bodyRef->body();
         q3VelocityState *v = m_velocities + i;
 
         if ( body->m_flags & q3Body::eDynamic )
@@ -101,7 +101,7 @@ void q3Island::Solve( )
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
     {
         q3BodyRef *bodyRef = m_bodies[ i ];
-        q3Body *body = bodyRef->m_body;
+        q3Body *body = bodyRef->body();
         q3VelocityState *v = m_velocities + i;
 
         if ( body->m_flags & q3Body::eStatic )
@@ -124,7 +124,7 @@ void q3Island::Solve( )
         for ( i32 i = 0; i < m_bodyCount; ++i )
         {
             q3BodyRef* bodyRef = m_bodies[ i ];
-            q3Body *body = bodyRef->m_body;
+            q3Body *body = bodyRef->body();
 
             if ( body->m_flags & q3Body::eStatic )
                 continue;
@@ -164,7 +164,7 @@ void q3Island::Add( q3BodyRef *body )
 {
     assert( m_bodyCount < m_bodyCapacity );
 
-    body->m_body->m_islandIndex = m_bodyCount;
+    body->body()->m_islandIndex = m_bodyCount;
 
     m_bodies[ m_bodyCount++ ] = body;
 }
@@ -187,8 +187,8 @@ void q3Island::Initialize( )
 
         q3ContactConstraintState *c = m_contactStates + i;
 
-        A = cc->bodyA->m_body;
-        B = cc->bodyB->m_body;
+        A = cc->bodyA->body();
+        B = cc->bodyB->body();
 
         c->centerA = A->m_worldCenter;
         c->centerB = B->m_worldCenter;

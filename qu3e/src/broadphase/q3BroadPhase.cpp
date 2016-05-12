@@ -56,14 +56,14 @@ q3BroadPhase::~q3BroadPhase( )
 void q3BroadPhase::InsertBox( q3BoxRef *box, const q3AABB& aabb )
 {
     i32 id = m_tree.Insert( aabb, box );
-    box->m_box->broadPhaseIndex = id;
+    box->box()->broadPhaseIndex = id;
     BufferMove( id );
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3BroadPhase::RemoveBox( const q3BoxRef *box )
 {
-    m_tree.Remove( box->m_box->broadPhaseIndex );
+    m_tree.Remove( box->box()->broadPhaseIndex );
 }
 
 //--------------------------------------------------------------------------------------------------

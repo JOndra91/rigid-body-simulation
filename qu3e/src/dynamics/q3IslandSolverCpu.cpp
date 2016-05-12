@@ -64,7 +64,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
     q3BodyRef** stack = (q3BodyRef**)s_stack->Allocate( sizeof( q3Body* ) * stackSize );
     for ( auto seedRef : scene->m_container.bodies() )
     {
-        q3Body *seed = seedRef->m_body;
+        q3Body *seed = seedRef->body();
         // Seed cannot be apart of an island already
         if ( seed->m_flags & q3Body::eIsland )
             continue;
@@ -100,7 +100,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
             // formations as small as possible, however the static
             // body itself should be apart of the island in order
             // to properly represent a full contact
-            if ( body->m_body->m_flags & q3Body::eStatic )
+            if ( body->body()->m_flags & q3Body::eStatic )
                 continue;
 
             // Search all contacts connected to this body
@@ -118,7 +118,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
                     continue;
 
                 // Skip sensors
-                if ( contact->A->m_box->sensor || contact->B->m_box->sensor )
+                if ( contact->A->box()->sensor || contact->B->box()->sensor )
                     continue;
 
                 // Mark island flag and add to island
@@ -128,13 +128,13 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
                 // Attempt to add the other body in the contact to the island
                 // to simulate contact awakening propogation
                 q3BodyRef* other = edge->other;
-                if ( other->m_body->m_flags & q3Body::eIsland )
+                if ( other->body()->m_flags & q3Body::eIsland )
                     continue;
 
                 assert( stackCount < stackSize );
 
                 stack[ stackCount++ ] = other;
-                other->m_body->m_flags |= q3Body::eIsland;
+                other->body()->m_flags |= q3Body::eIsland;
             }
         }
 
@@ -152,7 +152,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
         // This allows static bodies to participate in other island formations
         for ( i32 i = 0; i < island.m_bodyCount; i++ )
         {
-            q3Body *body = island.m_bodies[ i ]->m_body;
+            q3Body *body = island.m_bodies[ i ]->body();
 
             if ( body->m_flags & q3Body::eStatic )
                 body->m_flags &= ~q3Body::eIsland;

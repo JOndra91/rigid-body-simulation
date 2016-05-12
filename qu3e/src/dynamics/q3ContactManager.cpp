@@ -49,7 +49,7 @@ void q3ContactManager::AddContact( q3BoxRef *A, q3BoxRef *B )
 {
     q3BodyRef *bodyA = A->getBodyRef();
     q3BodyRef *bodyB = B->getBodyRef();
-    if ( !bodyA->CanCollide( bodyB->m_body ) )
+    if ( !bodyA->CanCollide( bodyB->body() ) )
         return;
 
     // Search for existing matching contact
@@ -79,8 +79,8 @@ void q3ContactManager::AddContact( q3BoxRef *A, q3BoxRef *B )
     contact->bodyB = bodyB;
     contact->manifold.SetPair( A, B );
     contact->m_flags = 0;
-    contact->friction = q3MixFriction( A->m_box, B->m_box );
-    contact->restitution = q3MixRestitution( A->m_box, B->m_box );
+    contact->friction = q3MixFriction( A->box(), B->box() );
+    contact->restitution = q3MixRestitution( A->box(), B->box() );
     contact->manifold.contactCount = 0;
 
     for ( i32 i = 0; i < 8; ++i )
@@ -198,8 +198,8 @@ void q3ContactManager::TestCollisions( void )
     {
         q3BoxRef *A = constraint->A;
         q3BoxRef *B = constraint->B;
-        q3Body *bodyA = A->m_body;
-        q3Body *bodyB = B->m_body;
+        q3Body *bodyA = A->body();
+        q3Body *bodyB = B->body();
 
         if ( !bodyA->CanCollide( bodyB ) )
         {
@@ -216,7 +216,7 @@ void q3ContactManager::TestCollisions( void )
         }
 
         // Check if contact should persist
-        if ( !m_broadphase.TestOverlap( A->m_box->broadPhaseIndex, B->m_box->broadPhaseIndex ) )
+        if ( !m_broadphase.TestOverlap( A->box()->broadPhaseIndex, B->box()->broadPhaseIndex ) )
         {
             q3ContactConstraint* next = constraint->next;
             RemoveContact( constraint );
@@ -303,7 +303,7 @@ void q3ContactManager::RenderContacts( q3Render* render ) const
             render->SetPenPosition( c->position.x, c->position.y, c->position.z );
             render->Point( );
 
-            if ( m->A->m_body->IsAwake( ) )
+            if ( m->A->body()->IsAwake( ) )
                 render->SetPenColor( 1.0f, 1.0f, 1.0f );
             else
                 render->SetPenColor( 0.2f, 0.2f, 0.2f );

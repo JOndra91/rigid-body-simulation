@@ -479,14 +479,14 @@ void q3SupportEdge( const q3Transform& tx, const q3Vec3& e, q3Vec3 n, q3Vec3* aO
 // https://box2d.googlecode.com/files/Box2D_Lite.zip
 void q3BoxtoBox( q3Manifold* m, q3BoxRef* a, q3BoxRef* b )
 {
-    q3Transform atx = a->m_body->GetTransform( );
-    q3Transform btx = b->m_body->GetTransform( );
-    q3Transform aL = a->m_box->local;
-    q3Transform bL = b->m_box->local;
+    q3Transform atx = a->body()->GetTransform( );
+    q3Transform btx = b->body()->GetTransform( );
+    q3Transform aL = a->box()->local;
+    q3Transform bL = b->box()->local;
     atx = q3Mul( atx, aL );
     btx = q3Mul( btx, bL );
-    q3Vec3 eA = a->m_box->e;
-    q3Vec3 eB = b->m_box->e;
+    q3Vec3 eA = a->box()->e;
+    q3Vec3 eB = b->box()->e;
 
     // B's frame in A's space
     q3Mat3 C = q3Transpose( atx.rotation ) * btx.rotation;

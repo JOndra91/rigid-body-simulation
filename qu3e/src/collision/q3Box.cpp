@@ -222,16 +222,24 @@ q3BoxRef::q3BoxRef(q3Container *container)
  : m_container(container)
 {}
 
-void q3BoxRef::setBodyIndex(u32 bodyIndex) {
-    m_body = &m_container->m_bodies[bodyIndex];
-    m_box->m_bodyIndex = bodyIndex;
+void q3BoxRef::setBodyIndex(u32 index) {
+    m_bodyIndex = index;
+    box()->m_bodyIndex = index;
 }
 
 void q3BoxRef::setContainerIndex(u32 index) {
-    m_box = &m_container->m_boxes[index];
-    m_box->m_containerIndex = index;
+    m_boxIndex = index;
+    box()->m_containerIndex = index;
 }
 
 q3BodyRef* q3BoxRef::getBodyRef() const {
-    return m_container->getRef(m_body);
+    return m_container->getBodyRef(m_bodyIndex);
+}
+
+q3Box* q3BoxRef::box() const {
+   return &m_container->m_boxes[m_boxIndex];
+}
+
+q3Body* q3BoxRef::body() const {
+   return &m_container->m_bodies[m_bodyIndex];
 }

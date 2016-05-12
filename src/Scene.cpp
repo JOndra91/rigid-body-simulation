@@ -131,7 +131,7 @@ void Scene::prepareScene() {
     bodyDef.bodyType = eDynamicBody;
     boxDef.Set( tx, q3Vec3( 1.0f, 1.0f, 1.0f ) );
 
-    int width = 16, height = 80, depth = 16;
+    int width = 2, height = 2, depth = 2;
 
     for ( int i = 0; i < height; ++i )
     {
@@ -224,11 +224,11 @@ void Scene::prepareBuffers(unsigned &index, const q3BoxRef* box, Vertex* vert, G
     GLuint eOffset = index * 6 * 4;
     index++;
 
-    q3Body *body = box->m_body;
+    q3Body *body = box->body();
 
     q3Transform tx = body->GetTransform();
-    q3Transform local = box->m_box->local;
-    q3Vec3 e = box->m_box->e;
+    q3Transform local = box->box()->local;
+    q3Vec3 e = box->box()->e;
 
     q3Transform world = q3Mul( tx, local );
 

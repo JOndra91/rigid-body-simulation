@@ -131,7 +131,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     q3BodyRef** stack = (q3BodyRef**)s_stack->Allocate( sizeof( q3Body* ) * stackSize );
     for ( auto seedRef : scene->m_container.bodies() )
     {
-        q3Body *seed = seedRef->m_body;
+        q3Body *seed = seedRef->body();
         // Seed cannot be apart of an island already
         if ( seed->m_flags & q3Body::eIsland )
             continue;
@@ -165,7 +165,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
             // formations as small as possible, however the static
             // body itself should be apart of the island in order
             // to properly represent a full contact
-            if ( body->m_body->m_flags & q3Body::eStatic )
+            if ( body->body()->m_flags & q3Body::eStatic )
                 continue;
 
             // Search all contacts connected to this body
@@ -183,7 +183,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                     continue;
 
                 // Skip sensors
-                if ( contact->A->m_box->sensor || contact->B->m_box->sensor )
+                if ( contact->A->box()->sensor || contact->B->box()->sensor )
                     continue;
 
                 // Mark island flag and add to island
@@ -193,13 +193,13 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                 // Attempt to add the other body in the contact to the island
                 // to simulate contact awakening propogation
                 q3BodyRef* other = edge->other;
-                if ( other->m_body->m_flags & q3Body::eIsland )
+                if ( other->body()->m_flags & q3Body::eIsland )
                     continue;
 
                 assert( stackCount < stackSize );
 
                 stack[ stackCount++ ] = other;
-                other->m_body->m_flags |= q3Body::eIsland;
+                other->body()->m_flags |= q3Body::eIsland;
             }
         }
     }
@@ -215,7 +215,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
     {
         q3BodyRef* bodyRef = m_bodies[ i ];
-        q3Body *body = bodyRef->m_body;
+        q3Body *body = bodyRef->body();
         q3VelocityStateOcl *v = m_velocities + i;
 
         if ( body->m_flags & q3Body::eDynamic )
@@ -279,8 +279,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                 q3ContactStateOcl* cs = m_contactStates + it;
                 q3ContactConstraintStateOcl *cc = m_contactConstraintStates + cs->constraintIndex;
 
-                if((bodyAllocationTable[cc->indexA] < batchIndex || (m_bodies[cc->indexA]->m_body->m_flags & q3Body::eStatic))
-                  && (bodyAllocationTable[cc->indexB] < batchIndex || (m_bodies[cc->indexB]->m_body->m_flags & q3Body::eStatic)))
+                if((bodyAllocationTable[cc->indexA] < batchIndex || (m_bodies[cc->indexA]->body()->m_flags & q3Body::eStatic))
+                  && (bodyAllocationTable[cc->indexB] < batchIndex || (m_bodies[cc->indexB]->body()->m_flags & q3Body::eStatic)))
                 {
                     bodyAllocationTable[cc->indexA] = batchIndex;
                     bodyAllocationTable[cc->indexB] = batchIndex;
@@ -336,7 +336,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
     {
         q3BodyRef* bodyRef = m_bodies[ i ];
-        q3Body *body = bodyRef->m_body;
+        q3Body *body = bodyRef->body();
         q3VelocityStateOcl *v = m_velocities + i;
 
         if ( body->m_flags & q3Body::eStatic )
@@ -359,7 +359,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         for ( i32 i = 0; i < m_bodyCount; ++i )
         {
             q3BodyRef* bodyRef = m_bodies[ i ];
-            q3Body *body = bodyRef->m_body;
+            q3Body *body = bodyRef->body();
 
             if ( body->m_flags & q3Body::eStatic )
                 continue;
@@ -479,7 +479,7 @@ void q3IslandSolverOcl::Add( q3BodyRef *body )
 {
     assert( m_bodyCount < m_bodyCapacity );
 
-    body->m_body->m_islandIndex = m_bodyCount;
+    body->body()->m_islandIndex = m_bodyCount;
 
     m_bodies[ m_bodyCount++ ] = body;
 }
@@ -503,8 +503,8 @@ void q3IslandSolverOcl::InitializeContacts() {
 
         q3ContactConstraintStateOcl *c = m_contactConstraintStates + i;
 
-        A = cc->bodyA->m_body;
-        B = cc->bodyB->m_body;
+        A = cc->bodyA->body();
+        B = cc->bodyB->body();
 
         c->centerA = A->m_worldCenter;
         c->centerB = B->m_worldCenter;

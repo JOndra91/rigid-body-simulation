@@ -187,6 +187,7 @@ class q3BodyRef
     q3Scene *m_scene;
     void *m_userData;
     list<q3BoxRef> m_boxes;
+    u32 m_bodyIndex;
 
     q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer);
 
@@ -200,7 +201,7 @@ class q3BodyRef
 
 public:
 
-    q3Body *m_body;
+    q3Body* body() const;
 
     q3ContactEdge* m_contactList;
 
@@ -224,91 +225,91 @@ public:
     //-------------------------------------------------------------------------
 
     inline void ApplyLinearForce( const q3Vec3& force ) {
-        m_body->ApplyLinearForce( force );
+        body()->ApplyLinearForce( force );
     }
 
     inline void ApplyForceAtWorldPoint( const q3Vec3& force, const q3Vec3& point ) {
-        m_body->ApplyForceAtWorldPoint( force, point );
+        body()->ApplyForceAtWorldPoint( force, point );
     }
 
     inline void ApplyTorque( const q3Vec3& torque ) {
-        m_body->ApplyTorque( torque );
+        body()->ApplyTorque( torque );
     }
 
     inline void SetToAwake( ) {
-        m_body->SetToAwake( );
+        body()->SetToAwake( );
     }
 
     inline void SetToSleep( ) {
-        m_body->SetToSleep( );
+        body()->SetToSleep( );
     }
 
     inline bool IsAwake( ) const {
-        return m_body->IsAwake( );
+        return body()->IsAwake( );
     }
 
     inline r32 GetGravityScale( ) const {
-        return m_body->GetGravityScale( );
+        return body()->GetGravityScale( );
     }
 
     inline void SetGravityScale( r32 scale ) {
-        m_body->SetGravityScale( scale );
+        body()->SetGravityScale( scale );
     }
 
     inline const q3Vec3 GetLocalPoint( const q3Vec3& p ) const {
-        return m_body->GetLocalPoint( p );
+        return body()->GetLocalPoint( p );
     }
 
     inline const q3Vec3 GetLocalVector( const q3Vec3& v ) const {
-        return m_body->GetLocalVector( v );
+        return body()->GetLocalVector( v );
     }
 
     inline const q3Vec3 GetWorldPoint( const q3Vec3& p ) const {
-        return m_body->GetWorldPoint( p );
+        return body()->GetWorldPoint( p );
     }
 
     inline const q3Vec3 GetWorldVector( const q3Vec3& v ) const {
-        return m_body->GetWorldVector( v );
+        return body()->GetWorldVector( v );
     }
 
     inline const q3Vec3 GetLinearVelocity( ) const {
-        return m_body->GetLinearVelocity( );
+        return body()->GetLinearVelocity( );
     }
 
     inline void SetLinearVelocity( const q3Vec3& v ) {
-        m_body->SetLinearVelocity( v );
+        body()->SetLinearVelocity( v );
     }
 
     inline const q3Vec3 GetAngularVelocity( ) const {
-        return m_body->GetAngularVelocity( );
+        return body()->GetAngularVelocity( );
     }
 
     inline void SetAngularVelocity( const q3Vec3 v ) {
-        m_body->SetAngularVelocity( v );
+        body()->SetAngularVelocity( v );
     }
 
     inline bool CanCollide( const q3Body *other ) const {
-        return m_body->CanCollide( other );
+        return body()->CanCollide( other );
     }
 
     inline const q3Transform GetTransform( ) const {
-        return m_body->GetTransform( );
+        return body()->GetTransform( );
     }
 
     inline i32 GetFlags( ) const {
-        return m_body->GetFlags( );
+        return body()->GetFlags( );
     }
 
     inline void SetLayers( i32 layers ) {
-        m_body->SetLayers( layers );
+        body()->SetLayers( layers );
     }
 
     inline i32 GetLayers( ) const {
-        return m_body->GetLayers( );
+        return body()->GetLayers( );
     }
 
     inline const q3Quaternion GetQuaternion( ) const {
-        return m_body->GetQuaternion( );
+        return body()->GetQuaternion( );
     }
 
 

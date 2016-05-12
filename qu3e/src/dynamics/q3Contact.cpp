@@ -35,7 +35,7 @@ void q3Manifold::SetPair( q3BoxRef *a, q3BoxRef *b )
     A = a;
     B = b;
 
-    sensor = A->m_box->sensor || B->m_box->sensor;
+    sensor = A->box()->sensor || B->box()->sensor;
 }
 
 // Generate contact information
