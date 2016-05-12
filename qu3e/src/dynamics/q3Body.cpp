@@ -90,9 +90,8 @@ q3Body::q3Body( const q3BodyDef& def)
 
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::setBodyIndex(u32 index) {
-    q3Body *body = &m_container->m_bodies[index];
-    body->m_bodyIndex = index;
     m_bodyIndex = index;
+    body()->m_bodyIndex = index;
 
     for(auto &box : *m_boxRefPtrs) {
         box->setBodyIndex(index);
