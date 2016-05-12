@@ -186,7 +186,7 @@ class q3BodyRef
     q3Container *m_container;
     q3Scene *m_scene;
     void *m_userData;
-    list<q3BoxRef> m_boxes;
+    list<q3BoxRef> *m_boxes;
     u32 m_bodyIndex;
 
     q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer);
@@ -200,6 +200,8 @@ class q3BodyRef
     friend class q3Scene;
 
 public:
+
+    ~q3BodyRef();
 
     q3Body* body() const;
 

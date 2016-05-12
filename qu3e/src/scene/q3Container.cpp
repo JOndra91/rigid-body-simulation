@@ -59,7 +59,7 @@ void q3Container::remove( q3BodyRef &body ) {
     u32 index = body.m_bodyIndex;
     q3BodyRef *ref;
 
-    for(auto box : body.m_boxes) {
+    for(auto box : *body.m_boxes) {
         remove(body, box);
     }
 
@@ -84,7 +84,7 @@ void q3Container::remove( q3BodyRef &body, q3BoxRef &box ) {
 
     ref->setContainerIndex(index);
 
-    body.m_boxes.remove(box);
+    body.m_boxes->remove(box);
     m_boxes.pop_back();
     m_boxPtrs.pop_back();
 }

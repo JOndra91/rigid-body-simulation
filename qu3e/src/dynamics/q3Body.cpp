@@ -94,7 +94,7 @@ void q3BodyRef::setContainerIndex(u32 index) {
     body->m_containerIndex = index;
     m_bodyIndex = index;
 
-    for(auto &box : m_boxes) {
+    for(auto &box : *m_boxes) {
         box.setBodyIndex(index);
     }
 }
@@ -108,8 +108,8 @@ const q3BoxRef* q3BodyRef::AddBox( const q3BoxDef& def )
     m_container->m_boxes.push_back(q3Box());
     box = &m_container->m_boxes.back();
 
-    m_boxes.push_back(q3BoxRef(m_container));
-    ref = &m_boxes.back();
+    m_boxes->push_back(q3BoxRef(m_container));
+    ref = &m_boxes->back();
     ref->setContainerIndex(index);
     ref->setBodyIndex(body()->m_containerIndex);
     m_container->m_boxPtrs.push_back(ref);
@@ -164,11 +164,11 @@ void q3BodyRef::RemoveBox( q3BoxRef &box_ )
 //--------------------------------------------------------------------------------------------------
 void q3BodyRef::RemoveAllBoxes( )
 {
-    for(auto &box : m_boxes) {
+    for(auto &box : *m_boxes) {
         m_scene->m_contactManager.m_broadphase.RemoveBox( &box );
         m_container->remove(*this, box);
     }
-    m_boxes.clear();
+    m_boxes->clear();
 
     m_scene->m_contactManager.RemoveContactsFromBody( this );
 }
@@ -534,18 +534,24 @@ void q3BodyRef::SynchronizeProxies( )
 }
 
 std::list<q3BoxRef>& q3BodyRef::boxes() {
-    return m_boxes;
+    return *m_boxes;
 }
 
 const std::list<q3BoxRef>& q3BodyRef::boxes() const {
-    return m_boxes;
+    return *m_boxes;
 }
 
 q3BodyRef::q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer)
     : m_container(m_bodyContainer)
     , m_scene(scene)
-{};
+{
+    m_boxes = new list<q3BoxRef>();
+};
 
 q3Body* q3BodyRef::body() const {
    return &m_container->m_bodies[m_bodyIndex];
+}
+
+q3BodyRef::~q3BodyRef() {
+    delete m_boxes;
 }
