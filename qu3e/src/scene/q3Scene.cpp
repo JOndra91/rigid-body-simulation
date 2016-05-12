@@ -155,18 +155,21 @@ void q3Scene::Step( )
 //--------------------------------------------------------------------------------------------------
 q3BodyRef* q3Scene::CreateBody( const q3BodyDef& def )
 {
+    ++m_bodyCount;
     return m_container.create(def);
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::RemoveBody( q3BodyRef *body )
 {
+    --m_bodyCount;
     m_container.remove(body);
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3Scene::RemoveAllBodies( )
 {
+    m_bodyCount = 0;
     m_container.clear();
 }
 
