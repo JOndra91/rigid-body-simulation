@@ -459,6 +459,7 @@ void q3BodyRef::CalculateMassData( )
     {
         q3Identity( b.m_localCenter );
         b.m_worldCenter = b.m_tx.position;
+        *body() = b;
         return;
     }
 
