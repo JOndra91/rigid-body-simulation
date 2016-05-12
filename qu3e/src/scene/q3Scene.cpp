@@ -45,6 +45,7 @@ q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iter
     , m_boxAllocator( sizeof( q3Box ), 256 )
     , m_bodyCount( 0 )
     , m_bodyList( NULL )
+    , m_bodyListEnd( NULL )
     , m_gravity( gravity )
     , m_dt( dt )
     , m_iterations( iterations )
@@ -160,13 +161,16 @@ q3Body* q3Scene::CreateBody( const q3BodyDef& def )
     new (body) q3Body( def, this );
 
     // Add body to scene bodyList
-    body->m_prev = NULL;
-    body->m_next = m_bodyList;
+    body->m_prev = m_bodyListEnd;
+    body->m_next = NULL;
 
-    if ( m_bodyList )
-        m_bodyList->m_prev = body;
+    if ( m_bodyList == NULL )
+        m_bodyList = body;
 
-    m_bodyList = body;
+    if ( m_bodyListEnd )
+        m_bodyListEnd->m_next = body;
+
+    m_bodyListEnd = body;
     ++m_bodyCount;
 
     return body;
@@ -190,6 +194,8 @@ void q3Scene::RemoveBody( q3Body* body )
 
     if ( body == m_bodyList )
         m_bodyList = body->m_next;
+    else if ( body == m_bodyListEnd )
+        m_bodyListEnd = body->m_prev;
 
     --m_bodyCount;
 
@@ -213,6 +219,7 @@ void q3Scene::RemoveAllBodies( )
     }
 
     m_bodyList = NULL;
+    m_bodyListEnd = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------

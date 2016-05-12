@@ -155,6 +155,7 @@ private:
 
     i32 m_bodyCount;
     q3Body* m_bodyList;
+    q3Body* m_bodyListEnd;
 
     q3Stack m_stack;
     q3Heap m_heap;
