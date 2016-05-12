@@ -152,7 +152,7 @@ void Main::init(bool _renderingEnabled) {
     if(renderingEnabled) {
 
         sdlWindow = SDL_CreateWindow(
-                "Rigid body simulation on GPU (sort of) ALPHA",
+                "Rigid body simulation on GPU (sort of) Stable",
                 SDL_WINDOWPOS_UNDEFINED,
                 SDL_WINDOWPOS_UNDEFINED,
                 1200,
