@@ -107,7 +107,7 @@ Scene::~Scene() {
 }
 
 void Scene::prepareScene() {
-    const q3Box *box;
+    const q3BoxRef *box;
     int numColors = (sizeof(Scene::colors) / sizeof(u8vec3)) - 1;
     int colorIndex = 0;
 
@@ -116,7 +116,7 @@ void Scene::prepareScene() {
 
     q3BodyDef bodyDef;
 
-    q3Body *b = scene.CreateBody(bodyDef);
+    q3BodyRef *b = scene.CreateBody(bodyDef);
 
     q3BoxDef boxDef;
     boxDef.SetRestitution(0.0f);
@@ -218,17 +218,17 @@ void Scene::render() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Scene::prepareBuffers(unsigned &index, const q3Box* box, Vertex* vert, GLuint* elem) {
+void Scene::prepareBuffers(unsigned &index, const q3BoxRef* box, Vertex* vert, GLuint* elem) {
     Vertex *boxVerticies = vert + (index * 6 * 4);
     GLuint *boxElements = elem + (index * 6 * 5);
     GLuint eOffset = index * 6 * 4;
     index++;
 
-    q3Body *body = box->body;
+    q3Body *body = box->m_body;
 
     q3Transform tx = body->GetTransform();
-    q3Transform local = box->local;
-    q3Vec3 e = box->e;
+    q3Transform local = box->m_box->local;
+    q3Vec3 e = box->m_box->e;
 
     q3Transform world = q3Mul( tx, local );
 

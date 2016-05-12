@@ -36,6 +36,7 @@
 //--------------------------------------------------------------------------------------------------
 class q3BroadPhase;
 class q3Body;
+class q3BodyRef;
 struct q3ContactConstraint;
 
 struct q3VelocityState
@@ -77,11 +78,11 @@ struct q3ContactConstraintState
 struct q3Island
 {
     void Solve( );
-    void Add( q3Body *body );
+    void Add( q3BodyRef *body );
     void Add( q3ContactConstraint *contact );
     void Initialize( );
 
-    q3Body **m_bodies;
+    q3BodyRef **m_bodies;
     q3VelocityState *m_velocities;
     i32 m_bodyCapacity;
     i32 m_bodyCount;

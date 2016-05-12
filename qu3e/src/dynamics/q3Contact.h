@@ -101,7 +101,7 @@ struct q3Manifold
 
 struct q3ContactEdge
 {
-    q3Body *other;
+    q3BodyRef *other;
     q3ContactConstraint *constraint;
     q3ContactEdge* next;
     q3ContactEdge* prev;

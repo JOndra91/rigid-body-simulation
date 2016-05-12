@@ -84,7 +84,6 @@ class q3BoxRef
     mutable void *m_userData;
 
     q3BoxRef(q3Container *container);
-    // q3BoxRef(const q3BoxRef &other);
 
     void setBodyIndex(u32 bodyIndex);
     void setContainerIndex(u32 index);
@@ -105,6 +104,10 @@ public:
     }
 
     q3BodyRef* getBodyRef() const;
+
+    bool operator==( const q3BoxRef& other ) {
+        return m_box == other.m_box;
+    }
 
     //-------------------------------------------------------------------------
 

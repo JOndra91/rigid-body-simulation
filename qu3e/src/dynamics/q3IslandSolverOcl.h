@@ -89,14 +89,14 @@ struct q3IslandSolverOcl : q3IslandSolver
     void PreSolveContacts( void );
     void SolveContacts( void );
 
-    void Add( q3Body *body );
+    void Add( q3BodyRef *body );
     void Add( q3ContactConstraint *contact );
 
     q3ContactConstraintStateOcl *m_contactConstraintStates;
     q3ContactStateOcl *m_contactStates;
     q3ContactConstraint **m_contactConstraints;
     q3VelocityStateOcl *m_velocities;
-    q3Body **m_bodies;
+    q3BodyRef **m_bodies;
 
     q3Scene *m_scene;
 

@@ -28,7 +28,7 @@ namespace gmu {
         Camera *camera;
         RenderShaderProgram renderProgram;
         q3Scene scene;
-        std::vector<const q3Box*> boxes;
+        std::vector<const q3BoxRef*> boxes;
         GLuint vao, vbo, ebo;
         GLint uModel, uView, uProjection;
         GLint uColor;
@@ -37,7 +37,7 @@ namespace gmu {
         GLenum polygonMode;
 
         void prepareScene();
-        static void prepareBuffers(unsigned &index, const q3Box *b, Vertex *vert, GLuint *elem);
+        static void prepareBuffers(unsigned &index, const q3BoxRef *b, Vertex *vert, GLuint *elem);
     public:
         int loop;
         Scene(q3OpenCLDevice device);

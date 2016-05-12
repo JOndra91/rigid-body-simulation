@@ -66,35 +66,26 @@ public:
     void remove( q3BodyRef &body, q3BoxRef &box );
     void clear();
 
-    q3BodyRef* getBodyRef(u32 index) const;
-    q3BoxRef* getBoxRef(u32 index) const;
-    q3BodyRef* getRef(const q3Body* body) const;
-    q3BoxRef* getRef(const q3Box* box) const;
+    inline vector<q3BodyRef*> bodies() const {
+        return m_bodyPtrs;
+    }
 
-    list<q3BodyRef>::iterator begin();
-    list<q3BodyRef>::iterator end();
+    inline q3BodyRef* getBodyRef(u32 index) const {
+        return m_bodyPtrs[index];
+    }
 
-    list<q3BodyRef>::const_iterator begin() const;
-    list<q3BodyRef>::const_iterator end() const;
+    inline q3BoxRef* getBoxRef(u32 index) const {
+        return m_boxPtrs[index];
+    }
+
+    inline q3BodyRef* getRef(const q3Body* body) const {
+        return getBodyRef(body->m_containerIndex);
+    }
+
+    inline q3BoxRef* getRef(const q3Box* box) const {
+        return getBoxRef(box->m_containerIndex);
+    }
 };
-
-// --------------------------------- INLINE -----------------------------------
-
-q3BodyRef* q3Container::getBodyRef(u32 index) const {
-    return m_bodyPtrs[index];
-}
-
-q3BoxRef* q3Container::getBoxRef(u32 index) const {
-    return m_boxPtrs[index];
-}
-
-q3BodyRef* q3Container::getRef(const q3Body* body) const {
-    return getBodyRef(body->m_containerIndex);
-}
-
-q3BoxRef* q3Container::getRef(const q3Box* box) const {
-    return getBoxRef(box->m_containerIndex);
-}
 
 
 #endif // Q3BODY_CONTAINER_H

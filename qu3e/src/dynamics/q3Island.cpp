@@ -34,6 +34,7 @@
 #include "../common/q3Settings.h"
 #include "../broadphase/q3BroadPhase.h"
 #include "q3Contact.h"
+#include "../scene/q3Container.h"
 
 #include "../debug/q3Timers.h"
 
@@ -46,7 +47,8 @@ void q3Island::Solve( )
     // Integrate velocities and create state buffers, calculate world inertia
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
     {
-        q3Body *body = m_bodies[ i ];
+        q3BodyRef *bodyRef = m_bodies[ i ];
+        q3Body *body = bodyRef->m_body;
         q3VelocityState *v = m_velocities + i;
 
         if ( body->m_flags & q3Body::eDynamic )
@@ -98,7 +100,8 @@ void q3Island::Solve( )
     // Integrate positions
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
     {
-        q3Body *body = m_bodies[ i ];
+        q3BodyRef *bodyRef = m_bodies[ i ];
+        q3Body *body = bodyRef->m_body;
         q3VelocityState *v = m_velocities + i;
 
         if ( body->m_flags & q3Body::eStatic )
@@ -120,7 +123,8 @@ void q3Island::Solve( )
         f32 minSleepTime = Q3_R32_MAX;
         for ( i32 i = 0; i < m_bodyCount; ++i )
         {
-            q3Body* body = m_bodies[ i ];
+            q3BodyRef* bodyRef = m_bodies[ i ];
+            q3Body *body = bodyRef->m_body;
 
             if ( body->m_flags & q3Body::eStatic )
                 continue;
@@ -156,11 +160,11 @@ void q3Island::Solve( )
 }
 
 //--------------------------------------------------------------------------------------------------
-void q3Island::Add( q3Body *body )
+void q3Island::Add( q3BodyRef *body )
 {
     assert( m_bodyCount < m_bodyCapacity );
 
-    body->m_islandIndex = m_bodyCount;
+    body->m_body->m_islandIndex = m_bodyCount;
 
     m_bodies[ m_bodyCount++ ] = body;
 }
@@ -176,22 +180,26 @@ void q3Island::Add( q3ContactConstraint *contact )
 //--------------------------------------------------------------------------------------------------
 void q3Island::Initialize( )
 {
+    q3Body *A, *B;
     for ( i32 i = 0; i < m_contactCount; ++i )
     {
         q3ContactConstraint *cc = m_contacts[ i ];
 
         q3ContactConstraintState *c = m_contactStates + i;
 
-        c->centerA = cc->bodyA->m_worldCenter;
-        c->centerB = cc->bodyB->m_worldCenter;
-        c->iA = cc->bodyA->m_invInertiaWorld;
-        c->iB = cc->bodyB->m_invInertiaWorld;
-        c->mA = cc->bodyA->m_invMass;
-        c->mB = cc->bodyB->m_invMass;
+        A = cc->bodyA->m_body;
+        B = cc->bodyB->m_body;
+
+        c->centerA = A->m_worldCenter;
+        c->centerB = B->m_worldCenter;
+        c->iA = A->m_invInertiaWorld;
+        c->iB = B->m_invInertiaWorld;
+        c->mA = A->m_invMass;
+        c->mB = B->m_invMass;
         c->restitution = cc->restitution;
         c->friction = cc->friction;
-        c->indexA = cc->bodyA->m_islandIndex;
-        c->indexB = cc->bodyB->m_islandIndex;
+        c->indexA = A->m_islandIndex;
+        c->indexB = B->m_islandIndex;
         c->normal = cc->manifold.normal;
         c->tangentVectors[ 0 ] = cc->manifold.tangentVectors[ 0 ];
         c->tangentVectors[ 1 ] = cc->manifold.tangentVectors[ 1 ];

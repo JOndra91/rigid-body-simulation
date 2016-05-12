@@ -189,7 +189,6 @@ class q3BodyRef
     list<q3BoxRef> m_boxes;
 
     q3BodyRef(q3Scene *scene, q3Container *m_bodyContainer);
-    // q3BodyRef(const q3BodyRef &other); // Disable public copy constructor
 
     void SynchronizeProxies( );
     void CalculateMassData( );
@@ -212,7 +211,7 @@ public:
     // of their owning body. Boxes cannot be defined relative to one
     // another. The body will recalculate its mass values. No contacts
     // will be created until the next q3Scene::Step( ) call.
-    const q3BoxRef& AddBox( const q3BoxDef& def );
+    const q3BoxRef* AddBox( const q3BoxDef& def );
 
     // Removes this box from the body and broadphase. Forces the body
     // to recompute its mass if the body is dynamic. Frees the memory

@@ -47,7 +47,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
     i32 s_bodyCount = scene->m_bodyCount;
     island.m_bodyCapacity = s_bodyCount;
     island.m_contactCapacity = scene->m_contactManager.m_contactCount;
-    island.m_bodies = (q3Body**)s_stack->Allocate( sizeof( q3Body* ) * s_bodyCount );
+    island.m_bodies = (q3BodyRef**)s_stack->Allocate( sizeof( q3BodyRef* ) * s_bodyCount );
     island.m_velocities = (q3VelocityState *)s_stack->Allocate( sizeof( q3VelocityState ) * s_bodyCount );
     island.m_contacts = (q3ContactConstraint **)s_stack->Allocate( sizeof( q3ContactConstraint* ) * island.m_contactCapacity );
     island.m_contactStates = (q3ContactConstraintState *)s_stack->Allocate( sizeof( q3ContactConstraintState ) * island.m_contactCapacity );
@@ -61,9 +61,10 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
 
     // Build each active island and then solve each built island
     i32 stackSize = s_bodyCount;
-    q3Body** stack = (q3Body**)s_stack->Allocate( sizeof( q3Body* ) * stackSize );
-    for ( q3Body* seed = scene->m_bodyList; seed; seed = seed->m_next )
+    q3BodyRef** stack = (q3BodyRef**)s_stack->Allocate( sizeof( q3Body* ) * stackSize );
+    for ( auto seedRef : scene->m_container.bodies() )
     {
+        q3Body *seed = seedRef->m_body;
         // Seed cannot be apart of an island already
         if ( seed->m_flags & q3Body::eIsland )
             continue;
@@ -78,7 +79,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
             continue;
 
         i32 stackCount = 0;
-        stack[ stackCount++ ] = seed;
+        stack[ stackCount++ ] = seedRef;
         island.m_bodyCount = 0;
         island.m_contactCount = 0;
 
@@ -89,7 +90,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
         while( stackCount > 0 )
         {
             // Decrement stack to implement iterative backtracking
-            q3Body *body = stack[ --stackCount ];
+            q3BodyRef *body = stack[ --stackCount ];
             island.Add( body );
 
             // Awaken all bodies connected to the island
@@ -99,7 +100,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
             // formations as small as possible, however the static
             // body itself should be apart of the island in order
             // to properly represent a full contact
-            if ( body->m_flags & q3Body::eStatic )
+            if ( body->m_body->m_flags & q3Body::eStatic )
                 continue;
 
             // Search all contacts connected to this body
@@ -117,7 +118,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
                     continue;
 
                 // Skip sensors
-                if ( contact->A->sensor || contact->B->sensor )
+                if ( contact->A->m_box->sensor || contact->B->m_box->sensor )
                     continue;
 
                 // Mark island flag and add to island
@@ -126,14 +127,14 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
 
                 // Attempt to add the other body in the contact to the island
                 // to simulate contact awakening propogation
-                q3Body* other = edge->other;
-                if ( other->m_flags & q3Body::eIsland )
+                q3BodyRef* other = edge->other;
+                if ( other->m_body->m_flags & q3Body::eIsland )
                     continue;
 
                 assert( stackCount < stackSize );
 
                 stack[ stackCount++ ] = other;
-                other->m_flags |= q3Body::eIsland;
+                other->m_body->m_flags |= q3Body::eIsland;
             }
         }
 
@@ -151,7 +152,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
         // This allows static bodies to participate in other island formations
         for ( i32 i = 0; i < island.m_bodyCount; i++ )
         {
-            q3Body *body = island.m_bodies[ i ];
+            q3Body *body = island.m_bodies[ i ]->m_body;
 
             if ( body->m_flags & q3Body::eStatic )
                 body->m_flags &= ~q3Body::eIsland;

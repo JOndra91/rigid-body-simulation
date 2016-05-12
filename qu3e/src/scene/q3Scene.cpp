@@ -44,7 +44,7 @@ q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iter
     : m_contactManager( &m_stack )
     , m_boxAllocator( sizeof( q3Box ), 256 )
     , m_bodyCount( 0 )
-    , m_bodyContainer(this)
+    , m_container(this)
     , m_gravity( gravity )
     , m_dt( dt )
     , m_iterations( iterations )
@@ -103,7 +103,7 @@ void q3Scene::Step( )
     q3TimerPrint("subStep", " Test collisions");
     q3TimerStart("subStep");
 
-    for(auto &body : m_bodyContainer.m_bodies) {
+    for(auto &body : m_container.m_bodies) {
         body.m_flags = body.m_flags & ~q3Body::eIsland;;
     }
 
@@ -121,7 +121,7 @@ void q3Scene::Step( )
     q3TimerStart("subStep");
 
     // Update the broadphase AABBs
-    for(auto &body : m_bodyContainer.m_bodyRefs) {
+    for(auto &body : m_container.m_bodyRefs) {
         if ( body.m_body->m_flags & q3Body::eStatic )
             continue;
 
@@ -140,7 +140,7 @@ void q3Scene::Step( )
     q3TimerStart("subStep");
 
     // Clear all forces
-    for(auto &body : m_bodyContainer.m_bodies) {
+    for(auto &body : m_container.m_bodies) {
         q3Identity( body.m_force );
         q3Identity( body.m_torque );
     }
@@ -155,7 +155,7 @@ void q3Scene::Step( )
 //--------------------------------------------------------------------------------------------------
 q3BodyRef* q3Scene::CreateBody( const q3BodyDef& def )
 {
-    return m_bodyContainer.create(def);
+    return m_container.create(def);
     // q3Body* body = (q3Body*)m_heap.Allocate( sizeof( q3Body ) );
     // new (body) q3Body( def, this );
     //
@@ -175,7 +175,7 @@ q3BodyRef* q3Scene::CreateBody( const q3BodyDef& def )
 //--------------------------------------------------------------------------------------------------
 void q3Scene::RemoveBody( q3BodyRef *body )
 {
-    m_bodyContainer.remove(*body);
+    m_container.remove(*body);
     // assert( m_bodyCount > 0 );
     //
     // m_contactManager.RemoveContactsFromBody( body );
@@ -200,7 +200,7 @@ void q3Scene::RemoveBody( q3BodyRef *body )
 //--------------------------------------------------------------------------------------------------
 void q3Scene::RemoveAllBodies( )
 {
-    m_bodyContainer.clear();
+    m_container.clear();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -210,8 +210,8 @@ void q3Scene::SetAllowSleep( bool allowSleep )
 
     if ( !allowSleep )
     {
-        for(auto &body : m_bodyContainer) {
-            body.SetToAwake( );
+        for(auto body : m_container.bodies()) {
+            body->SetToAwake( );
         }
     }
 }
@@ -231,9 +231,9 @@ void q3Scene::SetEnableFriction( bool enabled )
 //--------------------------------------------------------------------------------------------------
 void q3Scene::Render( q3Render* render ) const
 {
-    for (auto &body : m_bodyContainer)
+    for (const auto body : m_container.bodies())
     {
-        body.Render( render );
+        body->Render( render );
     }
 
     m_contactManager.RenderContacts( render );
@@ -373,8 +373,8 @@ void q3Scene::Dump( FILE* file ) const
     fprintf( file, "q3Body** bodies = (q3Body**)q3Alloc( sizeof( q3Body* ) * %d );\n", m_bodyCount );
 
     i32 i = 0;
-    for(auto &body : m_bodyContainer) {
-        body.Dump(file, i);
+    for(auto body : m_container.bodies()) {
+        body->Dump(file, i);
     }
 
     fprintf( file, "q3Free( bodies );\n" );

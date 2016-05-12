@@ -96,19 +96,3 @@ void q3Container::clear() {
     m_bodyPtrs.clear();
     m_boxPtrs.clear();
 }
-
-list<q3BodyRef>::iterator q3Container::begin() {
-    return m_bodyRefs.begin();
-}
-
-list<q3BodyRef>::iterator q3Container::end() {
-    return m_bodyRefs.end();
-}
-
-list<q3BodyRef>::const_iterator q3Container::begin() const {
-    return m_bodyRefs.begin();
-}
-
-list<q3BodyRef>::const_iterator q3Container::end() const {
-    return m_bodyRefs.end();
-}

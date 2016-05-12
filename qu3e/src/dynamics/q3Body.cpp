@@ -99,7 +99,7 @@ void q3BodyRef::setContainerIndex(u32 index) {
 }
 
 //--------------------------------------------------------------------------------------------------
-const q3BoxRef& q3BodyRef::AddBox( const q3BoxDef& def )
+const q3BoxRef* q3BodyRef::AddBox( const q3BoxDef& def )
 {
     q3Box *box;
     q3BoxRef *ref;
@@ -130,7 +130,7 @@ const q3BoxRef& q3BodyRef::AddBox( const q3BoxDef& def )
     m_scene->m_contactManager.m_broadphase.InsertBox( ref, aabb );
     m_scene->m_newBox = true;
 
-    return *ref;
+    return ref;
 }
 
 //--------------------------------------------------------------------------------------------------

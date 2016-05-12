@@ -156,7 +156,7 @@ private:
     q3IslandSolver *m_islandSolver;
 
     i32 m_bodyCount;
-    q3Container m_bodyContainer;
+    q3Container m_container;
 
     q3Stack m_stack;
     q3Heap m_heap;

@@ -58,7 +58,7 @@ void q3ContactManager::AddContact( q3BoxRef *A, q3BoxRef *B )
     q3ContactEdge* edge = A->getBodyRef()->m_contactList;
     while ( edge )
     {
-        if ( edge->other == bodyB->m_body )
+        if ( edge->other == bodyB )
         {
             q3BoxRef *shapeA = edge->constraint->A;
             q3BoxRef *shapeB = edge->constraint->B;
@@ -94,7 +94,7 @@ void q3ContactManager::AddContact( q3BoxRef *A, q3BoxRef *B )
 
     // Connect A
     contact->edgeA.constraint = contact;
-    contact->edgeA.other = bodyB->m_body;
+    contact->edgeA.other = bodyB;
 
     contact->edgeA.prev = NULL;
     contact->edgeA.next = bodyA->m_contactList;
@@ -104,7 +104,7 @@ void q3ContactManager::AddContact( q3BoxRef *A, q3BoxRef *B )
 
     // Connect B
     contact->edgeB.constraint = contact;
-    contact->edgeB.other = bodyA->m_body;
+    contact->edgeB.other = bodyA;
 
     contact->edgeB.prev = NULL;
     contact->edgeB.next = bodyB->m_contactList;
