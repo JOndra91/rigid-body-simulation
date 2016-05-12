@@ -1,5 +1,6 @@
 #include <iostream>
 #include <csignal>
+#include <cstdio>
 
 #include "Main.hpp"
 #include "Exceptions.hpp"
@@ -16,6 +17,8 @@ void sigintHandler(int signal) {
 int main(int argc, char **argv) {
     signal(SIGINT, sigintHandler);
     bool render = true;
+    int limit = -1;
+    bool pause = false;
 
     for(int i = 1; i < argc; i++) {
         string arg(argv[i]);
@@ -30,6 +33,13 @@ int main(int argc, char **argv) {
         else if(arg == "--no-render") {
             render = false;
         }
+        else if(arg == "--limit") {
+            assert(++i < argc);
+            limit = atoi(argv[i]);
+        }
+        else if(arg == "--pause") {
+            pause = true;
+        }
         else {
             fprintf(stderr, "%s: Invalid argument\n", arg.c_str());
             exit(1);
@@ -37,7 +47,7 @@ int main(int argc, char **argv) {
     }
 
     try {
-        program.init(render);
+        program.init(render, pause, limit);
 
         program.run();
     } catch (string &str) {
@@ -130,7 +140,7 @@ drop:
             #endif
         }
 
-       if(scene->loop > 500) {
+       if(limit > 0 && scene->loop > limit) {
          quit();
        }
 
@@ -139,9 +149,10 @@ quit:
     onQuit();
 }
 
-void Main::init(bool _renderingEnabled) {
+void Main::init(bool _renderingEnabled, bool _pause, int _limit) {
 
     renderingEnabled = _renderingEnabled;
+    limit = _limit;
 
     if (SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
         throw string("SDL_Init failed.");
@@ -195,6 +206,8 @@ void Main::init(bool _renderingEnabled) {
 
         registerProcessor(scene);
     }
+
+    scene->pause = _pause;
 }
 
 void Main::onQuit() {

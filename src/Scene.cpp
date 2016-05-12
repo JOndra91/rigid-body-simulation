@@ -34,7 +34,7 @@ const u8vec3 Scene::colors[] = {
 };
 
 Scene::Scene(q3OpenCLDevice device) : vao(0), vbo(0), ebo(0),
-    scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 20), loop(0) {
+    scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 20), loop(0), pause(false) {
 
     prepareScene();
 }
@@ -302,6 +302,10 @@ void Scene::prepareBuffers(unsigned &index, const q3BoxRef* box, Vertex* vert, G
 
 
 void Scene::step(float time, float delta) {
+    if(pause) {
+        return;
+    }
+
     std::cout << "Loop: " << loop << std::endl;
     // printf("Delta: %f", scene.m_dt);
     scene.Step();
@@ -331,6 +335,11 @@ IEventListener::EventResponse Scene::onEvent(SDL_Event* evt) {
                     polygonMode = GL_FILL;
                     break;
             }
+            return EVT_PROCESSED;
+        }
+        else if(e->keysym.sym == SDLK_SPACE) {
+            pause = !pause;
+            printf("Pause: %d\n", pause);
             return EVT_PROCESSED;
         }
     }

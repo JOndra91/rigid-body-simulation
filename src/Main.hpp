@@ -22,12 +22,13 @@ namespace gmu {
         Scene *scene;
         q3OpenCLDevice clDev;
         bool renderingEnabled;
+        int limit;
 
     public:
         Main();
         ~Main();
         void run();
-        void init(bool renderingEnabled);
+        void init(bool renderingEnabled, bool pause, int limit);
         void onQuit();
         void release();
 
