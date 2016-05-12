@@ -305,6 +305,11 @@ void Scene::step(float time, float delta) {
     std::cout << "Loop: " << loop << std::endl;
     // printf("Delta: %f", scene.m_dt);
     scene.Step();
+    // char filename[255];
+    // sprintf(filename, "dump/%03d", loop);
+    // FILE *f = fopen(filename, "w");
+    // scene.Dump(f);
+    // fclose(f);
 
     ++loop;
 }
