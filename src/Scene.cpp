@@ -34,9 +34,9 @@ const u8vec3 Scene::colors[] = {
     u8vec3(128,128,128), // Static box color
 };
 
-Scene::Scene(q3OpenCLDevice device) : vao(0), vbo(0), ebo(0),
-    scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 20), loop(0), pause(false),
-    debug(false) {
+Scene::Scene(q3OpenCLDevice device)
+    : scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 20)
+    , vao(0), vbo(0), ebo(0), loop(0), pause(false), debug(false) {
 
     prepareScene();
 }
