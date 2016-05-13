@@ -146,7 +146,9 @@ void q3Scene::Step( )
         q3Identity( body.m_torque );
     }
 
+    q3TimerStop("subStep");
     q3TimerStop("step");
+    q3TimerPrint("subStep", " Clear forces");
     q3TimerPrint("step", "Step");
     #ifdef TIMERS_ENABLED
         std::cout << "====================================" << std::endl;
