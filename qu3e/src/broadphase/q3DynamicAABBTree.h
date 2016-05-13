@@ -29,6 +29,7 @@
 
 #include "../math/q3Math.h"
 #include "../common/q3Geometry.h"
+#include <vector>
 
 //--------------------------------------------------------------------------------------------------
 // q3DynamicAABBTree
@@ -87,11 +88,6 @@ private:
             i32 right;
         };
 
-        // Since only leaf nodes hold userdata, we can use the
-        // same memory used for left/right indices to store
-        // the userdata void pointer
-        void *userData;
-
         // leaf = 0, free nodes = -1
         i32 height;
 
@@ -114,7 +110,9 @@ private:
     void AddToFreeList( i32 index );
 
     i32 m_root;
+    std::vector<Node> m_nodeVector;
     Node *m_nodes;
+    std::vector<void*> m_userData;
     i32 m_count;    // Number of active nodes
     i32 m_capacity;    // Max capacity of nodes
     i32 m_freeList;

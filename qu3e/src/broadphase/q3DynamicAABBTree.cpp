@@ -47,16 +47,16 @@ q3DynamicAABBTree::q3DynamicAABBTree( )
 
     m_capacity = 1024;
     m_count = 0;
-    m_nodes = (Node *)q3Alloc( sizeof( Node ) * m_capacity );
+    m_nodeVector.resize(m_capacity);
+    m_nodes = m_nodeVector.data();
+    m_userData.resize(m_capacity);
 
     AddToFreeList( 0 );
 }
 
 //--------------------------------------------------------------------------------------------------
 q3DynamicAABBTree::~q3DynamicAABBTree( )
-{
-    q3Free( m_nodes );
-}
+{}
 
 //--------------------------------------------------------------------------------------------------
 i32 q3DynamicAABBTree::Insert( const q3AABB& aabb, void *userData )
@@ -66,7 +66,7 @@ i32 q3DynamicAABBTree::Insert( const q3AABB& aabb, void *userData )
     // Fatten AABB and set height/userdata
     m_nodes[ id ].aabb = aabb;
     FattenAABB( m_nodes[id].aabb );
-    m_nodes[ id ].userData = userData;
+    m_userData[ id ] = userData;
     m_nodes[ id ].height = 0;
 
     InsertLeaf( id );
@@ -105,7 +105,7 @@ void *q3DynamicAABBTree::GetUserData( i32 id ) const
 {
     assert( id >= 0 && id < m_capacity );
 
-    return m_nodes[ id ].userData;
+    return m_userData[ id ];
 }
 
 const q3AABB& q3DynamicAABBTree::GetFatAABB( i32 id ) const
@@ -221,11 +221,10 @@ i32 q3DynamicAABBTree::AllocateNode( )
 {
     if ( m_freeList == Node::Null )
     {
-        m_capacity *= 2;
-        Node *newNodes = (Node *)q3Alloc( sizeof( Node ) * m_capacity );
-        memcpy( newNodes, m_nodes, sizeof( Node ) * m_count );
-        q3Free( m_nodes );
-        m_nodes = newNodes;
+        m_nodeVector.resize(m_capacity * 2);
+        m_userData.resize(m_capacity * 2);
+        m_capacity = m_nodeVector.size();
+        m_nodes = m_nodeVector.data();
 
         AddToFreeList( m_count );
     }
@@ -236,7 +235,7 @@ i32 q3DynamicAABBTree::AllocateNode( )
     m_nodes[ freeNode ].left = Node::Null;
     m_nodes[ freeNode ].right = Node::Null;
     m_nodes[ freeNode ].parent = Node::Null;
-    m_nodes[ freeNode ].userData = NULL;
+    m_userData[ freeNode ] = NULL;
     ++m_count;
     return freeNode;
 }
@@ -437,7 +436,7 @@ void q3DynamicAABBTree::InsertLeaf( i32 id )
     i32 oldParent = m_nodes[sibling].parent;
     i32 newParent = AllocateNode( );
     m_nodes[ newParent ].parent = oldParent;
-    m_nodes[ newParent ].userData = NULL;
+    m_userData[ newParent ] = NULL;
     m_nodes[ newParent ].aabb = q3Combine( leafAABB, m_nodes[sibling].aabb );
     m_nodes[ newParent ].height = m_nodes[sibling].height + 1;
 
