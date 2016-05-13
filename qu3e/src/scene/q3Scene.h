@@ -33,6 +33,7 @@
 #include "../common/q3OpenCL.h"
 #include "../dynamics/q3ContactManager.h"
 #include "../dynamics/q3IslandSolver.h"
+#include <CL/cl.hpp>
 
 //--------------------------------------------------------------------------------------------------
 // q3Scene
@@ -170,6 +171,8 @@ private:
     bool m_newBox;
     bool m_allowSleep;
     bool m_enableFriction;
+
+    cl::Context m_clContext;
 
     friend class q3Body;
     friend struct q3IslandSolverCpu;

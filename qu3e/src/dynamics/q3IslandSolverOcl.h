@@ -80,7 +80,7 @@ struct q3ContactConstraintStateOcl
 //--------------------------------------------------------------------------------------------------
 struct q3IslandSolverOcl : q3IslandSolver
 {
-    q3IslandSolverOcl(cl_device_type dev = CL_DEVICE_TYPE_DEFAULT);
+    q3IslandSolverOcl(cl::Context *ctx);
     ~q3IslandSolverOcl();
 
     void Solve( q3Scene *scene ) override;
@@ -110,7 +110,7 @@ struct q3IslandSolverOcl : q3IslandSolver
     //-----------------------------------------------------------
     // Properties for OpenCL acceleration
     //-----------------------------------------------------------
-    cl::Context m_clContext;
+    cl::Context *m_clContext;
     cl::Program m_clProgram;
     cl::Kernel m_clKernelPreSolve;
     cl::Kernel m_clKernelSolve;

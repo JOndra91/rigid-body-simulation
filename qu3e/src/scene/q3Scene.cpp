@@ -65,8 +65,9 @@ q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iter
             default:
                 clDevType = CL_DEVICE_TYPE_DEFAULT;
         }
+        m_clContext = createCLContext(clDevType);
 
-        m_islandSolver = new q3IslandSolverOcl(clDevType);
+        m_islandSolver = new q3IslandSolverOcl(&m_clContext);
     }
     else {
         m_islandSolver = new q3IslandSolverCpu();

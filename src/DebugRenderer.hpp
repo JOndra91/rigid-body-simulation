@@ -1,9 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <q3.h>
 #include <vector>
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <q3.h>
 
 namespace gmu {
 
