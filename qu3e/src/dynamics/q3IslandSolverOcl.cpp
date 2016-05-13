@@ -85,7 +85,8 @@ q3IslandSolverOcl::q3IslandSolverOcl(cl::Context *ctx)
     m_clContext = ctx;
     m_clQueue = cl::CommandQueue(*m_clContext);
 
-    m_clProgram = buildProgramFromSourceString(*m_clContext, kernelSource);
+    // m_clProgram = buildProgramFromSourceString(*m_clContext, kernelSource);
+    m_clProgram = buildProgramFromSource(*m_clContext, "./qu3e/kernels/q3ContactSolverOcl.cl");
 
     std::vector<cl::Kernel> kernels;
     m_clProgram.createKernels(&kernels);
