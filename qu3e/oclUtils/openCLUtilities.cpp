@@ -223,7 +223,7 @@ cl::Program buildProgramFromSource(cl::Context context, std::string filename, st
             std::istreambuf_iterator<char>(sourceFile),
             (std::istreambuf_iterator<char>()));
 
-        buildProgramFromSourceString(context, sourceCode, buildOptions);
+        return buildProgramFromSourceString(context, sourceCode, buildOptions);
 
 }
 
