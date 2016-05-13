@@ -6,6 +6,7 @@
 
 #include "Scene.hpp"
 #include "Main.hpp"
+#include "DebugRenderer.hpp"
 
 using namespace gmu;
 
@@ -34,7 +35,8 @@ const u8vec3 Scene::colors[] = {
 };
 
 Scene::Scene(q3OpenCLDevice device) : vao(0), vbo(0), ebo(0),
-    scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 20), loop(0), pause(false) {
+    scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 20), loop(0), pause(false),
+    debug(false) {
 
     prepareScene();
 }
@@ -46,6 +48,8 @@ Scene::Scene(Camera *_camera, q3OpenCLDevice device) : Scene(device) {
 
     string vertexShaderFile("./shaders/shader.vert");
     string fragmentShaderFile("./shaders/shader.frag");
+    string vertexDebugShaderFile("./shaders/debug-shader.vert");
+    string fragmentDebugShaderFile("./shaders/debug-shader.frag");
 
     registerRenderer(camera);
 
@@ -55,6 +59,14 @@ Scene::Scene(Camera *_camera, q3OpenCLDevice device) : Scene(device) {
     renderProgram.setVertexShaderFromFile(vertexShaderFile);
     renderProgram.setFragmenShaderFromFile(fragmentShaderFile);
 
+    renderDebugProgram.setVertexShaderFromFile(vertexDebugShaderFile);
+    renderDebugProgram.setFragmenShaderFromFile(fragmentDebugShaderFile);
+
+    GLuint debugProgram = renderDebugProgram.getProgram();
+    if (debugProgram == 0) {
+        throw string("Could not compile debug render program.");
+    }
+
     GLuint program = renderProgram.getProgram();
     if (program == 0) {
         throw string("Could not compile render program.");
@@ -62,7 +74,6 @@ Scene::Scene(Camera *_camera, q3OpenCLDevice device) : Scene(device) {
 
     uProjection = glGetUniformLocation(program, "projection");
     uView = glGetUniformLocation(program, "view");
-    uModel = glGetUniformLocation(program, "model");
 
     uSunPosition = glGetUniformLocation(program, "sunPosition");
     uSunColor = glGetUniformLocation(program, "sunColor");
@@ -213,6 +224,8 @@ void Scene::render() {
     glUniformMatrix4fv(uProjection, 1, GL_FALSE, (GLfloat*) & projMat);
 
     glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
     glPolygonMode(GL_FRONT, polygonMode);
 
@@ -232,6 +245,51 @@ void Scene::render() {
     glDisable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
 
     glBindVertexArray(0);
+
+    if(debug) {
+        DebugRenderer debugRenderer;
+        scene.RenderBroadphase(&debugRenderer);
+
+        glUseProgram(renderDebugProgram.getProgram());
+
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+
+        glUniformMatrix4fv(uView, 1, GL_FALSE, (GLfloat*) & viewMat);
+        glUniformMatrix4fv(uProjection, 1, GL_FALSE, (GLfloat*) & projMat);
+
+        GLuint lvbo, lebo;
+
+        glGenBuffers(1, &lvbo);
+        glBindBuffer(GL_ARRAY_BUFFER, lvbo);
+
+        glEnableVertexAttribArray(aPosition);
+        glVertexAttribPointer(aPosition, 3, GL_FLOAT, GL_FALSE, sizeof (DebugRenderer::Vertex),
+            (GLvoid*) offsetof(DebugRenderer::Vertex, position));
+
+        glEnableVertexAttribArray(aColor);
+        glVertexAttribPointer(aColor, 4, GL_FLOAT, GL_TRUE, sizeof (DebugRenderer::Vertex),
+            (GLvoid*) offsetof(DebugRenderer::Vertex, color));
+
+        glGenBuffers(1, &lebo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lebo);
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(DebugRenderer::Vertex) * debugRenderer.lines.size(),
+            debugRenderer.lines.data(), GL_STREAM_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * debugRenderer.lineIndicies.size(),
+            debugRenderer.lineIndicies.data(), GL_STREAM_DRAW);
+
+        glEnable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
+        glDrawElements(GL_LINE_STRIP, debugRenderer.lineIndicies.size(), GL_UNSIGNED_INT, 0);
+        glDisable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        glDeleteBuffers(1, &lvbo);
+        glDeleteBuffers(1, &lebo);
+    }
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -340,6 +398,10 @@ IEventListener::EventResponse Scene::onEvent(SDL_Event* evt) {
         else if(e->keysym.sym == SDLK_SPACE) {
             pause = !pause;
             printf("Pause: %d\n", pause);
+            return EVT_PROCESSED;
+        } else if(e->keysym.sym == SDLK_TAB) {
+            debug = !debug;
+            printf("Debug: %d\n", debug);
             return EVT_PROCESSED;
         }
     }

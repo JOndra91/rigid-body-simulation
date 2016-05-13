@@ -119,7 +119,6 @@ void q3DynamicAABBTree::Render( q3Render *render ) const
 {
     if ( m_root != Node::Null )
     {
-        render->SetPenColor( 0.5f, 0.5f, 1.0f );
         RenderNode( render, m_root );
     }
 }
@@ -127,6 +126,11 @@ void q3DynamicAABBTree::Render( q3Render *render ) const
 void q3DynamicAABBTree::RenderNode( q3Render *render, i32 index ) const
 {
     assert( index >= 0 && index < m_capacity );
+
+    int r = ((index * 34 + 76) % 13) * 79;
+    int g = ((index * 247 + 33) % 896) * 714;
+    int bl = ((index * 11 + 45468) % 3347) * 8768;
+    render->SetPenColor( (r % 128 + 128) / 256.0f, (g % 128 + 128) / 256.0f, (bl % 128 + 128) / 256.0f );
 
     Node *n = m_nodes + index;
     const q3AABB& b = n->aabb;

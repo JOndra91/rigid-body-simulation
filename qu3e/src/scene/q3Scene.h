@@ -114,6 +114,8 @@ public:
     // the current simulation step.
     void Render( q3Render* render ) const;
 
+    void RenderBroadphase( q3Render* render ) const;
+
     // Gets and sets the global gravity vector used during integration
     const q3Vec3 GetGravity( ) const;
     void SetGravity( const q3Vec3& gravity );

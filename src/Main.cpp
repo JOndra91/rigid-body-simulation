@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
     bool render = true;
     int limit = -1;
     bool pause = false;
+    bool debug = false;
 
     for(int i = 1; i < argc; i++) {
         string arg(argv[i]);
@@ -40,6 +41,9 @@ int main(int argc, char **argv) {
         else if(arg == "--pause") {
             pause = true;
         }
+        else if(arg == "--debug") {
+            debug = true;
+        }
         else {
             fprintf(stderr, "%s: Invalid argument\n", arg.c_str());
             exit(1);
@@ -47,7 +51,7 @@ int main(int argc, char **argv) {
     }
 
     try {
-        program.init(render, pause, limit);
+        program.init(render, pause, limit, debug);
 
         program.run();
     } catch (string &str) {
@@ -149,7 +153,7 @@ quit:
     onQuit();
 }
 
-void Main::init(bool _renderingEnabled, bool _pause, int _limit) {
+void Main::init(bool _renderingEnabled, bool _pause, int _limit, bool _debug) {
 
     renderingEnabled = _renderingEnabled;
     limit = _limit;
@@ -208,6 +212,7 @@ void Main::init(bool _renderingEnabled, bool _pause, int _limit) {
     }
 
     scene->pause = _pause;
+    scene->debug = _debug;
 }
 
 void Main::onQuit() {

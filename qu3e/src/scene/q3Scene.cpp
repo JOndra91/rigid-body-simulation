@@ -207,7 +207,11 @@ void q3Scene::Render( q3Render* render ) const
     }
 
     m_contactManager.RenderContacts( render );
-    //m_contactManager.m_broadphase.m_tree.Render( render );
+}
+//--------------------------------------------------------------------------------------------------
+void q3Scene::RenderBroadphase( q3Render* render ) const
+{
+    m_contactManager.m_broadphase.m_tree.Render( render );
 }
 
 //--------------------------------------------------------------------------------------------------

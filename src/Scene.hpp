@@ -17,21 +17,21 @@ namespace gmu {
 
     class Scene : public IRenderer, public IProcessor, public IEventListener, public RegistrablesContainer {
     private:
-        typedef struct {
+        struct Vertex {
             vec3 position;
             vec3 normal;
             u8vec3 color;
-        } Vertex;
+        };
 
         const static u8vec3 colors[];
 
         Camera *camera;
         RenderShaderProgram renderProgram;
+        RenderShaderProgram renderDebugProgram;
         q3Scene scene;
         std::vector<const q3BoxRef*> boxes;
         GLuint vao, vbo, ebo;
-        GLint uModel, uView, uProjection;
-        GLint uColor;
+        GLint uView, uProjection;
         GLint aPosition, aNormal, aColor;
         GLint uSunPosition, uSunColor;
         GLenum polygonMode;
@@ -41,6 +41,7 @@ namespace gmu {
     public:
         int loop;
         bool pause;
+        bool debug;
         Scene(q3OpenCLDevice device);
         Scene(Camera *camera, q3OpenCLDevice device);
 

@@ -28,7 +28,7 @@ namespace gmu {
         Main();
         ~Main();
         void run();
-        void init(bool renderingEnabled, bool pause, int limit);
+        void init(bool renderingEnabled, bool pause, int limit, bool debug);
         void onQuit();
         void release();
 
