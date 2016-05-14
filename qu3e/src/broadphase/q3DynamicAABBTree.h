@@ -29,6 +29,7 @@
 
 #include "../math/q3Math.h"
 #include "../common/q3Geometry.h"
+#include "../common/q3OpenCL.h"
 #include <vector>
 
 //--------------------------------------------------------------------------------------------------
@@ -92,7 +93,7 @@ private:
         i32 height;
 
         static const i32 Null = -1;
-    };
+    } ALIGNED;
 
     inline i32 AllocateNode( );
     inline void DeallocateNode( i32 index );
@@ -116,6 +117,8 @@ private:
     i32 m_count;    // Number of active nodes
     i32 m_capacity;    // Max capacity of nodes
     i32 m_freeList;
+
+    friend class q3ContactManagerOcl;
 };
 
 #include "q3DynamicAABBTree.inl"

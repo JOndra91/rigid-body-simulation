@@ -56,6 +56,7 @@ class q3Container {
     friend class q3BodyRef;
     friend class q3BoxRef;
     friend class q3Scene;
+    friend class q3ContactManagerOcl;
 
 public:
     q3Container(q3Scene *scene);

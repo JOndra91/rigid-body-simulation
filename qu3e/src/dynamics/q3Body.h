@@ -110,11 +110,11 @@ private:
     enum
     {
         eAwake        = 0x001,
-        eActive        = 0x002,
-        eAllowSleep    = 0x004,
-        eIsland        = 0x010,
-        eStatic        = 0x020,
-        eDynamic    = 0x040,
+        eActive       = 0x002,
+        eAllowSleep   = 0x004,
+        eIsland       = 0x010,
+        eStatic       = 0x020,
+        eDynamic      = 0x040,
         eKinematic    = 0x080,
         eLockAxisX    = 0x100,
         eLockAxisY    = 0x200,
@@ -160,7 +160,7 @@ private:
 
     // void SynchronizeProxies( );
     // void CalculateMassData( );
-};
+} ALIGNED;
 
 
 using std::vector;
@@ -199,6 +199,9 @@ class q3BodyRef
 
     friend class q3Container;
     friend class q3Scene;
+    friend class q3ContactManagerOcl;
+    friend struct q3ManifoldOcl;
+    friend struct q3ContactConstraintOcl;
 
 public:
 

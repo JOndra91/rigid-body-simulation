@@ -39,15 +39,6 @@
 #define assert_size(type, size) assert(sizeof(type) == size)
 //#define assert_size(type, size) do { std::cout << "sizeof(" << # type << ") = " << sizeof(type) << std::endl; assert(sizeof(type) == size); } while(0)
 
-#define CEIL_TO(a, ceil) ((a - 1 + ceil)/ceil) * ceil
-
-cl_int clErr;
-#define CHECK_CL_ERROR(info) do { \
-        if(clErr) { \
-            std::cerr << "OpenCL error: \"" info "\" (" \
-                << getCLErrorString(clErr) << ")" << std::endl; \
-        } \
-    } while(0)
 
 #ifdef NO_KERNEL_SOURCE
 std::string kernelSource = "";
@@ -119,6 +110,7 @@ q3IslandSolverOcl::~q3IslandSolverOcl( void ) {
 //--------------------------------------------------------------------------------------------------
 void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
+    cl_int clErr;
     i32 s_bodyCount = scene->m_bodyCount;
     q3Stack *s_stack = &(scene->m_stack);
     q3ContactManager *s_manager = &(scene->m_contactManager);
@@ -260,11 +252,11 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         InitializeContacts();
 
         m_clBufferVelocity = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities, &clErr);
-        CHECK_CL_ERROR("Buffer q3VelocityStateOcl");
+        CHECK_CL_ERROR(clErr, "Buffer q3VelocityStateOcl");
         m_clBufferContactState = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates, &clErr);
-        CHECK_CL_ERROR("Buffer q3ContactStateOcl");
+        CHECK_CL_ERROR(clErr, "Buffer q3ContactStateOcl");
         m_clBufferContactConstraintState = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates, &clErr);
-        CHECK_CL_ERROR("Buffer q3ContactConstraintStateOcl");
+        CHECK_CL_ERROR(clErr, "Buffer q3ContactConstraintStateOcl");
 
         m_clGC.addMemObject(m_clBufferVelocity);
         m_clGC.addMemObject(m_clBufferContactState);
@@ -308,7 +300,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         } while(!contactsToPlan.empty());
 
         m_clBufferBatches = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint) * m_clBatches.size(), m_clBatches.data(), &clErr);
-        CHECK_CL_ERROR("Buffer batches");
+        CHECK_CL_ERROR(clErr, "Buffer batches");
 
         m_clGC.addMemObject(m_clBufferBatches);
 
@@ -316,9 +308,9 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         SolveContacts();
 
         clErr = m_clQueue.enqueueReadBuffer(*m_clBufferVelocity, true, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
-        CHECK_CL_ERROR("Read buffer q3VelocityStateOcl");
+        CHECK_CL_ERROR(clErr, "Read buffer q3VelocityStateOcl");
         clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, true, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates);
-        CHECK_CL_ERROR("Read buffer q3ContactStateOcl");
+        CHECK_CL_ERROR(clErr, "Read buffer q3ContactStateOcl");
     }
 
     q3TimerStop("solve");
@@ -417,50 +409,52 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 //--------------------------------------------------------------------------------------------------
 void q3IslandSolverOcl::PreSolveContacts()
 {
+    cl_int clErr;
     clErr = m_clKernelPreSolve.setArg(0, *m_clBufferVelocity);
-    CHECK_CL_ERROR("Set pre-solve kernel param 0 (velocity)");
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param 0 (velocity)");
     clErr = m_clKernelPreSolve.setArg(1, *m_clBufferContactConstraintState);
-    CHECK_CL_ERROR("Set pre-solve kernel param 1 (contact constraint state)");
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param 1 (contact constraint state)");
     clErr = m_clKernelPreSolve.setArg(2, *m_clBufferContactState);
-    CHECK_CL_ERROR("Set pre-solve kernel param 2 (contact state)");
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param 2 (contact state)");
     clErr = m_clKernelPreSolve.setArg(3, *m_clBufferBatches);
-    CHECK_CL_ERROR("Set pre-solve kernel param 3 (batches)");
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param 3 (batches)");
     clErr = m_clKernelPreSolve.setArg(6, (cl_int)m_scene->m_enableFriction);
-    CHECK_CL_ERROR("Set pre-solve kernel param 6 (friction)");
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param 6 (friction)");
     clErr = m_clKernelPreSolve.setArg(7, (cl_float)m_scene->m_dt);
-    CHECK_CL_ERROR("Set pre-solve kernel param 7 (dt)");
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param 7 (dt)");
 
     cl_uint offset = 0;
     cl::NDRange local(m_clLocalSize);
     for(cl_uint batchSize : m_clBatchSizes)
     {
         clErr = m_clKernelPreSolve.setArg(4, offset);
-        CHECK_CL_ERROR("Set pre-solve kernel param 4 (batch offset)");
+        CHECK_CL_ERROR(clErr, "Set pre-solve kernel param 4 (batch offset)");
         clErr = m_clKernelPreSolve.setArg(5, batchSize);
-        CHECK_CL_ERROR("Set pre-solve kernel param 5 (batch size)");
+        CHECK_CL_ERROR(clErr, "Set pre-solve kernel param 5 (batch size)");
 
         offset += batchSize;
 
         cl::NDRange global(CEIL_TO(batchSize,local[0]));
 
         clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelPreSolve, cl::NullRange, global, local);
-        CHECK_CL_ERROR("Run pre-solve kernel");
+        CHECK_CL_ERROR(clErr, "Run pre-solve kernel");
     }
 }
 
 //--------------------------------------------------------------------------------------------------
 void q3IslandSolverOcl::SolveContacts( )
 {
+    cl_int clErr;
     clErr = m_clKernelSolve.setArg(0, *m_clBufferVelocity);
-    CHECK_CL_ERROR("Set solve kernel param 0 (velocity)");
+    CHECK_CL_ERROR(clErr, "Set solve kernel param 0 (velocity)");
     clErr = m_clKernelSolve.setArg(1, *m_clBufferContactConstraintState);
-    CHECK_CL_ERROR("Set solve kernel param 1 (contact constraint state)");
+    CHECK_CL_ERROR(clErr, "Set solve kernel param 1 (contact constraint state)");
     clErr = m_clKernelSolve.setArg(2, *m_clBufferContactState);
-    CHECK_CL_ERROR("Set solve kernel param 2 (contact state)");
+    CHECK_CL_ERROR(clErr, "Set solve kernel param 2 (contact state)");
     clErr = m_clKernelSolve.setArg(3, *m_clBufferBatches);
-    CHECK_CL_ERROR("Set solve kernel param 3 (batches)");
+    CHECK_CL_ERROR(clErr, "Set solve kernel param 3 (batches)");
     clErr = m_clKernelSolve.setArg(6, (cl_int)m_scene->m_enableFriction);
-    CHECK_CL_ERROR("Set solve kernel param 6 (friction)");
+    CHECK_CL_ERROR(clErr, "Set solve kernel param 6 (friction)");
 
     for(int i = 0; i < m_scene->m_iterations; ++i) {
         cl_uint offset = 0;
@@ -468,16 +462,16 @@ void q3IslandSolverOcl::SolveContacts( )
         for(cl_uint batchSize : m_clBatchSizes)
         {
             clErr = m_clKernelSolve.setArg(4, offset);
-            CHECK_CL_ERROR("Set solve kernel param 4 (batch offset)");
+            CHECK_CL_ERROR(clErr, "Set solve kernel param 4 (batch offset)");
             clErr = m_clKernelSolve.setArg(5, batchSize);
-            CHECK_CL_ERROR("Set solve kernel param 5 (batch size)");
+            CHECK_CL_ERROR(clErr, "Set solve kernel param 5 (batch size)");
 
             offset += batchSize;
 
             cl::NDRange global(CEIL_TO(batchSize,local[0]));
 
             clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelSolve, cl::NullRange, global, local);
-            CHECK_CL_ERROR("Run solve kernel");
+            CHECK_CL_ERROR(clErr, "Run solve kernel");
         }
     }
 }

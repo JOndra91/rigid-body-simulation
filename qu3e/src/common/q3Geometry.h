@@ -28,6 +28,7 @@
 #define Q3GEOMETRY_H
 
 #include "../math/q3Math.h"
+#include "q3OpenCL.h"
 
 //--------------------------------------------------------------------------------------------------
 // q3AABB
@@ -40,7 +41,7 @@ struct q3AABB
     bool Contains( const q3AABB& other ) const;
     bool Contains( const q3Vec3& point ) const;
     r32 SurfaceArea( ) const;
-};
+} ALIGNED;
 
 const q3AABB q3Combine( const q3AABB& a, const q3AABB& b );
 

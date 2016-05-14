@@ -27,6 +27,18 @@
 #ifndef Q3OPENCL_H
 #define Q3OPENCL_H
 
+
+#define ALIGNED __attribute__ ((aligned))
+
+#define CEIL_TO(a, ceil) ((a - 1 + ceil)/ceil) * ceil
+
+#define CHECK_CL_ERROR(err, info) do { \
+        if(err) { \
+            std::cerr << "OpenCL error: \"" info "\" (" \
+                << getCLErrorString(err) << ")" << std::endl; \
+        } \
+    } while(0)
+
 enum class q3OpenCLDevice {
         NONE,
 #ifdef WITH_OCL
@@ -34,8 +46,6 @@ enum class q3OpenCLDevice {
         GPU,
 #endif // WITH_OCL
 };
-
-#define ALIGNED __attribute__ ((aligned))
 
 inline bool q3IsOpenCLAccelerated(q3OpenCLDevice dev) {
     return dev != q3OpenCLDevice::NONE;

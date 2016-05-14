@@ -54,14 +54,11 @@ struct q3Box
     q3Transform local;
     q3Vec3 e;
 
-    // q3Box* next;
-    // class q3Body* body;
     r32 friction;
     r32 restitution;
     r32 density;
     i32 broadPhaseIndex;
-    // mutable void* userData;
-    mutable bool sensor;
+    mutable u32 sensor;
     u32 m_boxIndex;
     u32 m_bodyIndex;
 
@@ -72,7 +69,7 @@ struct q3Box
     void ComputeAABB( const q3Transform& tx, q3AABB* aabb ) const;
     void ComputeMass( q3MassData* md ) const;
     void Render( const q3Transform& tx, bool awake, q3Render* render ) const;
-};
+} ALIGNED;
 
 //--------------------------------------------------------------------------------------------------
 // q3BoxRef
@@ -92,6 +89,9 @@ class q3BoxRef
 
     friend class q3Container;
     friend class q3BodyRef;
+    friend class q3ContactManagerOcl;
+    friend struct q3ManifoldOcl;
+    friend struct q3ContactConstraintOcl;
 
 public:
 

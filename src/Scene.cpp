@@ -122,7 +122,7 @@ void Scene::prepareScene() {
     int numColors = (sizeof(Scene::colors) / sizeof(u8vec3)) - 1;
     int colorIndex = 0;
 
-    int width = 2, height = 4, depth = 2;
+    int width = 16, height = 80, depth = 16;
 
     boxes.clear();
     boxes.reserve(width*height*depth + 1);

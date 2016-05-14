@@ -66,7 +66,7 @@ union q3FeaturePair
     };
 
     i32 key;
-};
+} ALIGNED;
 
 struct q3Contact
 {
@@ -79,7 +79,7 @@ struct q3Contact
     r32 tangentMass[ 2 ];        // Tangent constraint mass
     q3FeaturePair fp;            // Features on A and B for this contact
     u8 warmStarted;                // Used for debug rendering
-};
+} ALIGNED;
 
 struct q3Manifold
 {

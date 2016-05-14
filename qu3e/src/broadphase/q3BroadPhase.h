@@ -82,6 +82,7 @@ private:
 
     friend class q3DynamicAABBTree;
     friend class q3Scene;
+    friend class q3ContactManagerOcl;
 };
 
 inline bool q3BroadPhase::TreeCallBack( i32 index )

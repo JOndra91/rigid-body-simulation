@@ -65,12 +65,12 @@ public:
 
     // Remove contacts without broadphase overlap
     // Solves contact manifolds
-    void TestCollisions( void );
+    virtual void TestCollisions( void );
     static void SolveCollision( void* param );
 
     void RenderContacts( q3Render* debugDrawer ) const;
 
-private:
+protected:
     q3ContactConstraint* m_contactList;
     i32 m_contactCount;
     q3Stack* m_stack;
