@@ -78,20 +78,26 @@ void q3ContactManagerOcl::TestCollisions( void )
 {
     cl_int clErr;
     Indicies *indexMemory, *indexPtr;
+    // q3Contact *contactMemory, *contactPtr;
     q3ContactConstraintOcl *constraintMemory, *constraintPtr;
     q3ManifoldOcl *manifoldMemory, *manifoldPtr;
 
     q3ContactConstraint* constraint = m_contactList;
 
-    cl::Buffer bodyBuffer(*m_clContext, CL_MEM_READ_WRITE // Read only
+    cl::Buffer bodyBuffer(*m_clContext, CL_MEM_READ_WRITE // Read only?
         , m_container->m_bodies.size() * sizeof(q3Body), NULL, &clErr
     );
     CHECK_CL_ERROR(clErr, "Buffer q3Body");
 
-    cl::Buffer boxBuffer(*m_clContext, CL_MEM_READ_WRITE // Read only
+    cl::Buffer boxBuffer(*m_clContext, CL_MEM_READ_WRITE // Read only?
         , m_container->m_boxes.size() * sizeof(q3Box), NULL, &clErr
     );
     CHECK_CL_ERROR(clErr, "Buffer q3Box");
+
+    cl::Buffer contactBuffer(*m_clContext, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR
+        , m_contactCount * 8 * sizeof(q3Contact), NULL, &clErr
+    );
+    CHECK_CL_ERROR(clErr, "Buffer q3Contact");
 
     cl::Buffer constraintBuffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR
         , m_contactCount * sizeof(q3ContactConstraintOcl), NULL, &clErr
@@ -108,10 +114,16 @@ void q3ContactManagerOcl::TestCollisions( void )
     );
     CHECK_CL_ERROR(clErr, "Buffer q3ManifoldOcl");
 
-    cl::Buffer nodeBuffer(*m_clContext, CL_MEM_READ_WRITE // Read only
+    cl::Buffer nodeBuffer(*m_clContext, CL_MEM_READ_ONLY
         , m_broadphase.m_tree.m_count * sizeof(q3DynamicAABBTree::Node), NULL, &clErr
     );
     CHECK_CL_ERROR(clErr, "Buffer q3DynamicAABBTree::Node");
+
+    indexMemory =
+        (Indicies*) m_clQueue.enqueueMapBuffer
+        ( indexBuffer, CL_TRUE, CL_MAP_WRITE, 0
+        , m_contactCount * sizeof(Indicies), NULL, NULL, &clErr);
+    CHECK_CL_ERROR(clErr, "Map buffer Indicies");
 
     indexMemory =
         (Indicies*) m_clQueue.enqueueMapBuffer

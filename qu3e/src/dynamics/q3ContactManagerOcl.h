@@ -50,18 +50,15 @@ struct Indicies
 
 struct q3ManifoldOcl
 {
-    q3Contact contacts[ 8 ];
     q3Vec3 tangentVectors[ 2 ];    // Tangent vectors
     q3Vec3 normal;                // From A to B
     i32 contactCount;
     u32 sensor;
 
     inline void load(const q3Manifold &other) {
-        contactCount = other.contactCount;
-
-        for(int i = 0; i < contactCount; ++i) {
-            contacts[i] = other.contacts[i];
-        }
+        // contactCount = 0;
+        tangentVectors[0] = other.tangentVectors[0];
+        tangentVectors[1] = other.tangentVectors[1];
 
         normal = other.normal;
         sensor = other.sensor;
@@ -71,7 +68,6 @@ struct q3ManifoldOcl
 
 struct q3ContactConstraintOcl
 {
-
     r32 friction;
     r32 restitution;
     i32 m_flags;

@@ -35,9 +35,9 @@
 //--------------------------------------------------------------------------------------------------
 struct q3Transform
 {
-    q3Vec3 position;
     q3Mat3 rotation;
-};
+    q3Vec3 position;
+} ALIGNED;
 
 #include "q3Transform.inl"
 
