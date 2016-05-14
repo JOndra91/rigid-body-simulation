@@ -33,10 +33,23 @@
 #include <CL/cl.hpp>
 #include "../common/q3OpenCL.h"
 
+struct Indicies
+{
+    u32 boxA;
+    u32 boxB;
+    u32 bodyA;
+    u32 bodyB;
+
+    inline void load(const q3ContactConstraint &other) {
+        boxA = other.A->m_boxIndex;
+        boxB = other.B->m_boxIndex;
+        bodyA = other.bodyA->m_bodyIndex;
+        bodyB = other.bodyB->m_bodyIndex;
+    };
+} ALIGNED;
+
 struct q3ManifoldOcl
 {
-    // u32 A, B; // Box indicies
-
     q3Contact contacts[ 8 ];
     q3Vec3 tangentVectors[ 2 ];    // Tangent vectors
     q3Vec3 normal;                // From A to B
@@ -59,31 +72,15 @@ struct q3ManifoldOcl
 struct q3ContactConstraintOcl
 {
 
-    // q3ManifoldOcl manifold; -- Use separate buffer buffer
-    u32 A, B; // Box indicies
-    u32 bodyA, bodyB; // Body indicies
-
     r32 friction;
     r32 restitution;
-
     i32 m_flags;
 
     inline void load(const q3ContactConstraint &other) {
-        A = other.A->m_boxIndex;
-        B = other.B->m_boxIndex;
-        bodyA = other.bodyA->m_bodyIndex;
-        bodyB = other.bodyB->m_bodyIndex;
         friction = other.friction;
         restitution = other.restitution;
         m_flags = other.m_flags;
     };
-
-    // enum
-    // {
-    //     eColliding    = 0x00000001, // Set when contact collides during a step
-    //     eWasColliding = 0x00000002, // Set when two objects stop colliding
-    //     eIsland       = 0x00000004, // For internal marking during island forming
-    // };
 } ALIGNED;
 
 //--------------------------------------------------------------------------------------------------

@@ -92,6 +92,7 @@ class q3BoxRef
     friend class q3ContactManagerOcl;
     friend struct q3ManifoldOcl;
     friend struct q3ContactConstraintOcl;
+    friend struct Indicies;
 
 public:
 
