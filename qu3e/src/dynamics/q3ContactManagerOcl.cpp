@@ -79,6 +79,7 @@ void q3ContactManagerOcl::TestCollisions( void )
     cl_int clErr;
     Indicies *indexMemory, *indexPtr;
     // q3Contact *contactMemory, *contactPtr;
+    q3OldContactOcl *oldContactMemory, *oldContactPtr;
     q3ContactConstraintOcl *constraintMemory, *constraintPtr;
     q3ManifoldOcl *manifoldMemory, *manifoldPtr;
 
@@ -98,6 +99,11 @@ void q3ContactManagerOcl::TestCollisions( void )
         , m_contactCount * 8 * sizeof(q3Contact), NULL, &clErr
     );
     CHECK_CL_ERROR(clErr, "Buffer q3Contact");
+
+    cl::Buffer oldContactBuffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR
+        , m_contactCount * 8 * sizeof(q3OldContactOcl), NULL, &clErr
+    );
+    CHECK_CL_ERROR(clErr, "Buffer q3OldContactOcl");
 
     cl::Buffer constraintBuffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR
         , m_contactCount * sizeof(q3ContactConstraintOcl), NULL, &clErr
@@ -125,11 +131,11 @@ void q3ContactManagerOcl::TestCollisions( void )
         , m_contactCount * sizeof(Indicies), NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map buffer Indicies");
 
-    indexMemory =
-        (Indicies*) m_clQueue.enqueueMapBuffer
-        ( indexBuffer, CL_TRUE, CL_MAP_WRITE, 0
-        , m_contactCount * sizeof(Indicies), NULL, NULL, &clErr);
-    CHECK_CL_ERROR(clErr, "Map buffer Indicies");
+    oldContactMemory =
+        (q3OldContactOcl*) m_clQueue.enqueueMapBuffer
+        ( oldContactBuffer, CL_TRUE, CL_MAP_WRITE, 0
+        , m_contactCount * 8 * sizeof(q3OldContactOcl), NULL, NULL, &clErr);
+    CHECK_CL_ERROR(clErr, "Map buffer q3OldContactOcl");
 
     constraintMemory =
         (q3ContactConstraintOcl*) m_clQueue.enqueueMapBuffer
@@ -146,19 +152,27 @@ void q3ContactManagerOcl::TestCollisions( void )
     indexPtr = indexMemory;
     constraintPtr = constraintMemory;
     manifoldPtr = manifoldMemory;
-    while( constraint )
+    int i = 0;
+    while(constraint)
     {
         indexPtr->load(*constraint);
+        oldContactPtr = oldContactMemory + (i * 8);
+        int contactCount = constraint->manifold.contactCount;
+        for(int j = 0; j < contactCount; ++j) {
+            oldContactPtr->load(constraint->manifold.contacts[j]);
+        }
         constraintPtr->load(*constraint);
         manifoldPtr->load(constraint->manifold);
 
         ++indexPtr;
         ++constraintPtr;
         ++manifoldPtr;
+        ++i;
         constraint = constraint->next;
     }
 
     m_clQueue.enqueueUnmapMemObject(indexBuffer, indexMemory);
+    m_clQueue.enqueueUnmapMemObject(oldContactBuffer, oldContactMemory);
     m_clQueue.enqueueUnmapMemObject(constraintBuffer, constraintMemory);
     m_clQueue.enqueueUnmapMemObject(manifoldBuffer, manifoldMemory);
 
