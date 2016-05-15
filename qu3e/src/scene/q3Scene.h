@@ -154,7 +154,7 @@ public:
     void Dump( FILE* file ) const;
 
 private:
-    q3ContactManager m_contactManager;
+    q3ContactManager *m_contactManager;
     q3PagedAllocator m_boxAllocator;
     q3IslandSolver *m_islandSolver;
 

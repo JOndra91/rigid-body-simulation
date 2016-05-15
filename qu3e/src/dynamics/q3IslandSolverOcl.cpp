@@ -41,9 +41,9 @@
 
 
 #ifdef NO_KERNEL_SOURCE
-std::string kernelSource = "";
+std::string solverKernelSource = "";
 #else
-std::string kernelSource =
+std::string solverKernelSource =
 #include "q3ContactSolverOcl.cl.str"
 ;
 #endif // NO_KERNEL_SOURCE
@@ -76,7 +76,7 @@ q3IslandSolverOcl::q3IslandSolverOcl(cl::Context *ctx)
     m_clContext = ctx;
     m_clQueue = cl::CommandQueue(*m_clContext);
 
-    // m_clProgram = buildProgramFromSourceString(*m_clContext, kernelSource);
+    // m_clProgram = buildProgramFromSourceString(*m_clContext, solverKernelSource);
     m_clProgram = buildProgramFromSource(*m_clContext, "./qu3e/kernels/q3ContactSolverOcl.cl");
 
     std::vector<cl::Kernel> kernels;
@@ -113,7 +113,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     cl_int clErr;
     i32 s_bodyCount = scene->m_bodyCount;
     q3Stack *s_stack = &(scene->m_stack);
-    q3ContactManager *s_manager = &(scene->m_contactManager);
+    q3ContactManager *s_manager = scene->m_contactManager;
 
     m_scene = scene;
 

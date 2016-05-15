@@ -32,9 +32,9 @@
 #include <openCLUtilities.hpp>
 
 #ifdef NO_KERNEL_SOURCE
-std::string kernelSource = "";
+std::string managerKernelSource = "";
 #else
-std::string kernelSource =
+std::string managerKernelSource =
 #include "q3ContactManagerOcl.cl.str"
 ;
 #endif // NO_KERNEL_SOURCE
@@ -49,7 +49,7 @@ q3ContactManagerOcl::q3ContactManagerOcl( q3Stack* stack,  q3Container *containe
 {
     m_clQueue = cl::CommandQueue(*m_clContext);
 
-    // m_clProgram = buildProgramFromSourceString(*m_clContext, kernelSource);
+    // m_clProgram = buildProgramFromSourceString(*m_clContext, managerKernelSource);
     m_clProgram = buildProgramFromSource(*m_clContext, "./qu3e/kernels/q3ContactManagerOcl.cl");
 
     std::vector<cl::Kernel> kernels;

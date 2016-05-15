@@ -47,6 +47,7 @@ set(qu3e_dynamics_srcs
 	dynamics/q3Body.cpp
 	dynamics/q3Contact.cpp
 	dynamics/q3ContactManager.cpp
+	dynamics/q3ContactManagerOcl.cpp
 	dynamics/q3ContactSolverCpu.cpp
 	dynamics/q3Island.cpp
 	dynamics/q3IslandSolverCpu.cpp
@@ -56,6 +57,7 @@ set(qu3e_dynamics_hdrs
 	dynamics/q3Body.h
 	dynamics/q3Contact.h
 	dynamics/q3ContactManager.h
+	dynamics/q3ContactManagerOcl.h
 	dynamics/q3ContactSolverCpu.h
 	dynamics/q3Island.h
 	dynamics/q3IslandSolver.h

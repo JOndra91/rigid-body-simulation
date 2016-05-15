@@ -35,14 +35,14 @@
 #include "../dynamics/q3IslandSolverCpu.h"
 #include "../dynamics/q3IslandSolverOcl.h"
 #include "../dynamics/q3ContactSolverCpu.h"
+#include "../dynamics/q3ContactManagerOcl.h"
 #include "../collision/q3Box.h"
 
 //--------------------------------------------------------------------------------------------------
 // q3Scene
 //--------------------------------------------------------------------------------------------------
 q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iterations )
-    : m_contactManager( &m_stack )
-    , m_boxAllocator( sizeof( q3Box ), 256 )
+    : m_boxAllocator( sizeof( q3Box ), 256 )
     , m_bodyCount( 0 )
     , m_container(this)
     , m_gravity( gravity )
@@ -67,9 +67,11 @@ q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iter
         }
         m_clContext = createCLContext(clDevType);
 
+        m_contactManager = new q3ContactManagerOcl(&m_stack, &m_container, &m_clContext);
         m_islandSolver = new q3IslandSolverOcl(&m_clContext);
     }
     else {
+        m_contactManager = new q3ContactManager(&m_stack);
         m_islandSolver = new q3IslandSolverCpu();
     }
 }
@@ -90,7 +92,7 @@ void q3Scene::Step( )
 
     if ( m_newBox )
     {
-        m_contactManager.m_broadphase.UpdatePairs( );
+        m_contactManager->m_broadphase.UpdatePairs( );
         m_newBox = false;
     }
 
@@ -98,7 +100,7 @@ void q3Scene::Step( )
     q3TimerPrint("subStep", " Update pairs");
     q3TimerStart("subStep");
 
-    m_contactManager.TestCollisions( );
+    m_contactManager->TestCollisions( );
 
     q3TimerStop("subStep");
     q3TimerPrint("subStep", " Test collisions");
@@ -108,7 +110,7 @@ void q3Scene::Step( )
         body.m_flags = body.m_flags & ~q3Body::eIsland;;
     }
 
-    for ( q3ContactConstraint* c = m_contactManager.m_contactList; c; c = c->next )
+    for ( q3ContactConstraint* c = m_contactManager->m_contactList; c; c = c->next )
         c->m_flags &= ~q3ContactConstraint::eIsland;
 
     q3TimerStop("subStep");
@@ -134,7 +136,7 @@ void q3Scene::Step( )
     q3TimerStart("subStep");
 
     // Look for new contacts
-    m_contactManager.FindNewContacts( );
+    m_contactManager->FindNewContacts( );
 
     q3TimerStop("subStep");
     q3TimerPrint("subStep", " Find new contacts");
@@ -209,12 +211,12 @@ void q3Scene::Render( q3Render* render ) const
         body->Render( render );
     }
 
-    m_contactManager.RenderContacts( render );
+    m_contactManager->RenderContacts( render );
 }
 //--------------------------------------------------------------------------------------------------
 void q3Scene::RenderBroadphase( q3Render* render ) const
 {
-    m_contactManager.m_broadphase.m_tree.Render( render );
+    m_contactManager->m_broadphase.m_tree.Render( render );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -240,7 +242,7 @@ void q3Scene::Shutdown( )
 //--------------------------------------------------------------------------------------------------
 void q3Scene::SetContactListener( q3ContactListener* listener )
 {
-    m_contactManager.m_contactListener = listener;
+    m_contactManager->m_contactListener = listener;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -270,9 +272,9 @@ void q3Scene::QueryAABB( q3QueryCallback *cb, const q3AABB& aabb ) const
 
     SceneQueryWrapper wrapper;
     wrapper.m_aabb = aabb;
-    wrapper.broadPhase = &m_contactManager.m_broadphase;
+    wrapper.broadPhase = &m_contactManager->m_broadphase;
     wrapper.cb = cb;
-    m_contactManager.m_broadphase.m_tree.Query( &wrapper, aabb );
+    m_contactManager->m_broadphase.m_tree.Query( &wrapper, aabb );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -299,14 +301,14 @@ void q3Scene::QueryPoint( q3QueryCallback *cb, const q3Vec3& point ) const
 
     SceneQueryWrapper wrapper;
     wrapper.m_point = point;
-    wrapper.broadPhase = &m_contactManager.m_broadphase;
+    wrapper.broadPhase = &m_contactManager->m_broadphase;
     wrapper.cb = cb;
     const r32 k_fattener = r32( 0.5 );
     q3Vec3 v( k_fattener, k_fattener, k_fattener );
     q3AABB aabb;
     aabb.min = point - v;
     aabb.max = point + v;
-    m_contactManager.m_broadphase.m_tree.Query( &wrapper, aabb );
+    m_contactManager->m_broadphase.m_tree.Query( &wrapper, aabb );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -333,9 +335,9 @@ void q3Scene::RayCast( q3QueryCallback *cb, q3RaycastData& rayCast ) const
 
     SceneQueryWrapper wrapper;
     wrapper.m_rayCast = &rayCast;
-    wrapper.broadPhase = &m_contactManager.m_broadphase;
+    wrapper.broadPhase = &m_contactManager->m_broadphase;
     wrapper.cb = cb;
-    m_contactManager.m_broadphase.m_tree.Query( &wrapper, rayCast );
+    m_contactManager->m_broadphase.m_tree.Query( &wrapper, rayCast );
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -3,12 +3,18 @@ typedef uint   u32;
 typedef float  r32;
 typedef uchar u8;
 typedef float3 q3Vec3;
+typedef float4 q3Quaternion;
 
-typedef struct
+#define Q3_R32_MAX FLT_MAX
+
+typedef union
 {
-  q3Vec3 ex;
-  q3Vec3 ey;
-  q3Vec3 ez;
+    struct {
+        q3Vec3 ex;
+        q3Vec3 ey;
+        q3Vec3 ez;
+    };
+    q3Vec3 m[3];
 } q3Mat3;
 
 typedef struct
@@ -81,7 +87,7 @@ enum bodyFlags
     eAwake        = 0x001,
     eActive       = 0x002,
     eAllowSleep   = 0x004,
-    eIsland       = 0x010,
+    // eIsland       = 0x010,
     eStatic       = 0x020,
     eDynamic      = 0x040,
     eKinematic    = 0x080,
@@ -150,7 +156,7 @@ enum constraintFlags
 {
     eColliding    = 0x00000001, // Set when contact collides during a step
     eWasColliding = 0x00000002, // Set when two objects stop colliding
-    eIsland       = 0x00000004, // For internal marking during island forming
+    // eIsland       = 0x00000004, // Not needed for openCL kernel
     eRemove       = 0x00000008,
 };
 
@@ -164,11 +170,13 @@ typedef struct
 typedef struct
 {
     q3Vec3 v;
-    q3FeaturePair f;
+    q3FeaturePairOcl f;
 } q3ClipVertex;
 
 typedef struct {
     r32 tangentImpulse[2];
+    r32 normalImpulse;
+    q3FeaturePairOcl fp;
 } q3OldContactOcl;
 
 inline q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
@@ -206,6 +214,11 @@ inline r32 q3Abs(r32 a)
     return fabs(a);
 }
 
+inline q3Vec3 vAbs(q3Vec3 a)
+{
+    return (q3Vec3)(fabs(a.x), fabs(a.y), fabs(a.z));
+}
+
 inline r32 q3Length( const q3Vec3 v )
 {
     return length(v);
@@ -221,10 +234,27 @@ inline const q3Vec3 q3Normalize( const q3Vec3 v )
 }
 
 /**
+ * Matrix vector multiplication
+ */
+inline q3Vec3 mvMul(const q3Mat3 m, const q3Vec3 v)
+{
+  return (q3Vec3)(
+    m.ex.x * v.x + m.ey.x * v.y + m.ez.x * v.z,
+    m.ex.y * v.x + m.ey.y * v.y + m.ez.y * v.z,
+    m.ex.z * v.x + m.ey.z * v.y + m.ez.z * v.z
+  );
+}
+
+/**
  * Matrix matrix multiplication
  */
-inline q3Mat3 mmMul(const q3Mat m, const q3Mat n) {
-    return m * n;
+inline q3Mat3 mmMul(const q3Mat3 m, const q3Mat3 n) {
+    q3Mat3 o;
+    o.ex = mvMul(m, n.ex);
+    o.ey = mvMul(m, n.ey);
+    o.ez = mvMul(m, n.ez);
+
+    return o;
 }
 
 /**
@@ -238,33 +268,21 @@ inline q3Transform ttMul(const q3Transform t, const q3Transform u)
     return v;
 }
 
-/**
- * Matrix vector multiplication
- */
-inline q3Vec3 mvMul(const q3Mat3 m, const q3Vec3 v)
-{
-  return (q3Vec3)(
-    m.ex.x * v.x + m.ey.x * v.y + m.ez.x * v.z,
-    m.ex.y * v.x + m.ey.y * v.y + m.ez.y * v.z,
-    m.ex.z * v.x + m.ey.z * v.y + m.ez.z * v.z
-  );
-}
-
 /*
  * Transform matrix multiplication
  */
 inline q3Vec3 tvMul(const q3Transform tx, const q3Vec3 v)
 {
-    return q3Vec3(mvMul(tx->rotation, v) + tx->position);
+    return mvMul(tx.rotation, v) + tx.position;
 }
 
 inline const q3Mat3 mTranspose( const q3Mat3 m )
 {
-    return q3Mat3(
-        m.ex.x, m.ey.x, m.ez.x,
-        m.ex.y, m.ey.y, m.ez.y,
-        m.ex.z, m.ey.z, m.ez.z
-    );
+    q3Mat3 n;
+    n.ex = (q3Vec3)(m.ex.x, m.ey.x, m.ez.x);
+    n.ey = (q3Vec3)(m.ex.y, m.ey.y, m.ez.y);
+    n.ez = (q3Vec3)(m.ex.z, m.ey.z, m.ez.z);
+    return n;
 }
 
 inline q3Vec3 mvMulT( const q3Mat3 r, const q3Vec3 v )
@@ -274,20 +292,20 @@ inline q3Vec3 mvMulT( const q3Mat3 r, const q3Vec3 v )
 
 inline q3Vec3 mCol0( const q3Mat3 m )
 {
-    return q3Vec3( m.ex.x, m.ey.x, m.ez.x );
+    return (q3Vec3)( m.ex.x, m.ey.x, m.ez.x );
 }
 
 inline q3Vec3 mCol1( const q3Mat3 m )
 {
-    return q3Vec3( m.ex.y, m.ey.y, m.ez.y );
+    return (q3Vec3)( m.ex.y, m.ey.y, m.ez.y );
 }
 
 inline q3Vec3 mCol2( const q3Mat3 m )
 {
-    return q3Vec3( m.ex.z, m.ey.z, m.ez.z );
+    return (q3Vec3)( m.ex.z, m.ey.z, m.ez.z );
 }
 
-inline void vSet(q3Vec *v, r32 x, r32 y, r32 z) {
+inline void vSet(q3Vec3 *v, r32 x, r32 y, r32 z) {
     v->x = x;
     v->y = y;
     v->z = z;
@@ -299,13 +317,13 @@ inline void mSetRows(q3Mat3 *m, q3Vec3 x, q3Vec3 y, q3Vec3 z) {
     m->ez = z;
 }
 
-inline bool bodiesCanColide(q3Body a, q3Body b);
-inline bool bodyIsAwake(q3Body body);
+inline bool bodiesCanColide(const q3Body a, const q3Body b);
+inline bool bodyIsAwake(const q3Body body);
 inline bool aabbOverlaps(q3AABB a, q3AABB b);
-void solveCollision(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
+void solveCollision(global q3ContactOcl *contacts, q3ContactConstraintOcl *c, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
 inline bool q3TrackFaceAxis(i32 *axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal);
 inline bool q3TrackEdgeAxis(i32* axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal);
-void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
+void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
 void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* out);
 void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 axis, u8* out, q3Mat3* basis, q3Vec3* e);
 void q3SupportEdge(q3Transform tx, q3Vec3 e, q3Vec3 n, q3Vec3* aOut, q3Vec3* bOut);
@@ -316,7 +334,7 @@ kernel void testCollisions
     ( const global Indicies *indexBuffer // read only
     , global q3ContactConstraintOcl *constraintBuffer
     , global q3ManifoldOcl *manifoldBuffer
-    , global q3Contact *contactBuffer
+    , global q3ContactOcl *contactBuffer
     , const global q3OldContactOcl *oldContactBuffer // read only
     , global q3Body *bodyBuffer
     , global q3Box *boxBuffer
@@ -360,32 +378,32 @@ kernel void testCollisions
     q3Vec3 ot0 = oldManifold.tangentVectors[0];
     q3Vec3 ot1 = oldManifold.tangentVectors[1];
 
-    global q3Contact *contacts = contactBuffer + (global_x * 8);
+    global q3ContactOcl *contacts = contactBuffer + (global_x * 8);
 
     // Solve collision
-    solveCollision(contacts, &manifold, &boxA, &boxB);
-    q3ComputeBasis(manifold->normal, manifold->tangentVectors, manifold->tangentVectors + 1);
+    solveCollision(contacts, &constraint, &manifold, &bodyA, &boxA, &bodyB, &boxB);
+    q3ComputeBasis(manifold.normal, manifold.tangentVectors, manifold.tangentVectors + 1);
 
     for ( i32 i = 0; i < manifold.contactCount; ++i )
     {
-        global q3Contact *c = contacts + i;
+        global q3ContactOcl *c = contacts + i;
         c->tangentImpulse[0] = c->tangentImpulse[1] = c->normalImpulse = 0.0f;
         u8 oldWarmStart = c->warmStarted;
         c->warmStarted = 0;
 
-        global q3OldContactOcl *ocPtr = oldContactBuffer + (8 * global_x);
+        const global q3OldContactOcl *ocPtr = oldContactBuffer + (8 * global_x);
         for ( i32 j = 0; j < oldManifold.contactCount; ++j )
         {
-            global q3OldContactOcl *oc = ocPtr + j;
+            const global q3OldContactOcl *oc = ocPtr + j;
             if ( c->fp.key == oc->fp.key )
             {
                 c->normalImpulse = oc->normalImpulse;
 
                 // Attempt to re-project old friction solutions
                 q3Vec3 friction = ot0 * oc->tangentImpulse[0] + ot1 * oc->tangentImpulse[1];
-                c->tangentImpulse[0] = q3Dot( friction, manifold->tangentVectors[0] );
-                c->tangentImpulse[1] = q3Dot( friction, manifold->tangentVectors[1] );
-                c->warmStarted = q3Max( oldWarmStart, u8( oldWarmStart + 1 ) );
+                c->tangentImpulse[0] = q3Dot( friction, manifold.tangentVectors[0] );
+                c->tangentImpulse[1] = q3Dot( friction, manifold.tangentVectors[1] );
+                c->warmStarted = q3Max( oldWarmStart, (u8)( oldWarmStart + 1 ) );
                 break;
             }
         }
@@ -394,14 +412,14 @@ kernel void testCollisions
     manifoldBuffer[global_x] = manifold;
 }
 
-inline bool bodiesCanColide( const q3Body *a, const q3Body *b) {
-    return !(a->m_bodyIndex == b->m_bodyIndex
-        || (!(a->m_flags & eDynamic) && !(b->m_flags & eDynamic))
-        || !(a->m_layers & b->m_layers));
+inline bool bodiesCanColide( const q3Body a, const q3Body b) {
+    return !(a.m_bodyIndex == b.m_bodyIndex
+        || (!(a.m_flags & eDynamic) && !(b.m_flags & eDynamic))
+        || !(a.m_layers & b.m_layers));
 }
 
-inline bool bodyIsAwake(const q3Body *body) {
-    return (body->m_flags & eAwake) != 0;
+inline bool bodyIsAwake(const q3Body body) {
+    return (body.m_flags & eAwake) != 0;
 }
 
 inline bool aabbOverlaps(q3AABB a, q3AABB b) {
@@ -413,15 +431,15 @@ inline bool aabbOverlaps(q3AABB a, q3AABB b) {
         !(a.max.z < b.min.z || a.min.z > b.max.z);
 }
 
-void solveCollision(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
+void solveCollision(global q3ContactOcl *contacts, q3ContactConstraintOcl *c, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
     m->contactCount = 0;
 
     q3BoxToBox(contacts, m, bodyA, boxA, bodyB, boxB);
 
-    i32 flags = m->m_flags;
-    int collisionMask = -(manifold.contactCount > 0);
+    i32 flags = c->m_flags;
+    int collisionMask = -(m->contactCount > 0);
     // ^ This should set mask to 0x00000000 or 0xFFFFFFFF
-    m->m_flags = (
+    c->m_flags = (
         (collisionMask & (
             (flags | ((flags & eColliding) << 1)) | eColliding
             ))
@@ -454,8 +472,7 @@ void solveCollision(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA,
     // }
 }
 
-inline bool q3TrackFaceAxis(i32 *axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal)
-{
+inline bool q3TrackFaceAxis(i32 *axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal) {
     if ( s > 0.0f )
         return true;
 
@@ -470,8 +487,7 @@ inline bool q3TrackFaceAxis(i32 *axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q
 }
 
 
-inline bool q3TrackEdgeAxis(i32* axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal);
-{
+inline bool q3TrackEdgeAxis(i32* axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal) {
     if ( s > 0.0f )
         return true;
 
@@ -489,17 +505,17 @@ inline bool q3TrackEdgeAxis(i32* axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q
 }
 
 void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* out) {
-    n = -q3MulT( itx.rotation, n );
-    q3Vec3 absN = q3Abs( n );
+    n = -mvMulT( itx.rotation, n );
+    q3Vec3 absN = vAbs( n );
 
     if ( absN.x > absN.y && absN.x > absN.z )
     {
         if ( n.x > 0.0f )
         {
-            out[0].v.Set(  e.x,  e.y, -e.z );
-            out[1].v.Set(  e.x,  e.y,  e.z );
-            out[2].v.Set(  e.x, -e.y,  e.z );
-            out[3].v.Set(  e.x, -e.y, -e.z );
+            vSet(&out[0].v,  e.x,  e.y, -e.z );
+            vSet(&out[1].v,  e.x,  e.y,  e.z );
+            vSet(&out[2].v,  e.x, -e.y,  e.z );
+            vSet(&out[3].v,  e.x, -e.y, -e.z );
 
             out[0].f.inI = 9;
             out[0].f.outI = 1;
@@ -513,10 +529,10 @@ void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* ou
 
         else
         {
-            out[0].v.Set( -e.x, -e.y,  e.z );
-            out[1].v.Set( -e.x,  e.y,  e.z );
-            out[2].v.Set( -e.x,  e.y, -e.z );
-            out[3].v.Set( -e.x, -e.y, -e.z );
+            vSet(&out[0].v, -e.x, -e.y,  e.z );
+            vSet(&out[1].v, -e.x,  e.y,  e.z );
+            vSet(&out[2].v, -e.x,  e.y, -e.z );
+            vSet(&out[3].v, -e.x, -e.y, -e.z );
 
             out[0].f.inI = 5;
             out[0].f.outI = 11;
@@ -533,10 +549,10 @@ void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* ou
     {
         if ( n.y > 0.0f )
         {
-            out[0].v.Set( -e.x,  e.y,  e.z );
-            out[1].v.Set(  e.x,  e.y,  e.z );
-            out[2].v.Set(  e.x,  e.y, -e.z );
-            out[3].v.Set( -e.x,  e.y, -e.z );
+            vSet(&out[0].v, -e.x,  e.y,  e.z );
+            vSet(&out[1].v,  e.x,  e.y,  e.z );
+            vSet(&out[2].v,  e.x,  e.y, -e.z );
+            vSet(&out[3].v, -e.x,  e.y, -e.z );
 
             out[0].f.inI = 3;
             out[0].f.outI = 0;
@@ -550,10 +566,10 @@ void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* ou
 
         else
         {
-            out[0].v.Set(  e.x, -e.y,  e.z );
-            out[1].v.Set( -e.x, -e.y,  e.z );
-            out[2].v.Set( -e.x, -e.y, -e.z );
-            out[3].v.Set(  e.x, -e.y, -e.z );
+            vSet(&out[0].v,  e.x, -e.y,  e.z );
+            vSet(&out[1].v, -e.x, -e.y,  e.z );
+            vSet(&out[2].v, -e.x, -e.y, -e.z );
+            vSet(&out[3].v,  e.x, -e.y, -e.z );
 
             out[0].f.inI = 7;
             out[0].f.outI = 4;
@@ -570,10 +586,10 @@ void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* ou
     {
         if ( n.z > 0.0f )
         {
-            out[0].v.Set( -e.x,  e.y,  e.z );
-            out[1].v.Set( -e.x, -e.y,  e.z );
-            out[2].v.Set(  e.x, -e.y,  e.z );
-            out[3].v.Set(  e.x,  e.y,  e.z );
+            vSet(&out[0].v, -e.x,  e.y,  e.z );
+            vSet(&out[1].v, -e.x, -e.y,  e.z );
+            vSet(&out[2].v,  e.x, -e.y,  e.z );
+            vSet(&out[3].v,  e.x,  e.y,  e.z );
 
             out[0].f.inI = 0;
             out[0].f.outI = 11;
@@ -587,10 +603,10 @@ void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* ou
 
         else
         {
-            out[0].v.Set(  e.x, -e.y, -e.z );
-            out[1].v.Set( -e.x, -e.y, -e.z );
-            out[2].v.Set( -e.x,  e.y, -e.z );
-            out[3].v.Set(  e.x,  e.y, -e.z );
+            vSet(&out[0].v,  e.x, -e.y, -e.z );
+            vSet(&out[1].v, -e.x, -e.y, -e.z );
+            vSet(&out[2].v, -e.x,  e.y, -e.z );
+            vSet(&out[3].v,  e.x,  e.y, -e.z );
 
             out[0].f.inI = 9;
             out[0].f.outI = 6;
@@ -604,7 +620,7 @@ void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* ou
     }
 
     for ( i32 i = 0; i < 4; ++i )
-        out[ i ].v = q3Mul( itx, out[ i ].v );
+        out[ i ].v = tvMul( itx, out[ i ].v );
 }
 
 void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 axis, u8* out, q3Mat3* basis, q3Vec3* e)
@@ -625,7 +641,7 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
             out[3] = 9;
 
             vSet(e, eR.y, eR.z, eR.x);
-            nSetRows(basis, rtx.rotation.ey, rtx.rotation.ez, rtx.rotation.ex);
+            mSetRows(basis, rtx.rotation.ey, rtx.rotation.ez, rtx.rotation.ex);
         }
 
         else
@@ -636,7 +652,7 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
             out[3] = 5;
 
             vSet(e, eR.z, eR.y, eR.x);
-            nSetRows(basis, rtx.rotation.ez, rtx.rotation.ey, -rtx.rotation.ex);
+            mSetRows(basis, rtx.rotation.ez, rtx.rotation.ey, -rtx.rotation.ex);
         }
         break;
 
@@ -649,7 +665,7 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
             out[3] = 3;
 
             vSet(e, eR.z, eR.x, eR.y);
-            nSetRows(basis, rtx.rotation.ez, rtx.rotation.ex, rtx.rotation.ey);
+            mSetRows(basis, rtx.rotation.ez, rtx.rotation.ex, rtx.rotation.ey);
         }
 
         else
@@ -660,7 +676,7 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
             out[3] = 7;
 
             vSet(e, eR.z, eR.x, eR.y);
-            nSetRows(basis, rtx.rotation.ez, -rtx.rotation.ex, -rtx.rotation.ey);
+            mSetRows(basis, rtx.rotation.ez, -rtx.rotation.ex, -rtx.rotation.ey);
         }
         break;
 
@@ -673,7 +689,7 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
             out[3] = 0;
 
             vSet(e, eR.y, eR.x, eR.z);
-            nSetRows(basis, -rtx.rotation.ey, rtx.rotation.ex, rtx.rotation.ez);
+            mSetRows(basis, -rtx.rotation.ey, rtx.rotation.ex, rtx.rotation.ez);
         }
 
         else
@@ -684,7 +700,7 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
             out[3] = 9;
 
             vSet(e, eR.y, eR.x, eR.z);
-            nSetRows(basis, -rtx.rotation.ey, -rtx.rotation.ex, -rtx.rotation.ez);
+            mSetRows(basis, -rtx.rotation.ey, -rtx.rotation.ex, -rtx.rotation.ez);
         }
         break;
     }
@@ -692,7 +708,7 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
 
 void q3SupportEdge(q3Transform tx, q3Vec3 e, q3Vec3 n, q3Vec3* aOut, q3Vec3* bOut) {
     n = mvMulT( tx.rotation, n );
-    q3Vec3 absN = q3Abs( n );
+    q3Vec3 absN = vAbs( n );
     q3Vec3 a, b;
 
     // x > y
@@ -780,7 +796,7 @@ inline void q3ComputeBasis( const q3Vec3 a, q3Vec3* b, q3Vec3* c ) {
     *c = q3Cross( a, *b );
 }
 
-void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
+void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
     q3Transform atx = bodyA->m_tx;
     q3Transform btx = bodyB->m_tx;
     q3Transform aL = boxA->localTransform;
@@ -790,7 +806,7 @@ void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3B
     q3Vec3 eA = boxA->e;
     q3Vec3 eB = boxB->e;
 
-    q3Mat3 C = mTranspose( atx.rotation ) * btx.rotation;
+    q3Mat3 C = mmMul(mTranspose( atx.rotation ), btx.rotation);
 
     q3Mat3 absC;
     bool parallel = false;
@@ -799,8 +815,8 @@ void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3B
     {
         for ( i32 j = 0; j < 3; ++j )
         {
-            r32 val = q3Abs( C[ i ][ j ] );
-            absC[ i ][ j ] = val;
+            r32 val = q3Abs( C.m[ i ][ j ] );
+            absC.m[ i ][ j ] = val;
 
             parallel = parallel || (val + kCosTol >= 1.0f);
         }
@@ -862,66 +878,66 @@ void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3B
         r32 rB;
 
         // Cross( a.x, b.x )
-        rA = eA.y * absC[0][2] + eA.z * absC[0][1];
-        rB = eB.y * absC[2][0] + eB.z * absC[1][0];
-        s = q3Abs( t.z * C[0][1] - t.y * C[0][2] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 6, s, &eMax, q3Vec3( 0.0f, -C[0][2], C[0][1] ), &nE ) )
+        rA = eA.y * absC.m[0][2] + eA.z * absC.m[0][1];
+        rB = eB.y * absC.m[2][0] + eB.z * absC.m[1][0];
+        s = q3Abs( t.z * C.m[0][1] - t.y * C.m[0][2] ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 6, s, &eMax, (q3Vec3)( 0.0f, -C.m[0][2], C.m[0][1] ), &nE ) )
             return;
 
         // Cross( a.x, b.y )
-        rA = eA.y * absC[1][2] + eA.z * absC[1][1];
-        rB = eB.x * absC[2][0] + eB.z * absC[0][0];
-        s = q3Abs( t.z * C[1][1] - t.y * C[1][2] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 7, s, &eMax, q3Vec3( 0.0f, -C[1][2], C[1][1] ), &nE ) )
+        rA = eA.y * absC.m[1][2] + eA.z * absC.m[1][1];
+        rB = eB.x * absC.m[2][0] + eB.z * absC.m[0][0];
+        s = q3Abs( t.z * C.m[1][1] - t.y * C.m[1][2] ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 7, s, &eMax, (q3Vec3)( 0.0f, -C.m[1][2], C.m[1][1] ), &nE ) )
             return;
 
         // Cross( a.x, b.z )
-        rA = eA.y * absC[2][2] + eA.z * absC[2][1];
-        rB = eB.x * absC[1][0] + eB.y * absC[0][0];
-        s = q3Abs( t.z * C[2][1] - t.y * C[2][2] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 8, s, &eMax, q3Vec3( 0.0f, -C[2][2], C[2][1] ), &nE ) )
+        rA = eA.y * absC.m[2][2] + eA.z * absC.m[2][1];
+        rB = eB.x * absC.m[1][0] + eB.y * absC.m[0][0];
+        s = q3Abs( t.z * C.m[2][1] - t.y * C.m[2][2] ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 8, s, &eMax, (q3Vec3)( 0.0f, -C.m[2][2], C.m[2][1] ), &nE ) )
             return;
 
         // Cross( a.y, b.x )
-        rA = eA.x * absC[0][2] + eA.z * absC[0][0];
-        rB = eB.y * absC[2][1] + eB.z * absC[1][1];
-        s = q3Abs( t.x * C[0][2] - t.z * C[0][0] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 9, s, &eMax, q3Vec3( C[0][2], 0.0f, -C[0][0] ), &nE ) )
+        rA = eA.x * absC.m[0][2] + eA.z * absC.m[0][0];
+        rB = eB.y * absC.m[2][1] + eB.z * absC.m[1][1];
+        s = q3Abs( t.x * C.m[0][2] - t.z * C.m[0][0] ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 9, s, &eMax, (q3Vec3)( C.m[0][2], 0.0f, -C.m[0][0] ), &nE ) )
             return;
 
         // Cross( a.y, b.y )
-        rA = eA.x * absC[1][2] + eA.z * absC[1][0];
-        rB = eB.x * absC[2][1] + eB.z * absC[0][1];
-        s = q3Abs( t.x * C[1][2] - t.z * C[1][0] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 10, s, &eMax, q3Vec3( C[1][2], 0.0f, -C[1][0] ), &nE ) )
+        rA = eA.x * absC.m[1][2] + eA.z * absC.m[1][0];
+        rB = eB.x * absC.m[2][1] + eB.z * absC.m[0][1];
+        s = q3Abs( t.x * C.m[1][2] - t.z * C.m[1][0] ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 10, s, &eMax, (q3Vec3)( C.m[1][2], 0.0f, -C.m[1][0] ), &nE ) )
             return;
 
         // Cross( a.y, b.z )
-        rA = eA.x * absC[2][2] + eA.z * absC[2][0];
-        rB = eB.x * absC[1][1] + eB.y * absC[0][1];
-        s = q3Abs( t.x * C[2][2] - t.z * C[2][0] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 11, s, &eMax, q3Vec3( C[2][2], 0.0f, -C[2][0] ), &nE ) )
+        rA = eA.x * absC.m[2][2] + eA.z * absC.m[2][0];
+        rB = eB.x * absC.m[1][1] + eB.y * absC.m[0][1];
+        s = q3Abs( t.x * C.m[2][2] - t.z * C.m[2][0] ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 11, s, &eMax, (q3Vec3)( C.m[2][2], 0.0f, -C.m[2][0] ), &nE ) )
             return;
 
         // Cross( a.z, b.x )
-        rA = eA.x * absC[0][1] + eA.y * absC[0][0];
-        rB = eB.y * absC[2][2] + eB.z * absC[1][2];
-        s = q3Abs( t.y * C[0][0] - t.x * C[0][1] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 12, s, &eMax, q3Vec3( -C[0][1], C[0][0], 0.0f ), &nE ) )
+        rA = eA.x * absC.m[0][1] + eA.y * absC.m[0][0];
+        rB = eB.y * absC.m[2][2] + eB.z * absC.m[1][2];
+        s = q3Abs( t.y * C.m[0][0] - t.x * C.m[0][1] ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 12, s, &eMax, (q3Vec3)( -C.m[0][1], C.m[0][0], 0.0f ), &nE ) )
             return;
 
         // Cross( a.z, b.y )
-        rA = eA.x * absC[1][1] + eA.y * absC[1][0];
-        rB = eB.x * absC[2][2] + eB.z * absC[0][2];
-        s = q3Abs( t.y * C[1][0] - t.x * C[1][1] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 13, s, &eMax, q3Vec3( -C[1][1], C[1][0], 0.0f ), &nE ) )
+        rA = eA.x * absC.m[1][1] + eA.y * absC.m[1][0];
+        rB = eB.x * absC.m[2][2] + eB.z * absC.m[0][2];
+        s = q3Abs( t.y * C.m[1][0] - t.x * C.m[1][1] ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 13, s, &eMax, (q3Vec3)( -C.m[1][1], C.m[1][0], 0.0f ), &nE ) )
             return;
 
         // Cross( a.z, b.z )
-        rA = eA.x * absC[2][1] + eA.y * absC[2][0];
-        rB = eB.x * absC[1][2] + eB.y * absC[0][2];
-        s = q3Abs( t.y * C[2][0] - t.x * C[2][1] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 14, s, &eMax, q3Vec3( -C[2][1], C[2][0], 0.0f ), &nE ) )
+        rA = eA.x * absC.m[2][1] + eA.y * absC.m[2][0];
+        rB = eB.x * absC.m[1][2] + eB.y * absC.m[0][2];
+        s = q3Abs( t.y * C.m[2][0] - t.x * C.m[2][1] ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 14, s, &eMax, (q3Vec3)( -C.m[2][1], C.m[2][0], 0.0f ), &nE ) )
             return;
     }
 
@@ -988,7 +1004,7 @@ void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3B
         // Compute reference and incident edge information necessary for clipping
         q3ClipVertex incident[4];
         for(int i = 0; i < 4; ++i) {
-            incident.key = ~0;
+            incident[i].f.key = ~0;
         }
         q3ComputeIncidentFace( itx, eI, n, incident );
         u8 clipEdges[4];
@@ -999,7 +1015,7 @@ void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3B
         // Clip the incident face against the reference face side planes
         q3ClipVertex out[8];
         for(int i = 0; i < 8; ++i) {
-            out.key = ~0;
+            out[i].f.key = ~0;
         }
         r32 depths[8];
         i32 outNum;
@@ -1012,20 +1028,20 @@ void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3B
 
             for ( i32 i = 0; i < outNum; ++i )
             {
-                global q3Contact* c = contacts + i;
+                global q3ContactOcl* c = contacts + i;
 
-                q3FeaturePair pair = out[ i ].f;
+                q3FeaturePairOcl pair = out[ i ].f;
 
                 if ( flip )
                 {
                     u8 swap;
 
                     swap = pair.inI;
-                    pair.inI = pair.inR
+                    pair.inI = pair.inR;
                     pair.inR = swap;
 
                     swap = pair.outI;
-                    pair.outI = pair.outR
+                    pair.outI = pair.outR;
                     pair.outR = swap;
                 }
 
@@ -1038,7 +1054,7 @@ void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3B
 
     else
     {
-        n = atx.rotation * n;
+        n = mvMul(atx.rotation, n);
 
         if ( q3Dot( n, btx.position - atx.position ) < 0.0f )
             n = -n;
@@ -1054,8 +1070,8 @@ void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3B
         m->normal = n;
         m->contactCount = 1;
 
-        q3Contact* c = contacts;
-        q3FeaturePair pair;
+        global q3ContactOcl* c = contacts;
+        q3FeaturePairOcl pair;
         pair.key = axis;
         c->fp = pair;
         c->penetration = sMax;

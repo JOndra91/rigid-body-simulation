@@ -46,7 +46,7 @@ void q3IslandSolverCpu::Solve( q3Scene *scene ) {
     q3Stack *s_stack = &(scene->m_stack);
     i32 s_bodyCount = scene->m_bodyCount;
     island.m_bodyCapacity = s_bodyCount;
-    island.m_contactCapacity = scene->m_contactManager.m_contactCount;
+    island.m_contactCapacity = scene->m_contactManager->m_contactCount;
     island.m_bodies = (q3BodyRef**)s_stack->Allocate( sizeof( q3BodyRef* ) * s_bodyCount );
     island.m_velocities = (q3VelocityState *)s_stack->Allocate( sizeof( q3VelocityState ) * s_bodyCount );
     island.m_contacts = (q3ContactConstraint **)s_stack->Allocate( sizeof( q3ContactConstraint* ) * island.m_contactCapacity );

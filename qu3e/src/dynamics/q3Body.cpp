@@ -125,7 +125,7 @@ const q3BoxRef* q3BodyRef::AddBox( const q3BoxDef& def )
 
     CalculateMassData( );
 
-    m_scene->m_contactManager.m_broadphase.InsertBox( ref, aabb );
+    m_scene->m_contactManager->m_broadphase.InsertBox( ref, aabb );
     m_scene->m_newBox = true;
 
     return ref;
@@ -148,10 +148,10 @@ void q3BodyRef::RemoveBox( q3BoxRef &box_ )
         q3BoxRef* B = contact->B;
 
         if ( box == A || box == B )
-            m_scene->m_contactManager.RemoveContact( contact );
+            m_scene->m_contactManager->RemoveContact( contact );
     }
 
-    m_scene->m_contactManager.m_broadphase.RemoveBox( box );
+    m_scene->m_contactManager->m_broadphase.RemoveBox( box );
 
     CalculateMassData( );
 }
@@ -160,12 +160,12 @@ void q3BodyRef::RemoveBox( q3BoxRef &box_ )
 void q3BodyRef::RemoveAllBoxes( )
 {
     for(auto box : *m_boxRefPtrs) {
-        m_scene->m_contactManager.m_broadphase.RemoveBox( box );
+        m_scene->m_contactManager->m_broadphase.RemoveBox( box );
         m_container->remove(this, box);
     }
     m_boxRefPtrs->clear();
 
-    m_scene->m_contactManager.RemoveContactsFromBody( this );
+    m_scene->m_contactManager->RemoveContactsFromBody( this );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -514,7 +514,7 @@ void q3BodyRef::CalculateMassData( )
 
 void q3BodyRef::SynchronizeProxies( )
 {
-    q3BroadPhase* broadphase = &m_scene->m_contactManager.m_broadphase;
+    q3BroadPhase* broadphase = &m_scene->m_contactManager->m_broadphase;
 
     body()->m_tx.position = body()->m_worldCenter -
         q3Mul( body()->m_tx.rotation, body()->m_localCenter );

@@ -64,7 +64,7 @@ public:
     q3Quaternion& operator*=( const q3Quaternion& rhs );
 
     const q3Mat3 ToMat3( void ) const;
-};
+} ALIGNED;
 
 //--------------------------------------------------------------------------------------------------
 inline const q3Quaternion q3Normalize( const q3Quaternion& q )
