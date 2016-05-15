@@ -1,6 +1,7 @@
 typedef int    i32;
 typedef uint   u32;
 typedef float  r32;
+typedef uchar u8;
 typedef float3 q3Vec3;
 
 typedef struct
@@ -160,6 +161,12 @@ typedef struct
     i32 m_flags;
 } q3ContactConstraintOcl;
 
+typedef struct
+{
+    q3Vec3 v;
+    q3FeaturePair f;
+} q3ClipVertex;
+
 inline q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
 {
   return cross(a, b);
@@ -185,7 +192,7 @@ inline r32 q3Min(r32 a, r32 b)
   return min(a, b);
 }
 
-inline r32 q3Invert( r32 a )
+inline r32 q3Invert(r32 a)
 {
   return a != 0.0f ? 1.0f / a : 0.0f;
 }
@@ -193,6 +200,15 @@ inline r32 q3Invert( r32 a )
 inline r32 q3Abs(r32 a)
 {
     return fabs(a);
+}
+
+inline r32 q3Length( const q3Vec3 v )
+{
+    return length(v);
+}
+
+inline r32 q3Sign(r32 a) {
+    return sign(a);
 }
 
 /**
@@ -225,6 +241,14 @@ inline q3Vec3 mvMul(const q3Mat3 m, const q3Vec3 v)
   );
 }
 
+/*
+ * Transform matrix multiplication
+ */
+inline q3Vec3 tvMul(const q3Transform tx, const q3Vec3 v)
+{
+    return q3Vec3(mvMul(tx->rotation, v) + tx->position);
+}
+
 inline const q3Mat3 mTranspose( const q3Mat3 m )
 {
     return q3Mat3(
@@ -254,13 +278,29 @@ inline q3Vec3 mCol2( const q3Mat3 m )
     return q3Vec3( m.ex.z, m.ey.z, m.ez.z );
 }
 
+inline void vSet(q3Vec *v, r32 x, r32 y, r32 z) {
+    v->x = x;
+    v->y = y;
+    v->z = z;
+}
+
+inline void mSetRows(q3Mat3 *m, q3Vec3 x, q3Vec3 y, q3Vec3 z) {
+    m->ex = x;
+    m->ey = y;
+    m->ez = z;
+}
+
 inline bool bodiesCanColide(q3Body a, q3Body b);
 inline bool bodyIsAwake(q3Body body);
 inline bool aabbOverlaps(q3AABB a, q3AABB b);
-void solveCollision(q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
+void solveCollision(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
 inline bool q3TrackFaceAxis(i32 *axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal);
 inline bool q3TrackEdgeAxis(i32* axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal);
-void q3BoxToBox(q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
+void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
+void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* out);
+void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 axis, u8* out, q3Mat3* basis, q3Vec3* e);
+void q3SupportEdge(q3Transform tx, q3Vec3 e, q3Vec3 n, q3Vec3* aOut, q3Vec3* bOut);
+inline void q3EdgesContact( q3Vec3 *CA, q3Vec3 *CB, const q3Vec3 PA, const q3Vec3 QA, const q3Vec3 PB, const q3Vec3 QB);
 
 kernel void testCollisions
     ( const global Indicies *indexBuffer // read only
@@ -309,8 +349,10 @@ kernel void testCollisions
     q3Vec3 ot0 = oldManifold.tangentVectors[ 0 ];
     q3Vec3 ot1 = oldManifold.tangentVectors[ 1 ];
 
+    global q3Contact *contacts = contactBuffer + (global_x * 8);
+
     // Solve collision
-    solveCollision(&manifold, &boxA, &boxB);
+    solveCollision(contacts, &manifold, &boxA, &boxB);
 
 }
 
@@ -333,10 +375,10 @@ inline bool aabbOverlaps(q3AABB a, q3AABB b) {
         !(a.max.z < b.min.z || a.min.z > b.max.z);
 }
 
-void solveCollision(q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
+void solveCollision(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
     m->contactCount = 0;
 
-    q3BoxToBox(m, bodyA, boxA, bodyB, boxB);
+    q3BoxToBox(contacts, m, bodyA, boxA, bodyB, boxB);
 
     i32 flags = m->m_flags;
     int collisionMask = -(manifold.contactCount > 0);
@@ -408,7 +450,285 @@ inline bool q3TrackEdgeAxis(i32* axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q
     return false;
 }
 
-void q3BoxToBox(q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
+void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* out) {
+    n = -q3MulT( itx.rotation, n );
+    q3Vec3 absN = q3Abs( n );
+
+    if ( absN.x > absN.y && absN.x > absN.z )
+    {
+        if ( n.x > 0.0f )
+        {
+            out[ 0 ].v.Set(  e.x,  e.y, -e.z );
+            out[ 1 ].v.Set(  e.x,  e.y,  e.z );
+            out[ 2 ].v.Set(  e.x, -e.y,  e.z );
+            out[ 3 ].v.Set(  e.x, -e.y, -e.z );
+
+            out[ 0 ].f.inI = 9;
+            out[ 0 ].f.outI = 1;
+            out[ 1 ].f.inI = 1;
+            out[ 1 ].f.outI = 8;
+            out[ 2 ].f.inI = 8;
+            out[ 2 ].f.outI = 7;
+            out[ 3 ].f.inI = 7;
+            out[ 3 ].f.outI = 9;
+        }
+
+        else
+        {
+            out[ 0 ].v.Set( -e.x, -e.y,  e.z );
+            out[ 1 ].v.Set( -e.x,  e.y,  e.z );
+            out[ 2 ].v.Set( -e.x,  e.y, -e.z );
+            out[ 3 ].v.Set( -e.x, -e.y, -e.z );
+
+            out[ 0 ].f.inI = 5;
+            out[ 0 ].f.outI = 11;
+            out[ 1 ].f.inI = 11;
+            out[ 1 ].f.outI = 3;
+            out[ 2 ].f.inI = 3;
+            out[ 2 ].f.outI = 10;
+            out[ 3 ].f.inI = 10;
+            out[ 3 ].f.outI = 5;
+        }
+    }
+
+    else if ( absN.y > absN.x && absN.y > absN.z )
+    {
+        if ( n.y > 0.0f )
+        {
+            out[ 0 ].v.Set( -e.x,  e.y,  e.z );
+            out[ 1 ].v.Set(  e.x,  e.y,  e.z );
+            out[ 2 ].v.Set(  e.x,  e.y, -e.z );
+            out[ 3 ].v.Set( -e.x,  e.y, -e.z );
+
+            out[ 0 ].f.inI = 3;
+            out[ 0 ].f.outI = 0;
+            out[ 1 ].f.inI = 0;
+            out[ 1 ].f.outI = 1;
+            out[ 2 ].f.inI = 1;
+            out[ 2 ].f.outI = 2;
+            out[ 3 ].f.inI = 2;
+            out[ 3 ].f.outI = 3;
+        }
+
+        else
+        {
+            out[ 0 ].v.Set(  e.x, -e.y,  e.z );
+            out[ 1 ].v.Set( -e.x, -e.y,  e.z );
+            out[ 2 ].v.Set( -e.x, -e.y, -e.z );
+            out[ 3 ].v.Set(  e.x, -e.y, -e.z );
+
+            out[ 0 ].f.inI = 7;
+            out[ 0 ].f.outI = 4;
+            out[ 1 ].f.inI = 4;
+            out[ 1 ].f.outI = 5;
+            out[ 2 ].f.inI = 5;
+            out[ 2 ].f.outI = 6;
+            out[ 3 ].f.inI = 5;
+            out[ 3 ].f.outI = 6;
+        }
+    }
+
+    else
+    {
+        if ( n.z > 0.0f )
+        {
+            out[ 0 ].v.Set( -e.x,  e.y,  e.z );
+            out[ 1 ].v.Set( -e.x, -e.y,  e.z );
+            out[ 2 ].v.Set(  e.x, -e.y,  e.z );
+            out[ 3 ].v.Set(  e.x,  e.y,  e.z );
+
+            out[ 0 ].f.inI = 0;
+            out[ 0 ].f.outI = 11;
+            out[ 1 ].f.inI = 11;
+            out[ 1 ].f.outI = 4;
+            out[ 2 ].f.inI = 4;
+            out[ 2 ].f.outI = 8;
+            out[ 3 ].f.inI = 8;
+            out[ 3 ].f.outI = 0;
+        }
+
+        else
+        {
+            out[ 0 ].v.Set(  e.x, -e.y, -e.z );
+            out[ 1 ].v.Set( -e.x, -e.y, -e.z );
+            out[ 2 ].v.Set( -e.x,  e.y, -e.z );
+            out[ 3 ].v.Set(  e.x,  e.y, -e.z );
+
+            out[ 0 ].f.inI = 9;
+            out[ 0 ].f.outI = 6;
+            out[ 1 ].f.inI = 6;
+            out[ 1 ].f.outI = 10;
+            out[ 2 ].f.inI = 10;
+            out[ 2 ].f.outI = 2;
+            out[ 3 ].f.inI = 2;
+            out[ 3 ].f.outI = 9;
+        }
+    }
+
+    for ( i32 i = 0; i < 4; ++i )
+        out[ i ].v = q3Mul( itx, out[ i ].v );
+}
+
+void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 axis, u8* out, q3Mat3* basis, q3Vec3* e)
+{
+    n = mvMulT( rtx.rotation, n );
+
+    if ( axis >= 3 )
+        axis -= 3;
+
+    switch ( axis )
+    {
+    case 0:
+        if ( n.x > 0.0f )
+        {
+            out[ 0 ] = 1;
+            out[ 1 ] = 8;
+            out[ 2 ] = 7;
+            out[ 3 ] = 9;
+
+            vSet(e, eR.y, eR.z, eR.x);
+            nSetRows(basis, rtx.rotation.ey, rtx.rotation.ez, rtx.rotation.ex);
+        }
+
+        else
+        {
+            out[ 0 ] = 11;
+            out[ 1 ] = 3;
+            out[ 2 ] = 10;
+            out[ 3 ] = 5;
+
+            vSet(e, eR.z, eR.y, eR.x);
+            nSetRows(basis, rtx.rotation.ez, rtx.rotation.ey, -rtx.rotation.ex);
+        }
+        break;
+
+    case 1:
+        if ( n.y > 0.0f )
+        {
+            out[ 0 ] = 0;
+            out[ 1 ] = 1;
+            out[ 2 ] = 2;
+            out[ 3 ] = 3;
+
+            vSet(e, eR.z, eR.x, eR.y);
+            nSetRows(basis, rtx.rotation.ez, rtx.rotation.ex, rtx.rotation.ey);
+        }
+
+        else
+        {
+            out[ 0 ] = 4;
+            out[ 1 ] = 5;
+            out[ 2 ] = 6;
+            out[ 3 ] = 7;
+
+            vSet(e, eR.z, eR.x, eR.y);
+            nSetRows(basis, rtx.rotation.ez, -rtx.rotation.ex, -rtx.rotation.ey);
+        }
+        break;
+
+    case 2:
+        if ( n.z > 0.0f )
+        {
+            out[ 0 ] = 11;
+            out[ 1 ] = 4;
+            out[ 2 ] = 8;
+            out[ 3 ] = 0;
+
+            vSet(e, eR.y, eR.x, eR.z);
+            nSetRows(basis, -rtx.rotation.ey, rtx.rotation.ex, rtx.rotation.ez);
+        }
+
+        else
+        {
+            out[ 0 ] = 6;
+            out[ 1 ] = 10;
+            out[ 2 ] = 2;
+            out[ 3 ] = 9;
+
+            vSet(e, eR.y, eR.x, eR.z);
+            nSetRows(basis, -rtx.rotation.ey, -rtx.rotation.ex, -rtx.rotation.ez);
+        }
+        break;
+    }
+}
+
+void q3SupportEdge(q3Transform tx, q3Vec3 e, q3Vec3 n, q3Vec3* aOut, q3Vec3* bOut) {
+    n = mvMulT( tx.rotation, n );
+    q3Vec3 absN = q3Abs( n );
+    q3Vec3 a, b;
+
+    // x > y
+    if ( absN.x > absN.y )
+    {
+        // x > y > z
+        if ( absN.y > absN.z )
+        {
+            vSet(&a, e.x, e.y, e.z);
+            vSet(&b, e.x, e.y, -e.z);
+        }
+
+        // x > z > y || z > x > y
+        else
+        {
+            vSet(&a, e.x, e.y, e.z);
+            vSet(&b, e.x, -e.y, e.z);
+        }
+    }
+
+    // y > x
+    else
+    {
+        // y > x > z
+        if ( absN.x > absN.z )
+        {
+            vSet(&a, e.x, e.y, e.z);
+            vSet(&b, e.x, e.y, -e.z);
+        }
+
+        // z > y > x || y > z > x
+        else
+        {
+            vSet(&a, e.x, e.y, e.z);
+            vSet(&b, -e.x, e.y, e.z);
+        }
+    }
+
+    r32 signx = q3Sign( n.x );
+    r32 signy = q3Sign( n.y );
+    r32 signz = q3Sign( n.z );
+
+    a.x *= signx;
+    a.y *= signy;
+    a.z *= signz;
+    b.x *= signx;
+    b.y *= signy;
+    b.z *= signz;
+
+    *aOut = tvMul( tx, a );
+    *bOut = tvMul( tx, b );
+}
+
+inline void q3EdgesContact( q3Vec3 *CA, q3Vec3 *CB, const q3Vec3 PA, const q3Vec3 QA, const q3Vec3 PB, const q3Vec3 QB)
+{
+    q3Vec3 DA = QA - PA;
+    q3Vec3 DB = QB - PB;
+    q3Vec3 r = PA - PB;
+    r32 a = q3Dot( DA, DA );
+    r32 e = q3Dot( DB, DB );
+    r32 f = q3Dot( DB, r );
+    r32 c = q3Dot( DA, r );
+
+    r32 b = q3Dot( DA, DB );
+    r32 denom = a * e - b * b;
+
+    r32 TA = (b * f - c * e) / denom;
+    r32 TB = (b * TA + f) / e;
+
+    *CA = PA + DA * TA;
+    *CB = PB + DB * TB;
+}
+
+void q3BoxToBox(global q3Contact *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
     q3Transform atx = bodyA->m_tx;
     q3Transform btx = bodyB->m_tx;
     q3Transform aL = boxA->localTransform;
@@ -493,63 +813,200 @@ void q3BoxToBox(q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3B
         rA = eA.y * absC[ 0 ][ 2 ] + eA.z * absC[ 0 ][ 1 ];
         rB = eB.y * absC[ 2 ][ 0 ] + eB.z * absC[ 1 ][ 0 ];
         s = q3Abs( t.z * C[ 0 ][ 1 ] - t.y * C[ 0 ][ 2 ] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 6, s, &eMax, q3Vec3( r32( 0.0 ), -C[ 0 ][ 2 ], C[ 0 ][ 1 ] ), &nE ) )
+        if ( q3TrackEdgeAxis( &eAxis, 6, s, &eMax, q3Vec3( 0.0f, -C[ 0 ][ 2 ], C[ 0 ][ 1 ] ), &nE ) )
             return;
 
         // Cross( a.x, b.y )
         rA = eA.y * absC[ 1 ][ 2 ] + eA.z * absC[ 1 ][ 1 ];
         rB = eB.x * absC[ 2 ][ 0 ] + eB.z * absC[ 0 ][ 0 ];
         s = q3Abs( t.z * C[ 1 ][ 1 ] - t.y * C[ 1 ][ 2 ] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 7, s, &eMax, q3Vec3( r32( 0.0 ), -C[ 1 ][ 2 ], C[ 1 ][ 1 ] ), &nE ) )
+        if ( q3TrackEdgeAxis( &eAxis, 7, s, &eMax, q3Vec3( 0.0f, -C[ 1 ][ 2 ], C[ 1 ][ 1 ] ), &nE ) )
             return;
 
         // Cross( a.x, b.z )
         rA = eA.y * absC[ 2 ][ 2 ] + eA.z * absC[ 2 ][ 1 ];
         rB = eB.x * absC[ 1 ][ 0 ] + eB.y * absC[ 0 ][ 0 ];
         s = q3Abs( t.z * C[ 2 ][ 1 ] - t.y * C[ 2 ][ 2 ] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 8, s, &eMax, q3Vec3( r32( 0.0 ), -C[ 2 ][ 2 ], C[ 2 ][ 1 ] ), &nE ) )
+        if ( q3TrackEdgeAxis( &eAxis, 8, s, &eMax, q3Vec3( 0.0f, -C[ 2 ][ 2 ], C[ 2 ][ 1 ] ), &nE ) )
             return;
 
         // Cross( a.y, b.x )
         rA = eA.x * absC[ 0 ][ 2 ] + eA.z * absC[ 0 ][ 0 ];
         rB = eB.y * absC[ 2 ][ 1 ] + eB.z * absC[ 1 ][ 1 ];
         s = q3Abs( t.x * C[ 0 ][ 2 ] - t.z * C[ 0 ][ 0 ] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 9, s, &eMax, q3Vec3( C[ 0 ][ 2 ], r32( 0.0 ), -C[ 0 ][ 0 ] ), &nE ) )
+        if ( q3TrackEdgeAxis( &eAxis, 9, s, &eMax, q3Vec3( C[ 0 ][ 2 ], 0.0f, -C[ 0 ][ 0 ] ), &nE ) )
             return;
 
         // Cross( a.y, b.y )
         rA = eA.x * absC[ 1 ][ 2 ] + eA.z * absC[ 1 ][ 0 ];
         rB = eB.x * absC[ 2 ][ 1 ] + eB.z * absC[ 0 ][ 1 ];
         s = q3Abs( t.x * C[ 1 ][ 2 ] - t.z * C[ 1 ][ 0 ] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 10, s, &eMax, q3Vec3( C[ 1 ][ 2 ], r32( 0.0 ), -C[ 1 ][ 0 ] ), &nE ) )
+        if ( q3TrackEdgeAxis( &eAxis, 10, s, &eMax, q3Vec3( C[ 1 ][ 2 ], 0.0f, -C[ 1 ][ 0 ] ), &nE ) )
             return;
 
         // Cross( a.y, b.z )
         rA = eA.x * absC[ 2 ][ 2 ] + eA.z * absC[ 2 ][ 0 ];
         rB = eB.x * absC[ 1 ][ 1 ] + eB.y * absC[ 0 ][ 1 ];
         s = q3Abs( t.x * C[ 2 ][ 2 ] - t.z * C[ 2 ][ 0 ] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 11, s, &eMax, q3Vec3( C[ 2 ][ 2 ], r32( 0.0 ), -C[ 2 ][ 0 ] ), &nE ) )
+        if ( q3TrackEdgeAxis( &eAxis, 11, s, &eMax, q3Vec3( C[ 2 ][ 2 ], 0.0f, -C[ 2 ][ 0 ] ), &nE ) )
             return;
 
         // Cross( a.z, b.x )
         rA = eA.x * absC[ 0 ][ 1 ] + eA.y * absC[ 0 ][ 0 ];
         rB = eB.y * absC[ 2 ][ 2 ] + eB.z * absC[ 1 ][ 2 ];
         s = q3Abs( t.y * C[ 0 ][ 0 ] - t.x * C[ 0 ][ 1 ] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 12, s, &eMax, q3Vec3( -C[ 0 ][ 1 ], C[ 0 ][ 0 ], r32( 0.0 ) ), &nE ) )
+        if ( q3TrackEdgeAxis( &eAxis, 12, s, &eMax, q3Vec3( -C[ 0 ][ 1 ], C[ 0 ][ 0 ], 0.0f ), &nE ) )
             return;
 
         // Cross( a.z, b.y )
         rA = eA.x * absC[ 1 ][ 1 ] + eA.y * absC[ 1 ][ 0 ];
         rB = eB.x * absC[ 2 ][ 2 ] + eB.z * absC[ 0 ][ 2 ];
         s = q3Abs( t.y * C[ 1 ][ 0 ] - t.x * C[ 1 ][ 1 ] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 13, s, &eMax, q3Vec3( -C[ 1 ][ 1 ], C[ 1 ][ 0 ], r32( 0.0 ) ), &nE ) )
+        if ( q3TrackEdgeAxis( &eAxis, 13, s, &eMax, q3Vec3( -C[ 1 ][ 1 ], C[ 1 ][ 0 ], 0.0f ), &nE ) )
             return;
 
         // Cross( a.z, b.z )
         rA = eA.x * absC[ 2 ][ 1 ] + eA.y * absC[ 2 ][ 0 ];
         rB = eB.x * absC[ 1 ][ 2 ] + eB.y * absC[ 0 ][ 2 ];
         s = q3Abs( t.y * C[ 2 ][ 0 ] - t.x * C[ 2 ][ 1 ] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 14, s, &eMax, q3Vec3( -C[ 2 ][ 1 ], C[ 2 ][ 0 ], r32( 0.0 ) ), &nE ) )
+        if ( q3TrackEdgeAxis( &eAxis, 14, s, &eMax, q3Vec3( -C[ 2 ][ 1 ], C[ 2 ][ 0 ], 0.0f ), &nE ) )
             return;
+    }
+
+    // Artificial axis bias to improve frame coherence
+    const r32 kRelTol = 0.95;
+    const r32 kAbsTol = 0.01;
+    i32 axis;
+    r32 sMax;
+    q3Vec3 n;
+    r32 faceMax = q3Max( aMax, bMax );
+    if ( kRelTol * eMax > faceMax + kAbsTol )
+    {
+        axis = eAxis;
+        sMax = eMax;
+        n = nE;
+    }
+    else
+    {
+        if ( kRelTol * bMax > aMax + kAbsTol )
+        {
+            axis = bAxis;
+            sMax = bMax;
+            n = nB;
+        }
+
+        else
+        {
+            axis = aAxis;
+            sMax = aMax;
+            n = nA;
+        }
+    }
+
+    if ( q3Dot( n, btx.position - atx.position ) < 0.0 )
+        n = -n;
+
+    if ( axis < 6 )
+    {
+        q3Transform rtx;
+        q3Transform itx;
+        q3Vec3 eR;
+        q3Vec3 eI;
+        bool flip;
+
+        if ( axis < 3 )
+        {
+            rtx = atx;
+            itx = btx;
+            eR = eA;
+            eI = eB;
+            flip = false;
+        }
+
+        else
+        {
+            rtx = btx;
+            itx = atx;
+            eR = eB;
+            eI = eA;
+            flip = true;
+            n = -n;
+        }
+
+        // Compute reference and incident edge information necessary for clipping
+        q3ClipVertex incident[ 4 ];
+        for(int i = 0; i < 4; ++i) {
+            incident.key = ~0;
+        }
+        q3ComputeIncidentFace( itx, eI, n, incident );
+        u8 clipEdges[ 4 ];
+        q3Mat3 basis;
+        q3Vec3 e;
+        q3ComputeReferenceEdgesAndBasis( eR, rtx, n, axis, clipEdges, &basis, &e );
+
+        // Clip the incident face against the reference face side planes
+        q3ClipVertex out[ 8 ];
+        for(int i = 0; i < 8; ++i) {
+            out.key = ~0;
+        }
+        r32 depths[ 8 ];
+        i32 outNum;
+        outNum = q3Clip( rtx.position, e, clipEdges, basis, incident, out, depths );
+
+        if ( outNum )
+        {
+            m->contactCount = outNum;
+            m->normal = flip ? -n : n;
+
+            for ( i32 i = 0; i < outNum; ++i )
+            {
+                global q3Contact* c = contacts + i;
+
+                q3FeaturePair pair = out[ i ].f;
+
+                if ( flip )
+                {
+                    u8 swap;
+
+                    swap = pair.inI;
+                    pair.inI = pair.inR
+                    pair.inR = swap;
+
+                    swap = pair.outI;
+                    pair.outI = pair.outR
+                    pair.outR = swap;
+                }
+
+                c->fp = out[ i ].f;
+                c->position = out[ i ].v;
+                c->penetration = depths[ i ];
+            }
+        }
+    }
+
+    else
+    {
+        n = atx.rotation * n;
+
+        if ( q3Dot( n, btx.position - atx.position ) < 0.0f )
+            n = -n;
+
+        q3Vec3 PA, QA;
+        q3Vec3 PB, QB;
+        q3SupportEdge( atx, eA, n, &PA, &QA );
+        q3SupportEdge( btx, eB, -n, &PB, &QB );
+
+        q3Vec3 CA, CB;
+        q3EdgesContact( &CA, &CB, PA, QA, PB, QB );
+
+        m->normal = n;
+        m->contactCount = 1;
+
+        q3Contact* c = contacts;
+        q3FeaturePair pair;
+        pair.key = axis;
+        c->fp = pair;
+        c->penetration = sMax;
+        c->position = (CA + CB) * 0.5f;
     }
 }
