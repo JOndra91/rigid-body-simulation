@@ -78,7 +78,7 @@ void q3ContactManagerOcl::TestCollisions( void )
 {
     cl_int clErr;
     Indicies *indexMemory, *indexPtr;
-    // q3Contact *contactMemory, *contactPtr;
+    q3Contact *contactMemory, *contactPtr;
     q3OldContactOcl *oldContactMemory, *oldContactPtr;
     q3ContactConstraintOcl *constraintMemory, *constraintPtr;
     q3ManifoldOcl *manifoldMemory, *manifoldPtr;
@@ -190,6 +190,28 @@ void q3ContactManagerOcl::TestCollisions( void )
     );
 
     // Run kernel here
+
+    cl_uint argument = 0;
+
+    clErr = m_clKernelTestCollisions.setArg(argument++, indexBuffer);
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (indexBuffer)");
+    clErr = m_clKernelTestCollisions.setArg(argument++, constraintBuffer);
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (constraintBuffer)");
+    clErr = m_clKernelTestCollisions.setArg(argument++, manifoldBuffer);
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (manifoldBuffer)");
+    clErr = m_clKernelTestCollisions.setArg(argument++, contactBuffer);
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (contactBuffer)");
+    clErr = m_clKernelTestCollisions.setArg(argument++, oldContactBuffer);
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (oldContactBuffer)");
+    clErr = m_clKernelTestCollisions.setArg(argument++, bodyBuffer);
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (bodyBuffer)");
+    clErr = m_clKernelTestCollisions.setArg(argument++, boxBuffer);
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (boxBuffer)");
+    clErr = m_clKernelTestCollisions.setArg(argument++, nodeBuffer);
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (nodeBuffer)");
+    clErr = m_clKernelTestCollisions.setArg(argument++, m_contactCount);
+    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (m_contactCount)");
+
     cl::NDRange local(m_clLocalSize);
     cl::NDRange global(CEIL_TO(m_contactCount,local[0]));
     m_clQueue.enqueueNDRangeKernel(m_clKernelTestCollisions, cl::NullRange, global, local);
@@ -207,21 +229,52 @@ void q3ContactManagerOcl::TestCollisions( void )
         , m_contactCount * sizeof(q3ManifoldOcl), NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map buffer q3ManifoldOcl");
 
-    // TODO
-    // constraintPtr = constraintMemory;
-    // manifoldPtr = manifoldMemory;
-    // while( constraint )
-    // {
-    //     constraintPtr->update(*constraint);
-    //     manifoldPtr->update(constraint->manifold);
-    //
-    //     ++constraintPtr;
-    //     ++manifoldPtr;
-    //     constraint = constraint->next;
-    // }
+    contactMemory =
+    (q3Contact*) m_clQueue.enqueueMapBuffer
+    ( contactBuffer, CL_TRUE, CL_MAP_READ, 0
+        , m_contactCount * 8 * sizeof(q3Contact), NULL, NULL, &clErr);
+    CHECK_CL_ERROR(clErr, "Map buffer q3Contact");
+
+    constraintPtr = constraintMemory;
+    manifoldPtr = manifoldMemory;
+    i = 0;
+    while(constraint)
+    {
+        contactPtr = contactMemory + (i * 8);
+        constraintPtr->update(*constraint);
+        manifoldPtr->update(constraint->manifold);
+        int contactCount = constraint->manifold.contactCount;
+        for(int j = 0; j < contactCount; ++j) {
+            constraint->manifold.contacts[j] = contactPtr[j];
+        }
+
+        ++constraintPtr;
+        ++manifoldPtr;
+        ++i;
+
+        if ( m_contactListener )
+        {
+            if (
+                constraint->m_flags & q3ContactConstraint::eColliding &&
+                !(constraint->m_flags & q3ContactConstraint::eWasColliding)
+                )
+            {
+                m_contactListener->BeginContact( constraint );
+            }
+
+            else if (
+                !(constraint->m_flags & q3ContactConstraint::eColliding) &&
+                constraint->m_flags & q3ContactConstraint::eWasColliding
+                )
+            {
+                m_contactListener->EndContact( constraint );
+            }
+        }
+
+        constraint = constraint->next;
+    }
 
     m_clQueue.enqueueUnmapMemObject(constraintBuffer, constraintMemory);
     m_clQueue.enqueueUnmapMemObject(manifoldBuffer, manifoldMemory);
-
-    m_clQueue.finish();
+    m_clQueue.enqueueUnmapMemObject(contactBuffer, contactMemory);
 }

@@ -317,7 +317,7 @@ kernel void testCollisions
     , global q3ContactConstraintOcl *constraintBuffer
     , global q3ManifoldOcl *manifoldBuffer
     , global q3Contact *contactBuffer
-    , global q3OldContactOcl *oldContactBuffer
+    , const global q3OldContactOcl *oldContactBuffer // read only
     , global q3Body *bodyBuffer
     , global q3Box *boxBuffer
     , const global aabbNode *aabbNodeBuffer // read only

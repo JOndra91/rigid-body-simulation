@@ -64,6 +64,16 @@ struct q3ManifoldOcl
         sensor = other.sensor;
     }
 
+    inline void update(q3Manifold &other) {
+        other.tangentVectors[0] = tangentVectors[0];
+        other.tangentVectors[1] = tangentVectors[1];
+
+        other.contactCount = contactCount;
+
+        other.normal = normal;
+        other.sensor = sensor;
+    }
+
 } ALIGNED;
 
 struct q3ContactConstraintOcl
@@ -76,6 +86,12 @@ struct q3ContactConstraintOcl
         friction = other.friction;
         restitution = other.restitution;
         m_flags = other.m_flags;
+    };
+
+    inline void update(q3ContactConstraint &other) {
+        other.friction = friction;
+        other.restitution = restitution;
+        other.m_flags = m_flags;
     };
 } ALIGNED;
 
