@@ -14,7 +14,6 @@ typedef union
         q3Vec3 ey;
         q3Vec3 ez;
     };
-    q3Vec3 m[3];
 } q3Mat3;
 
 typedef struct
@@ -364,10 +363,10 @@ kernel void testCollisions
         return;
     }
 
-    const q3Box boxA = boxBuffer[indicies.boxA];
-    const q3Box boxB = boxBuffer[indicies.boxB];
-    const q3AABB aabbA = aabbNodeBuffer[boxA.broadPhaseIndex].aabb;
-    const q3AABB aabbB = aabbNodeBuffer[boxB.broadPhaseIndex].aabb;
+    q3Box boxA = boxBuffer[indicies.boxA];
+    q3Box boxB = boxBuffer[indicies.boxB];
+    q3AABB aabbA = aabbNodeBuffer[boxA.broadPhaseIndex].aabb;
+    q3AABB aabbB = aabbNodeBuffer[boxB.broadPhaseIndex].aabb;
 
     if(!aabbOverlaps(aabbA, aabbB)) {
         constraintBuffer[global_x].m_flags |= eRemove;
@@ -856,13 +855,17 @@ i32 q3Orthographic( r32 _sign, r32 e, i32 axis, i32 clipEdge, q3ClipVertex* in, 
 {
     i32 outCount = 0;
     q3ClipVertex a = in[ inCount - 1 ];
+    r32 v[3];
 
     for ( i32 i = 0; i < inCount; ++i )
     {
         q3ClipVertex b = in[i];
 
-        r32 da = _sign * a.v[axis] - e;
-        r32 db = _sign * b.v[axis] - e;
+        v[0] = a.v.x; v[1] = a.v.y; v[2] = a.v.z;
+        r32 da = _sign * v[axis] - e;
+
+        v[0] = b.v.x; v[1] = b.v.y; v[2] = b.v.z;
+        r32 db = _sign * v[axis] - e;
 
         q3ClipVertex cv;
 
@@ -915,16 +918,53 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, 
     q3Mat3 absC;
     bool parallel = false;
     const r32 kCosTol = 1.0e-6f;
-    for ( i32 i = 0; i < 3; ++i )
-    {
-        for ( i32 j = 0; j < 3; ++j )
-        {
-            r32 val = q3Abs( C.m[i][j] );
-            absC.m[i][j] = val;
+    r32 val;
 
-            parallel = parallel || (val + kCosTol >= 1.0f);
-        }
-    }
+    val = q3Abs( C.ex.x );
+    absC.ex.x = val;
+    parallel = parallel || (val + kCosTol >= 1.0f);
+
+    val = q3Abs( C.ex.y );
+    absC.ex.y = val;
+    parallel = parallel || (val + kCosTol >= 1.0f);
+
+    val = q3Abs( C.ex.y );
+    absC.ex.y = val;
+    parallel = parallel || (val + kCosTol >= 1.0f);
+
+    val = q3Abs( C.ey.x );
+    absC.ey.x = val;
+    parallel = parallel || (val + kCosTol >= 1.0f);
+
+    val = q3Abs( C.ey.y );
+    absC.ey.y = val;
+    parallel = parallel || (val + kCosTol >= 1.0f);
+
+    val = q3Abs( C.ey.z );
+    absC.ey.z = val;
+    parallel = parallel || (val + kCosTol >= 1.0f);
+
+    val = q3Abs( C.ez.x );
+    absC.ez.x = val;
+    parallel = parallel || (val + kCosTol >= 1.0f);
+
+    val = q3Abs( C.ez.y );
+    absC.ez.y = val;
+    parallel = parallel || (val + kCosTol >= 1.0f);
+
+    val = q3Abs( C.ez.z );
+    absC.ez.z = val;
+    parallel = parallel || (val + kCosTol >= 1.0f);
+    // for ( i32 i = 0; i < 3; ++i )
+    // {
+    //     for ( i32 j = 0; j < 3; ++j )
+    //     {
+    //         r32 val = q3Abs( C.m[i][j] );
+    //         absC.m[i][j] = val;
+    //
+    //         parallel = parallel || (val + kCosTol >= 1.0f);
+    //     }
+    // }
 
     // Vector from center A to center B in A's space
     q3Vec3 t = mvMulT( atx.rotation, btx.position - atx.position );
@@ -982,66 +1022,66 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, 
         r32 rB;
 
         // Cross( a.x, b.x )
-        rA = eA.y * absC.m[0][2] + eA.z * absC.m[0][1];
-        rB = eB.y * absC.m[2][0] + eB.z * absC.m[1][0];
-        s = q3Abs( t.z * C.m[0][1] - t.y * C.m[0][2] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 6, s, &eMax, (q3Vec3)( 0.0f, -C.m[0][2], C.m[0][1] ), &nE ) )
+        rA = eA.y * absC.ex.z + eA.z * absC.ex.y;
+        rB = eB.y * absC.ez.x + eB.z * absC.ey.x;
+        s = q3Abs( t.z * C.ex.y - t.y * C.ex.z ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 6, s, &eMax, (q3Vec3)( 0.0f, -C.ex.z, C.ex.y ), &nE ) )
             return;
 
         // Cross( a.x, b.y )
-        rA = eA.y * absC.m[1][2] + eA.z * absC.m[1][1];
-        rB = eB.x * absC.m[2][0] + eB.z * absC.m[0][0];
-        s = q3Abs( t.z * C.m[1][1] - t.y * C.m[1][2] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 7, s, &eMax, (q3Vec3)( 0.0f, -C.m[1][2], C.m[1][1] ), &nE ) )
+        rA = eA.y * absC.ey.z + eA.z * absC.ey.y;
+        rB = eB.x * absC.ez.x + eB.z * absC.ex.x;
+        s = q3Abs( t.z * C.ey.y - t.y * C.ey.z ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 7, s, &eMax, (q3Vec3)( 0.0f, -C.ey.z, C.ey.y ), &nE ) )
             return;
 
         // Cross( a.x, b.z )
-        rA = eA.y * absC.m[2][2] + eA.z * absC.m[2][1];
-        rB = eB.x * absC.m[1][0] + eB.y * absC.m[0][0];
-        s = q3Abs( t.z * C.m[2][1] - t.y * C.m[2][2] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 8, s, &eMax, (q3Vec3)( 0.0f, -C.m[2][2], C.m[2][1] ), &nE ) )
+        rA = eA.y * absC.ez.z + eA.z * absC.ez.y;
+        rB = eB.x * absC.ey.x + eB.y * absC.ex.x;
+        s = q3Abs( t.z * C.ez.y - t.y * C.ez.z ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 8, s, &eMax, (q3Vec3)( 0.0f, -C.ez.z, C.ez.y ), &nE ) )
             return;
 
         // Cross( a.y, b.x )
-        rA = eA.x * absC.m[0][2] + eA.z * absC.m[0][0];
-        rB = eB.y * absC.m[2][1] + eB.z * absC.m[1][1];
-        s = q3Abs( t.x * C.m[0][2] - t.z * C.m[0][0] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 9, s, &eMax, (q3Vec3)( C.m[0][2], 0.0f, -C.m[0][0] ), &nE ) )
+        rA = eA.x * absC.ex.z + eA.z * absC.ex.x;
+        rB = eB.y * absC.ez.y + eB.z * absC.ey.y;
+        s = q3Abs( t.x * C.ex.z - t.z * C.ex.x ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 9, s, &eMax, (q3Vec3)( C.ex.z, 0.0f, -C.ex.x ), &nE ) )
             return;
 
         // Cross( a.y, b.y )
-        rA = eA.x * absC.m[1][2] + eA.z * absC.m[1][0];
-        rB = eB.x * absC.m[2][1] + eB.z * absC.m[0][1];
-        s = q3Abs( t.x * C.m[1][2] - t.z * C.m[1][0] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 10, s, &eMax, (q3Vec3)( C.m[1][2], 0.0f, -C.m[1][0] ), &nE ) )
+        rA = eA.x * absC.ey.z + eA.z * absC.ey.x;
+        rB = eB.x * absC.ez.y + eB.z * absC.ex.y;
+        s = q3Abs( t.x * C.ey.z - t.z * C.ey.x ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 10, s, &eMax, (q3Vec3)( C.ey.z, 0.0f, -C.ey.x ), &nE ) )
             return;
 
         // Cross( a.y, b.z )
-        rA = eA.x * absC.m[2][2] + eA.z * absC.m[2][0];
-        rB = eB.x * absC.m[1][1] + eB.y * absC.m[0][1];
-        s = q3Abs( t.x * C.m[2][2] - t.z * C.m[2][0] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 11, s, &eMax, (q3Vec3)( C.m[2][2], 0.0f, -C.m[2][0] ), &nE ) )
+        rA = eA.x * absC.ez.z + eA.z * absC.ez.x;
+        rB = eB.x * absC.ey.y + eB.y * absC.ex.y;
+        s = q3Abs( t.x * C.ez.z - t.z * C.ez.x ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 11, s, &eMax, (q3Vec3)( C.ez.z, 0.0f, -C.ez.x ), &nE ) )
             return;
 
         // Cross( a.z, b.x )
-        rA = eA.x * absC.m[0][1] + eA.y * absC.m[0][0];
-        rB = eB.y * absC.m[2][2] + eB.z * absC.m[1][2];
-        s = q3Abs( t.y * C.m[0][0] - t.x * C.m[0][1] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 12, s, &eMax, (q3Vec3)( -C.m[0][1], C.m[0][0], 0.0f ), &nE ) )
+        rA = eA.x * absC.ex.y + eA.y * absC.ex.x;
+        rB = eB.y * absC.ez.z + eB.z * absC.ey.z;
+        s = q3Abs( t.y * C.ex.x - t.x * C.ex.y ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 12, s, &eMax, (q3Vec3)( -C.ex.y, C.ex.x, 0.0f ), &nE ) )
             return;
 
         // Cross( a.z, b.y )
-        rA = eA.x * absC.m[1][1] + eA.y * absC.m[1][0];
-        rB = eB.x * absC.m[2][2] + eB.z * absC.m[0][2];
-        s = q3Abs( t.y * C.m[1][0] - t.x * C.m[1][1] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 13, s, &eMax, (q3Vec3)( -C.m[1][1], C.m[1][0], 0.0f ), &nE ) )
+        rA = eA.x * absC.ey.y + eA.y * absC.ey.x;
+        rB = eB.x * absC.ez.z + eB.z * absC.ex.z;
+        s = q3Abs( t.y * C.ey.x - t.x * C.ey.y ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 13, s, &eMax, (q3Vec3)( -C.ey.y, C.ey.x, 0.0f ), &nE ) )
             return;
 
         // Cross( a.z, b.z )
-        rA = eA.x * absC.m[2][1] + eA.y * absC.m[2][0];
-        rB = eB.x * absC.m[1][2] + eB.y * absC.m[0][2];
-        s = q3Abs( t.y * C.m[2][0] - t.x * C.m[2][1] ) - (rA + rB);
-        if ( q3TrackEdgeAxis( &eAxis, 14, s, &eMax, (q3Vec3)( -C.m[2][1], C.m[2][0], 0.0f ), &nE ) )
+        rA = eA.x * absC.ez.y + eA.y * absC.ez.x;
+        rB = eB.x * absC.ey.z + eB.y * absC.ex.z;
+        s = q3Abs( t.y * C.ez.x - t.x * C.ez.y ) - (rA + rB);
+        if ( q3TrackEdgeAxis( &eAxis, 14, s, &eMax, (q3Vec3)( -C.ez.y, C.ez.x, 0.0f ), &nE ) )
             return;
     }
 
