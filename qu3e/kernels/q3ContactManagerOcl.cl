@@ -329,6 +329,8 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
 void q3SupportEdge(q3Transform tx, q3Vec3 e, q3Vec3 n, q3Vec3* aOut, q3Vec3* bOut);
 inline void q3EdgesContact( q3Vec3 *CA, q3Vec3 *CB, const q3Vec3 PA, const q3Vec3 QA, const q3Vec3 PB, const q3Vec3 QB);
 inline void q3ComputeBasis( const q3Vec3 a, q3Vec3* b, q3Vec3* c );
+i32 q3Clip(const q3Vec3 rPos, const q3Vec3 e, u8* clipEdges, const q3Mat3 basis, q3ClipVertex* incident, q3ClipVertex* outVerts, r32* outDepths);
+i32 q3Orthographic( r32 sign, r32 e, i32 axis, i32 clipEdge, q3ClipVertex* in, i32 inCount, q3ClipVertex* out );
 
 kernel void testCollisions
     ( const global Indicies *indexBuffer // read only
@@ -362,10 +364,10 @@ kernel void testCollisions
         return;
     }
 
-    q3Box boxA = boxBuffer[indicies.boxA];
-    q3Box boxB = boxBuffer[indicies.boxB];
-    q3AABB aabbA = aabbNodeBuffer[boxA.broadPhaseIndex].aabb;
-    q3AABB aabbB = aabbNodeBuffer[boxB.broadPhaseIndex].aabb;
+    const q3Box boxA = boxBuffer[indicies.boxA];
+    const q3Box boxB = boxBuffer[indicies.boxB];
+    const q3AABB aabbA = aabbNodeBuffer[boxA.broadPhaseIndex].aabb;
+    const q3AABB aabbB = aabbNodeBuffer[boxB.broadPhaseIndex].aabb;
 
     if(!aabbOverlaps(aabbA, aabbB)) {
         constraintBuffer[global_x].m_flags |= eRemove;
@@ -409,6 +411,7 @@ kernel void testCollisions
         }
     }
 
+    constraintBuffer[global_x] = constraint;
     manifoldBuffer[global_x] = manifold;
 }
 
@@ -620,7 +623,7 @@ void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* ou
     }
 
     for ( i32 i = 0; i < 4; ++i )
-        out[ i ].v = tvMul( itx, out[ i ].v );
+        out[i].v = tvMul( itx, out[i].v );
 }
 
 void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 axis, u8* out, q3Mat3* basis, q3Vec3* e)
@@ -796,6 +799,107 @@ inline void q3ComputeBasis( const q3Vec3 a, q3Vec3* b, q3Vec3* c ) {
     *c = q3Cross( a, *b );
 }
 
+i32 q3Clip(const q3Vec3 rPos, const q3Vec3 e, u8* clipEdges, const q3Mat3 basis, q3ClipVertex* incident, q3ClipVertex* outVerts, r32* outDepths)
+{
+    i32 inCount = 4;
+    i32 outCount;
+    q3ClipVertex in[8];
+    q3ClipVertex out[8];
+
+    for ( i32 i = 0; i < 4; ++i )
+        in[i].v = mvMulT( basis, incident[i].v - rPos );
+
+    outCount = q3Orthographic( 1.0f, e.x, 0, clipEdges[0], in, inCount, out );
+
+    if ( !outCount )
+        return 0;
+
+    inCount = q3Orthographic( 1.0f, e.y, 1, clipEdges[1], out, outCount, in );
+
+    if ( !inCount )
+        return 0;
+
+    outCount = q3Orthographic( -1.0f, e.x, 0, clipEdges[2], in, inCount, out );
+
+    if ( !outCount )
+        return 0;
+
+    inCount = q3Orthographic( -1.0f, e.y, 1, clipEdges[3], out, outCount, in );
+
+    // Keep incident vertices behind the reference face
+    outCount = 0;
+    for ( i32 i = 0; i < inCount; ++i )
+    {
+        r32 d = in[i].v.z - e.z;
+
+        if ( d <= 0.0f )
+        {
+            outVerts[outCount].v = mvMul( basis, in[i].v ) + rPos;
+            outVerts[outCount].f = in[i].f;
+            outDepths[outCount++] = d;
+        }
+    }
+
+    return outCount;
+}
+
+#define InFront( a ) \
+    ((a) < 0.0f)
+
+#define Behind( a ) \
+    ((a) >= 0.0f)
+
+#define On( a ) \
+    ((a) < 0.005f && (a) > -0.005f)
+
+i32 q3Orthographic( r32 _sign, r32 e, i32 axis, i32 clipEdge, q3ClipVertex* in, i32 inCount, q3ClipVertex* out )
+{
+    i32 outCount = 0;
+    q3ClipVertex a = in[ inCount - 1 ];
+
+    for ( i32 i = 0; i < inCount; ++i )
+    {
+        q3ClipVertex b = in[i];
+
+        r32 da = _sign * a.v[axis] - e;
+        r32 db = _sign * b.v[axis] - e;
+
+        q3ClipVertex cv;
+
+        // B
+        if ( ((InFront( da ) && InFront( db )) || On( da ) || On( db )) )
+        {
+            out[outCount++] = b;
+        }
+
+        // I
+        else if ( InFront( da ) && Behind( db ) )
+        {
+            cv.f = b.f;
+            cv.v = a.v + (b.v - a.v) * (da / (da - db));
+            cv.f.outR = clipEdge;
+            cv.f.outI = 0;
+            out[outCount++] = cv;
+        }
+
+        // I, B
+        else if ( Behind( da ) && InFront( db ) )
+        {
+            cv.f = a.f;
+            cv.v = a.v + (b.v - a.v) * (da / (da - db));
+            cv.f.inR = clipEdge;
+            cv.f.inI = 0;
+            out[outCount++] = cv;
+
+            out[outCount++] = b;
+        }
+
+        a = b;
+    }
+
+    return outCount;
+}
+
 void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
     q3Transform atx = bodyA->m_tx;
     q3Transform btx = bodyB->m_tx;
@@ -815,8 +919,8 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, 
     {
         for ( i32 j = 0; j < 3; ++j )
         {
-            r32 val = q3Abs( C.m[ i ][ j ] );
-            absC.m[ i ][ j ] = val;
+            r32 val = q3Abs( C.m[i][j] );
+            absC.m[i][j] = val;
 
             parallel = parallel || (val + kCosTol >= 1.0f);
         }
@@ -1030,7 +1134,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, 
             {
                 global q3ContactOcl* c = contacts + i;
 
-                q3FeaturePairOcl pair = out[ i ].f;
+                q3FeaturePairOcl pair = out[i].f;
 
                 if ( flip )
                 {
@@ -1045,9 +1149,9 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, 
                     pair.outR = swap;
                 }
 
-                c->fp = out[ i ].f;
-                c->position = out[ i ].v;
-                c->penetration = depths[ i ];
+                c->fp = out[i].f;
+                c->position = out[i].v;
+                c->penetration = depths[i];
             }
         }
     }
