@@ -4,10 +4,11 @@ BINDIR=bin
 RM=rm -rf
 MKDIR=mkdir
 
-first: $(BINDIR)/gmu
+first: $(BINDIR)/rigid_body
 
-$(BINDIR)/gmu: CMakeLists.txt qu3e src | $(BUILDDIR)
-	cd $(BUILDDIR); make
+.PHONY: $(BINDIR)/rigid_body
+$(BINDIR)/rigid_body: CMakeLists.txt qu3e src | $(BUILDDIR)
+	cd $(BUILDDIR); make -j
 
 $(BUILDDIR):
 	$(MKDIR) $@
