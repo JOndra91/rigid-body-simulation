@@ -76,6 +76,10 @@ q3ContactManagerOcl::q3ContactManagerOcl( q3Stack* stack,  q3Container *containe
 //--------------------------------------------------------------------------------------------------
 void q3ContactManagerOcl::TestCollisions( void )
 {
+    if(m_contactCount == 0) {
+        return;
+    }
+
     cl_int clErr;
     Indicies *indexMemory, *indexPtr;
     q3Contact *contactMemory, *contactPtr;
@@ -297,4 +301,11 @@ void q3ContactManagerOcl::TestCollisions( void )
     m_clQueue.enqueueUnmapMemObject(constraintBuffer, constraintMemory);
     m_clQueue.enqueueUnmapMemObject(manifoldBuffer, manifoldMemory);
     m_clQueue.enqueueUnmapMemObject(contactBuffer, contactMemory);
+
+    const char *spaces = "                    ";
+    constraint = m_contactList;
+    while( constraint ) {
+        constraint->print(spaces + 20);
+        constraint = constraint->next;
+    }
 }

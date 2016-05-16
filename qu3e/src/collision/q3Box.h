@@ -99,6 +99,14 @@ public:
     q3Box* box() const;
     q3Body* body() const;
 
+    inline u32 getBodyIndex() const {
+        return m_bodyIndex;
+    }
+
+    inline u32 getBoxIndex() const {
+        return m_boxIndex;
+    }
+
     void SetUserdata( void* data ) const;
     void* GetUserdata( ) const;
 

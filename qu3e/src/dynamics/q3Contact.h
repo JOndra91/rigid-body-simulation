@@ -30,6 +30,7 @@
 #include "../math/q3Math.h"
 #include "../common/q3Settings.h"
 #include "../collision/q3Box.h"
+#include "../dynamics/q3Body.h"
 #include "../collision/q3Collide.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -86,6 +87,21 @@ struct q3Contact
     r32 tangentMass[ 2 ];        // Tangent constraint mass
     q3FeaturePair fp;            // Features on A and B for this contact
     u8 warmStarted;                // Used for debug rendering
+
+    void print(const char *padding) {
+        fprintf(stderr, "%sContact:\n", padding);
+        fprintf(stderr, "%s  position: vec3(%f, %f, %f)\n", padding, position.x, position.y, position.z);
+        fprintf(stderr, "%s  penetration: %f\n", padding, penetration);
+        fprintf(stderr, "%s  normalImpulse: %f\n", padding, normalImpulse);
+        fprintf(stderr, "%s  tangentImpulse[0]: %f\n", padding, tangentImpulse[0]);
+        fprintf(stderr, "%s  tangentImpulse[1]: %f\n", padding, tangentImpulse[1]);
+        fprintf(stderr, "%s  bias: %f\n", padding, bias);
+        fprintf(stderr, "%s  normalMass: %f\n", padding, normalMass);
+        fprintf(stderr, "%s  tangentMass[0]: %f\n", padding, tangentMass[0]);
+        fprintf(stderr, "%s  tangentMass[1]: %f\n", padding, tangentMass[1]);
+        fprintf(stderr, "%s  fp: 0x%x\n", padding, fp.key);
+        fprintf(stderr, "%s  warmStarted: %d\n", padding, warmStarted);
+    };
 } ALIGNED;
 
 struct q3Manifold
@@ -104,6 +120,21 @@ struct q3Manifold
     q3Manifold* prev;
 
     bool sensor;
+
+    void print(const char *padding) {
+        fprintf(stderr, "%sManifold:\n", padding);
+        fprintf(stderr, "%s  boxA: %d\n", padding, A->getBoxIndex());
+        fprintf(stderr, "%s  boxB: %d\n", padding, B->getBoxIndex());
+        fprintf(stderr, "%s  normal: vec3(%f, %f, %f)\n", padding, normal.x, normal.y, normal.z);
+        fprintf(stderr, "%s  tangentVectors[0]: vec3(%f, %f, %f)\n", padding, tangentVectors[0].x, tangentVectors[0].y, tangentVectors[0].z);
+        fprintf(stderr, "%s  tangentVectors[1]: vec3(%f, %f, %f)\n", padding, tangentVectors[1].x, tangentVectors[1].y, tangentVectors[1].z);
+        fprintf(stderr, "%s  normal: vec3(%f, %f, %f)\n", padding, normal.x, normal.y, normal.z);
+        fprintf(stderr, "%s  sensor: %d\n", padding, sensor);
+        fprintf(stderr, "%s  contactCount: %d\n", padding, contactCount);
+        for(int i = 0; i < contactCount; ++i) {
+            contacts[i].print(padding - 2);
+        }
+    };
 };
 
 struct q3ContactEdge
@@ -140,6 +171,18 @@ struct q3ContactConstraint
     };
 
     i32 m_flags;
+
+    void print(const char *padding) {
+        fprintf(stderr, "%sContactConstraint:\n", padding);
+        fprintf(stderr, "%s  boxA: %d\n", padding, A->getBoxIndex());
+        fprintf(stderr, "%s  boxB: %d\n", padding, B->getBoxIndex());
+        fprintf(stderr, "%s  bodyA: %d\n", padding, A->getBodyIndex());
+        fprintf(stderr, "%s  bodyB: %d\n", padding, B->getBodyIndex());
+        fprintf(stderr, "%s  friction: %f\n", padding, friction);
+        fprintf(stderr, "%s  restitution: %f\n", padding, restitution);
+        fprintf(stderr, "%s  m_flags: 0x%x\n", padding, m_flags);
+        manifold.print(padding - 2);
+    };
 
     friend class q3ContactManager;
     friend class q3Scene;
