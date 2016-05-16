@@ -159,7 +159,7 @@ void q3ContactManagerOcl::TestCollisions( void )
         oldContactPtr = oldContactMemory + (i * 8);
         int contactCount = constraint->manifold.contactCount;
         for(int j = 0; j < contactCount; ++j) {
-            oldContactPtr->load(constraint->manifold.contacts[j]);
+            oldContactPtr[j].load(constraint->manifold.contacts[j]);
         }
         constraintPtr->load(*constraint);
         manifoldPtr->load(constraint->manifold);
