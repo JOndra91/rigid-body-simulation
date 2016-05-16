@@ -36,10 +36,6 @@
 
 #include "../debug/q3Timers.h"
 
-#define assert_size(type, size) assert(sizeof(type) == size)
-//#define assert_size(type, size) do { std::cout << "sizeof(" << # type << ") = " << sizeof(type) << std::endl; assert(sizeof(type) == size); } while(0)
-
-
 #ifdef NO_KERNEL_SOURCE
 std::string solverKernelSource = "";
 #else

@@ -84,6 +84,24 @@ void q3ContactManagerOcl::TestCollisions( void )
     q3ManifoldOcl *manifoldMemory, *manifoldPtr;
     q3ContactConstraint* constraint;
 
+    assert_size(i32, 4);
+    assert_size(r32, 4);
+    assert_size(u32, 4);
+    assert_size(q3Vec3, 16);
+    assert_size(q3Mat3, 48);
+    assert_size(Indicies, 16);
+    assert_size(q3AABB, 32);
+    assert_size(q3DynamicAABBTree::Node, 48); // aabbNode
+    assert_size(q3Transform, 64);
+    assert_size(q3Box, 112);
+    assert_size(q3Body, 320);
+    assert_size(q3FeaturePair, 4);
+    assert_size(q3Contact, 64);
+    assert_size(q3ManifoldOcl, 64);
+    assert_size(q3ContactConstraintOcl, 16);
+    assert_size(q3ClipVertex, 32);
+    assert_size(q3OldContactOcl, 16);
+
     cl::Buffer bodyBuffer(*m_clContext, CL_MEM_READ_WRITE // Read only?
         , m_container->m_bodies.size() * sizeof(q3Body), NULL, &clErr
     );

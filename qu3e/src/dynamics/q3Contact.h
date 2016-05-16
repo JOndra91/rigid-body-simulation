@@ -66,6 +66,13 @@ union q3FeaturePair
     };
 
     i32 key;
+} PACKED;
+
+
+struct q3ClipVertex
+{
+    q3Vec3 v;
+    q3FeaturePair f;
 } ALIGNED;
 
 struct q3Contact

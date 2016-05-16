@@ -27,10 +27,16 @@
 #ifndef Q3OPENCL_H
 #define Q3OPENCL_H
 
+#include <cassert>
 
 #define ALIGNED __attribute__ ((aligned))
+#define PACKED __attribute__ ((packed))
 
 #define CEIL_TO(a, ceil) ((a - 1 + ceil)/ceil) * ceil
+
+
+#define assert_size(type, size) assert(sizeof(type) == size)
+// #define assert_size(type, size) do { std::cout << "sizeof(" << # type << ") = " << sizeof(type) << std::endl; assert(sizeof(type) == size); } while(0)
 
 #define CHECK_CL_ERROR(err, info) do { \
         if(err) { \

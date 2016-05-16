@@ -66,18 +66,6 @@ inline bool q3TrackEdgeAxis( i32* axis, i32 n, r32 s, r32* sMax, const q3Vec3& n
 }
 
 //--------------------------------------------------------------------------------------------------
-struct q3ClipVertex
-{
-    q3ClipVertex( )
-    {
-        f.key = ~0;
-    }
-
-    q3Vec3 v;
-    q3FeaturePair f;
-};
-
-//--------------------------------------------------------------------------------------------------
 void q3ComputeReferenceEdgesAndBasis( const q3Vec3& eR, const q3Transform& rtx, q3Vec3 n, i32 axis, u8* out, q3Mat3* basis, q3Vec3* e )
 {
     n = q3MulT( rtx.rotation, n );

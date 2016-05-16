@@ -164,6 +164,7 @@ typedef struct
     r32 friction;
     r32 restitution;
     i32 m_flags;
+    i32 __padding;
 } q3ContactConstraintOcl;
 
 typedef struct
@@ -349,6 +350,26 @@ kernel void testCollisions
     {
         return;
     }
+
+    // if(global_x == 0) {
+    //   printf("sizeof(i32) = %u\n", sizeof(i32));
+    //   printf("sizeof(r32) = %u\n", sizeof(r32));
+    //   printf("sizeof(u32) = %u\n", sizeof(u32));
+    //   printf("sizeof(q3Vec3) = %u\n", sizeof(q3Vec3));
+    //   printf("sizeof(q3Mat3) = %u\n", sizeof(q3Mat3));
+    //   printf("sizeof(Indicies) = %u\n", sizeof(Indicies));
+    //   printf("sizeof(q3AABB) = %u\n", sizeof(q3AABB));
+    //   printf("sizeof(aabbNode) = %u\n", sizeof(aabbNode));
+    //   printf("sizeof(q3Transform) = %u\n", sizeof(q3Transform));
+    //   printf("sizeof(q3Box) = %u\n", sizeof(q3Box));
+    //   printf("sizeof(q3Body) = %u\n", sizeof(q3Body));
+    //   printf("sizeof(q3FeaturePairOcl) = %u\n", sizeof(q3FeaturePairOcl));
+    //   printf("sizeof(q3ContactOcl) = %u\n", sizeof(q3ContactOcl));
+    //   printf("sizeof(q3ManifoldOcl) = %u\n", sizeof(q3ManifoldOcl));
+    //   printf("sizeof(q3ContactConstraintOcl) = %u\n", sizeof(q3ContactConstraintOcl));
+    //   printf("sizeof(q3ClipVertex) = %u\n", sizeof(q3ClipVertex));
+    //   printf("sizeof(q3OldContactOcl) = %u\n", sizeof(q3OldContactOcl));
+    // }
 
     Indicies indicies = indexBuffer[global_x];
     q3Body bodyA = bodyBuffer[indicies.bodyA];

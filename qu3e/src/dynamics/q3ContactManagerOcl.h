@@ -56,7 +56,7 @@ struct q3ManifoldOcl
     u32 sensor;
 
     inline void load(const q3Manifold &other) {
-        // contactCount = 0;
+        contactCount = other.contactCount;
         tangentVectors[0] = other.tangentVectors[0];
         tangentVectors[1] = other.tangentVectors[1];
 
