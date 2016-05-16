@@ -13,7 +13,7 @@ import re
 if len(sys.argv) == 3:
     with open(sys.argv[1],'r') as inputFile:
         with open(sys.argv[2],'w') as outputFile:
-            text = re.sub('(")', r'\\\1', inputFile.read())
+            text = re.sub(r'(["\\])', r'\\\1', inputFile.read())
             text = re.sub(r'\\n', r'\\\\n', text)
             text = re.sub(r'\n', r' \\n \\\n', text)
             print('// This file is generated from {}'.format(sys.argv[1]), file=outputFile)
