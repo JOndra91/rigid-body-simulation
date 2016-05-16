@@ -194,21 +194,6 @@ inline r32 q3Clamp(r32 minval, r32 maxval, r32 x)
   return clamp(x, minval, maxval);
 }
 
-inline r32 q3Max(r32 a, r32 b)
-{
-  return max(a, b);
-}
-
-inline r32 q3Min(r32 a, r32 b)
-{
-  return min(a, b);
-}
-
-inline r32 q3Invert(r32 a)
-{
-  return a != 0.0f ? 1.0f / a : 0.0f;
-}
-
 inline r32 q3Abs(r32 a)
 {
     return fabs(a);
@@ -425,7 +410,7 @@ kernel void testCollisions
                 q3Vec3 friction = ot0 * oc->tangentImpulse[0] + ot1 * oc->tangentImpulse[1];
                 c->tangentImpulse[0] = q3Dot( friction, manifold.tangentVectors[0] );
                 c->tangentImpulse[1] = q3Dot( friction, manifold.tangentVectors[1] );
-                c->warmStarted = q3Max( oldWarmStart, (u8)( oldWarmStart + 1 ) );
+                c->warmStarted = max(oldWarmStart, (u8)(oldWarmStart + 1));
                 break;
             }
         }
@@ -473,26 +458,28 @@ void solveCollision(global q3ContactOcl *contacts, q3ContactConstraintOcl *c, q3
             ))
         );
     // ^ This is crazy mess but it's equivalent with following code:
-    // if ( manifold.contactCount > 0 )
+    // if ( m->contactCount > 0 )
     // {
-    //     if ( m_flags & eColliding )
-    //         m_flags |= eWasColliding;
+    //     if ( flags & eColliding )
+    //         flags |= eWasColliding;
     //
     //     else
-    //         m_flags |= eColliding;
+    //         flags |= eColliding;
     // }
     //
     // else
     // {
-    //     if ( m_flags & eColliding )
+    //     if ( flags & eColliding )
     //     {
-    //         m_flags &= ~eColliding;
-    //         m_flags |= eWasColliding;
+    //         flags &= ~eColliding;
+    //         flags |= eWasColliding;
     //     }
     //
     //     else
-    //         m_flags &= ~eWasColliding;
+    //         flags &= ~eWasColliding;
     // }
+    //
+    // c->m_flags = flags;
 }
 
 inline bool q3TrackFaceAxis(i32 *axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal) {
@@ -1112,7 +1099,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, 
     i32 axis;
     r32 sMax;
     q3Vec3 n;
-    r32 faceMax = q3Max( aMax, bMax );
+    r32 faceMax = max( aMax, bMax );
     if ( kRelTol * eMax > faceMax + kAbsTol )
     {
         axis = eAxis;
