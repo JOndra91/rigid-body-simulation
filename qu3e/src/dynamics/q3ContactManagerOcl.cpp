@@ -302,10 +302,10 @@ void q3ContactManagerOcl::TestCollisions( void )
     m_clQueue.enqueueUnmapMemObject(manifoldBuffer, manifoldMemory);
     m_clQueue.enqueueUnmapMemObject(contactBuffer, contactMemory);
 
-    const char *spaces = "                    ";
-    constraint = m_contactList;
-    while( constraint ) {
-        constraint->print(spaces + 20);
-        constraint = constraint->next;
-    }
+    // const char *spaces = "                    ";
+    // constraint = m_contactList;
+    // while( constraint ) {
+    //     constraint->print(spaces + 20);
+    //     constraint = constraint->next;
+    // }
 }
