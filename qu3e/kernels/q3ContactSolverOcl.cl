@@ -237,7 +237,7 @@ kernel void prepare
     , global q3VelocityStateOcl *velocities
     , r32 dt
     , q3Vec3 gravity
-    , const uint indicies
+    , const global uint *indicies
     , uint bodyCount
     ) {
 
@@ -248,7 +248,8 @@ kernel void prepare
         return;
     }
 
-    q3Body body = bodies[global_x];
+    uint idx = indicies[global_x];
+    q3Body body = bodies[idx];
 
     if (!(body.m_flags & eDynamic))
     {
@@ -281,7 +282,7 @@ kernel void prepare
     v.v = body.m_linearVelocity;
     v.w = body.m_angularVelocity;
 
-    bodies[global_x] = body;
+    bodies[idx] = body;
     velocities[global_x] = v;
 }
 
@@ -289,6 +290,7 @@ kernel void integrate
     ( global q3Body *bodies
     , const global q3VelocityStateOcl *velocities
     , r32 dt
+    , const global uint *indicies
     , uint bodyCount
     ) {
 
@@ -299,7 +301,8 @@ kernel void integrate
         return;
     }
 
-    q3Body body = bodies[global_x];
+    uint idx = indicies[global_x];
+    q3Body body = bodies[idx];
 
     if (body.m_flags & eStatic)
     {
@@ -316,7 +319,7 @@ kernel void integrate
     body.m_q = qIntegrate( body.m_q, body.m_angularVelocity, dt );
     body.m_tx.rotation = qToMat3(body.m_q);
 
-    bodies[global_x] = body;
+    bodies[idx] = body;
 }
 
 kernel void preSolve

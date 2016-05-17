@@ -209,6 +209,10 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         }
     }
 
+    if(m_bodyCount == 0) {
+        return;
+    }
+
     m_contactStates = (q3ContactStateOcl *)s_stack->Allocate( sizeof( q3ContactStateOcl ) * m_contactStateCount );
     m_contactConstraintStates = (q3ContactConstraintStateOcl *)s_stack->Allocate( sizeof( q3ContactConstraintStateOcl ) * m_contactCount );
 
@@ -218,7 +222,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     cl::Buffer clBufferBody = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data(), &clErr);
     CHECK_CL_ERROR(clErr, "Buffer q3Body");
 
-    cl::Buffer clBufferIndicies = cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(cl_uint) * m_bodyCount, m_container->m_bodies.data(), &clErr);
+    cl::Buffer clBufferIndicies = cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(cl_uint) * m_bodyCount, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Buffer indicies");
 
     m_clBufferVelocity = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityStateOcl) * m_bodyCount, NULL, &clErr);
@@ -232,7 +236,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         indicies[i] = m_bodies[i]->getBodyIndex();
     }
 
-    m_clQueue.enqueueUnmapMemObject(clBufferIndicies, indicies);
+    clErr = m_clQueue.enqueueUnmapMemObject(clBufferIndicies, indicies);
+    CHECK_CL_ERROR(clErr, "Unmap indicies");
 
     clErr = m_clKernelPrepare.setArg(0, clBufferBody);
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 0 (body)");
@@ -242,8 +247,10 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 2 (dt)");
     clErr = m_clKernelPrepare.setArg(3, m_scene->m_gravity);
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 3 (gravity)");
-    clErr = m_clKernelPrepare.setArg(4, m_bodyCount);
-    CHECK_CL_ERROR(clErr, "Set prepare kernel param 4 (body count)");
+    clErr = m_clKernelPrepare.setArg(4, clBufferIndicies );
+    CHECK_CL_ERROR(clErr, "Set prepare kernel param 4 (indicies)");
+    clErr = m_clKernelPrepare.setArg(5, m_bodyCount);
+    CHECK_CL_ERROR(clErr, "Set prepare kernel param 5 (body count)");
 
     cl::NDRange local(m_clLocalSize);
     cl::NDRange global(CEIL_TO(m_bodyCount,local[0]));
@@ -338,8 +345,10 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     CHECK_CL_ERROR(clErr, "Set integrate kernel param 1 (velocity)");
     clErr = m_clKernelIntegrate.setArg(2, (cl_float)dt);
     CHECK_CL_ERROR(clErr, "Set integrate kernel param 2 (dt)");
-    clErr = m_clKernelIntegrate.setArg(3, m_bodyCount);
-    CHECK_CL_ERROR(clErr, "Set integrate kernel param 3 (body count)");
+    clErr = m_clKernelIntegrate.setArg(3, clBufferIndicies);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 3 (indicies)");
+    clErr = m_clKernelIntegrate.setArg(4, m_bodyCount);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 4 (body count)");
 
     global = cl::NDRange(CEIL_TO(m_bodyCount,local[0]));
     clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelIntegrate, cl::NullRange, global, local);
