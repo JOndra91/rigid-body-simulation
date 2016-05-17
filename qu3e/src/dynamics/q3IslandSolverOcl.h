@@ -80,7 +80,7 @@ struct q3ContactConstraintStateOcl
 //--------------------------------------------------------------------------------------------------
 struct q3IslandSolverOcl : q3IslandSolver
 {
-    q3IslandSolverOcl(cl::Context *ctx);
+    q3IslandSolverOcl(q3Container *container, cl::Context *ctx);
     ~q3IslandSolverOcl();
 
     void Solve( q3Scene *scene ) override;
@@ -92,10 +92,10 @@ struct q3IslandSolverOcl : q3IslandSolver
     void Add( q3BodyRef *body );
     void Add( q3ContactConstraint *contact );
 
+    q3Container *m_container;
     q3ContactConstraintStateOcl *m_contactConstraintStates;
     q3ContactStateOcl *m_contactStates;
     q3ContactConstraint **m_contactConstraints;
-    q3VelocityStateOcl *m_velocities;
     q3BodyRef **m_bodies;
 
     q3Scene *m_scene;
@@ -112,6 +112,8 @@ struct q3IslandSolverOcl : q3IslandSolver
     //-----------------------------------------------------------
     cl::Context *m_clContext;
     cl::Program m_clProgram;
+    cl::Kernel m_clKernelPrepare;
+    cl::Kernel m_clKernelIntegrate;
     cl::Kernel m_clKernelPreSolve;
     cl::Kernel m_clKernelSolve;
     cl::CommandQueue m_clQueue;

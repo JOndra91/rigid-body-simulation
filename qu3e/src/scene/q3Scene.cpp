@@ -67,8 +67,10 @@ q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iter
         }
         m_clContext = createCLContext(clDevType);
 
-        m_contactManager = new q3ContactManagerOcl(&m_stack, &m_container, &m_clContext);
-        m_islandSolver = new q3IslandSolverOcl(&m_clContext);
+        m_contactManager = new q3ContactManager(&m_stack);
+        // v This doesn't work :(
+        // m_contactManager = new q3ContactManagerOcl(&m_stack, &m_container, &m_clContext);
+        m_islandSolver = new q3IslandSolverOcl(&m_container, &m_clContext);
     }
     else {
         m_contactManager = new q3ContactManager(&m_stack);

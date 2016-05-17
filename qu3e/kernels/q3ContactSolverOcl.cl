@@ -2,6 +2,7 @@ typedef int    i32;
 typedef uint   u32;
 typedef float  r32;
 typedef float3 q3Vec3;
+typedef float4 q3Quaternion;
 
 #define Q3_BAUMGARTE 0.2f
 #define Q3_PENETRATION_SLOP 0.05f
@@ -49,6 +50,48 @@ typedef struct
   i32 indexB;
 } q3ContactConstraintStateOcl;
 
+enum bodyFlags
+{
+    eAwake        = 0x001,
+    eActive       = 0x002,
+    eAllowSleep   = 0x004,
+    // eIsland       = 0x010,
+    eStatic       = 0x020,
+    eDynamic      = 0x040,
+    eKinematic    = 0x080,
+    eLockAxisX    = 0x100,
+    eLockAxisY    = 0x200,
+    eLockAxisZ    = 0x400,
+};
+
+typedef struct
+{
+    q3Mat3 rotation;
+    q3Vec3 position;
+} q3Transform;
+
+typedef struct
+{
+    q3Mat3 m_invInertiaModel;
+    q3Mat3 m_invInertiaWorld;
+    r32 m_mass;
+    r32 m_invMass;
+    q3Vec3 m_linearVelocity;
+    q3Vec3 m_angularVelocity;
+    q3Vec3 m_force;
+    q3Vec3 m_torque;
+    q3Transform m_tx;
+    q3Quaternion m_q;
+    q3Vec3 m_localCenter;
+    q3Vec3 m_worldCenter;
+    r32 m_sleepTime;
+    r32 m_gravityScale;
+    i32 m_layers;
+    i32 m_flags;
+    u32 m_bodyIndex;
+    i32 m_islandIndex;
+} q3Body;
+
 inline q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
 {
   return cross(a, b);
@@ -89,6 +132,191 @@ inline q3Vec3 mvMul(q3Mat3 m, q3Vec3 v)
     m.ex.y * v.x + m.ey.y * v.y + m.ez.y * v.z,
     m.ex.z * v.x + m.ey.z * v.y + m.ez.z * v.z
   );
+}
+
+/**
+ * Matrix matrix multiplication
+ */
+inline q3Mat3 mmMul(const q3Mat3 m, const q3Mat3 n) {
+    q3Mat3 o;
+    o.ex = mvMul(m, n.ex);
+    o.ey = mvMul(m, n.ey);
+    o.ez = mvMul(m, n.ez);
+
+    return o;
+}
+
+inline const q3Mat3 mTranspose( const q3Mat3 m )
+{
+    q3Mat3 n;
+    n.ex = (q3Vec3)(m.ex.x, m.ey.x, m.ez.x);
+    n.ey = (q3Vec3)(m.ex.y, m.ey.y, m.ez.y);
+    n.ez = (q3Vec3)(m.ex.z, m.ey.z, m.ez.z);
+    return n;
+}
+
+void body_SetToAwake( q3Body *body )
+{
+    if( !(body->m_flags & eAwake) )
+    {
+        body->m_flags |= eAwake;
+        body->m_sleepTime = 0.0f;
+    }
+}
+
+void body_ApplyLinearForce( q3Body *body, const q3Vec3 force )
+{
+    body->m_force += force * body->m_mass;
+
+    body_SetToAwake(body);
+}
+
+inline const q3Quaternion qNormalize( const q3Quaternion q )
+{
+    r32 x = q.x;
+    r32 y = q.y;
+    r32 z = q.z;
+    r32 w = q.w;
+
+    r32 d = q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z;
+
+    if( d == 0 )
+        w = 1.0;
+
+    d = 1.0 / sqrt( d );
+
+    if ( d > 1.0e-8 )
+    {
+        x *= d;
+        y *= d;
+        z *= d;
+        w *= d;
+    }
+
+    return (q3Quaternion)( x, y, z, w );
+}
+
+q3Quaternion qIntegrate( q3Quaternion q, const q3Vec3 dv, r32 dt )
+{
+    q3Quaternion p = (q3Quaternion)( dv.x * dt, dv.y * dt, dv.z * dt, 0.0f);
+
+    q.x += p.x * 0.5;
+    q.y += p.y * 0.5;
+    q.z += p.z * 0.5;
+    q.w += p.w * 0.5;
+
+    return qNormalize( q );
+}
+
+q3Mat3 qToMat3( const q3Quaternion q )
+{
+    r32 qx2 = q.x + q.x;
+    r32 qy2 = q.y + q.y;
+    r32 qz2 = q.z + q.z;
+    r32 qxqx2 = q.x * qx2;
+    r32 qxqy2 = q.x * qy2;
+    r32 qxqz2 = q.x * qz2;
+    r32 qxqw2 = q.w * qx2;
+    r32 qyqy2 = q.y * qy2;
+    r32 qyqz2 = q.y * qz2;
+    r32 qyqw2 = q.w * qy2;
+    r32 qzqz2 = q.z * qz2;
+    r32 qzqw2 = q.w * qz2;
+
+    q3Mat3 m;
+
+    m.ex = (q3Vec3)( 1.0f - qyqy2 - qzqz2, qxqy2 + qzqw2, qxqz2 - qyqw2 );
+    m.ey = (q3Vec3)( qxqy2 - qzqw2, 1.0f - qxqx2 - qzqz2, qyqz2 + qxqw2 );
+    m.ez = (q3Vec3)( qxqz2 + qyqw2, qyqz2 - qxqw2, 1.0f - qxqx2 - qyqy2 );
+
+    return m;
+}
+
+kernel void prepare
+    ( global q3Body *bodies
+    , global q3VelocityStateOcl *velocities
+    , r32 dt
+    , q3Vec3 gravity
+    , const uint indicies
+    , uint bodyCount
+    ) {
+
+    uint global_x = (uint)get_global_id(0);
+
+    if(global_x >= bodyCount)
+    {
+        return;
+    }
+
+    q3Body body = bodies[global_x];
+
+    if (!(body.m_flags & eDynamic))
+    {
+        return;
+    }
+
+    q3VelocityStateOcl v = velocities[global_x];
+
+    body_ApplyLinearForce( &body, gravity * body.m_gravityScale );
+
+    // Calculate world space intertia tensor
+    q3Mat3 r = body.m_tx.rotation;
+    body.m_invInertiaWorld = mmMul(r, mmMul(body.m_invInertiaModel, mTranspose( r )));
+
+    // Integrate velocity
+    body.m_linearVelocity += (body.m_force * body.m_invMass) * dt;
+    body.m_angularVelocity += mvMul(body.m_invInertiaWorld, body.m_torque) * dt;
+
+    // From Box2D!
+    // Apply damping.
+    // ODE: dv/dt + c * v = 0
+    // Solution: v(t) = v0 * exp(-c * t)
+    // Time step: v(t + dt) = v0 * exp(-c * (t + dt)) = v0 * exp(-c * t) * exp(-c * dt) = v * exp(-c * dt)
+    // v2 = exp(-c * dt) * v1
+    // Pade approximation:
+    // v2 = v1 * 1 / (1 + c * dt)
+    body.m_linearVelocity *= 1.0f / (1.0f + dt * 0.0f);
+    body.m_angularVelocity *= 1.0f / (1.0f + dt * 0.1f);
+
+    v.v = body.m_linearVelocity;
+    v.w = body.m_angularVelocity;
+
+    bodies[global_x] = body;
+    velocities[global_x] = v;
+}
+
+kernel void integrate
+    ( global q3Body *bodies
+    , const global q3VelocityStateOcl *velocities
+    , r32 dt
+    , uint bodyCount
+    ) {
+
+    uint global_x = (uint)get_global_id(0);
+
+    if(global_x >= bodyCount)
+    {
+        return;
+    }
+
+    q3Body body = bodies[global_x];
+
+    if (body.m_flags & eStatic)
+    {
+        return;
+    }
+
+    const q3VelocityStateOcl v = velocities[global_x];
+
+    body.m_linearVelocity = v.v;
+    body.m_angularVelocity = v.w;
+
+    // Integrate position
+    body.m_worldCenter += body.m_linearVelocity * dt;
+    body.m_q = qIntegrate( body.m_q, body.m_angularVelocity, dt );
+    body.m_tx.rotation = qToMat3(body.m_q);
+
+    bodies[global_x] = body;
 }
 
 kernel void preSolve
