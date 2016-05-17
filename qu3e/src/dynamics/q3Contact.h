@@ -72,6 +72,11 @@ union q3FeaturePair
 
 struct q3ClipVertex
 {
+    q3ClipVertex( )
+    {
+        f.key = ~0;
+    }
+
     q3Vec3 v;
     q3FeaturePair f;
 } ALIGNED;
