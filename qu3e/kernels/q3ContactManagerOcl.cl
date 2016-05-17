@@ -357,9 +357,9 @@ kernel void testCollisions
     //   printf("sizeof(q3OldContactOcl) = %u\n", sizeof(q3OldContactOcl));
     // }
 
-    Indicies indicies = indexBuffer[global_x];
-    q3Body bodyA = bodyBuffer[indicies.bodyA];
-    q3Body bodyB = bodyBuffer[indicies.bodyB];
+    const Indicies indicies = indexBuffer[global_x];
+    const q3Body bodyA = bodyBuffer[indicies.bodyA];
+    const q3Body bodyB = bodyBuffer[indicies.bodyB];
 
     if(!bodiesCanColide(bodyA, bodyB)) {
         constraintBuffer[global_x].m_flags |= eRemove;
@@ -370,10 +370,10 @@ kernel void testCollisions
         return;
     }
 
-    q3Box boxA = boxBuffer[indicies.boxA];
-    q3Box boxB = boxBuffer[indicies.boxB];
-    q3AABB aabbA = aabbNodeBuffer[boxA.broadPhaseIndex].aabb;
-    q3AABB aabbB = aabbNodeBuffer[boxB.broadPhaseIndex].aabb;
+    const q3Box boxA = boxBuffer[indicies.boxA];
+    const q3Box boxB = boxBuffer[indicies.boxB];
+    const q3AABB aabbA = aabbNodeBuffer[boxA.broadPhaseIndex].aabb;
+    const q3AABB aabbB = aabbNodeBuffer[boxB.broadPhaseIndex].aabb;
 
     if(!aabbOverlaps(aabbA, aabbB)) {
         constraintBuffer[global_x].m_flags |= eRemove;

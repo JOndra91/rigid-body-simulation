@@ -106,12 +106,12 @@ void q3ContactManagerOcl::TestCollisions( void )
     assert_size(q3ClipVertex, 32);
     assert_size(q3OldContactOcl, 16);
 
-    cl::Buffer bodyBuffer(*m_clContext, CL_MEM_READ_WRITE // Read only?
+    cl::Buffer bodyBuffer(*m_clContext, CL_MEM_READ_ONLY
         , m_container->m_bodies.size() * sizeof(q3Body), NULL, &clErr
     );
     CHECK_CL_ERROR(clErr, "Buffer q3Body");
 
-    cl::Buffer boxBuffer(*m_clContext, CL_MEM_READ_WRITE // Read only?
+    cl::Buffer boxBuffer(*m_clContext, CL_MEM_READ_ONLY
         , m_container->m_boxes.size() * sizeof(q3Box), NULL, &clErr
     );
     CHECK_CL_ERROR(clErr, "Buffer q3Box");
