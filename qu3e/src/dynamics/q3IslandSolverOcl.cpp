@@ -213,21 +213,66 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         return;
     }
 
+    q3VelocityStateOcl *m_velocities = new q3VelocityStateOcl[m_bodyCount];
     m_contactStates = (q3ContactStateOcl *)s_stack->Allocate( sizeof( q3ContactStateOcl ) * m_contactStateCount );
     m_contactConstraintStates = (q3ContactConstraintStateOcl *)s_stack->Allocate( sizeof( q3ContactConstraintStateOcl ) * m_contactCount );
 
     // Apply gravity
     // Integrate velocities and create state buffers, calculate world inertia
     r32 dt = m_scene->m_dt;
+
+#if 0
+#define DUMP_FILE "cpu.dump"
+
+    q3Vec3 gravity = m_scene->m_gravity;
+    for ( i32 i = 0 ; i < m_bodyCount; ++i )
+    {
+        q3BodyRef* bodyRef = m_bodies[ i ];
+        q3Body *body = bodyRef->body();
+        q3VelocityStateOcl *v = m_velocities + i;
+
+        assert(i == body->m_islandIndex);
+
+        if ( body->m_flags & q3Body::eDynamic )
+        {
+            body->ApplyLinearForce( gravity * body->m_gravityScale );
+
+            // Calculate world space intertia tensor
+            q3Mat3 r = body->m_tx.rotation;
+            body->m_invInertiaWorld = r * body->m_invInertiaModel * q3Transpose( r );
+
+            // Integrate velocity
+            body->m_linearVelocity += (body->m_force * body->m_invMass) * dt;
+            body->m_angularVelocity += (body->m_invInertiaWorld * body->m_torque) * dt;
+
+            // From Box2D!
+            // Apply damping.
+            // ODE: dv/dt + c * v = 0
+            // Solution: v(t) = v0 * exp(-c * t)
+            // Time step: v(t + dt) = v0 * exp(-c * (t + dt)) = v0 * exp(-c * t) * exp(-c * dt) = v * exp(-c * dt)
+            // v2 = exp(-c * dt) * v1
+            // Pade approximation:
+            // v2 = v1 * 1 / (1 + c * dt)
+            body->m_linearVelocity *= r32( 1.0 ) / (r32( 1.0 ) + dt * r32( 0.0 ));
+            body->m_angularVelocity *= r32( 1.0 ) / (r32( 1.0 ) + dt * r32( 0.1 ));
+        }
+
+        v->v = body->m_linearVelocity;
+        v->w = body->m_angularVelocity;
+    }
+
+
+#else
+#define DUMP_FILE "ocl.dump"
+
     cl::Buffer clBufferBody = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data(), &clErr);
     CHECK_CL_ERROR(clErr, "Buffer q3Body");
 
     cl::Buffer clBufferIndicies = cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(cl_uint) * m_bodyCount, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Buffer indicies");
 
-    m_clBufferVelocity = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityStateOcl) * m_bodyCount, NULL, &clErr);
+    cl::Buffer clBufferVelocities = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityStateOcl) * m_bodyCount, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Buffer q3VelocityStateOcl");
-    m_clGC.addMemObject(m_clBufferVelocity);
 
     cl_uint *indicies = (cl_uint*)m_clQueue.enqueueMapBuffer(clBufferIndicies, CL_TRUE, CL_MAP_WRITE, 0, sizeof(cl_uint) * m_bodyCount, NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map indicies");
@@ -241,7 +286,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
     clErr = m_clKernelPrepare.setArg(0, clBufferBody);
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 0 (body)");
-    clErr = m_clKernelPrepare.setArg(1, *m_clBufferVelocity);
+    clErr = m_clKernelPrepare.setArg(1, clBufferVelocities);
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 1 (velocity)");
     clErr = m_clKernelPrepare.setArg(2, (cl_float)dt);
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 2 (dt)");
@@ -257,16 +302,51 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelPrepare, cl::NullRange, global, local);
     CHECK_CL_ERROR(clErr, "Run prepare kernel");
 
+    clErr = m_clQueue.enqueueReadBuffer(clBufferVelocities, true, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
+    CHECK_CL_ERROR(clErr, "Read buffer q3VelocityStateOcl");
+
+    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
+    CHECK_CL_ERROR(clErr, "Read body buffer");
+
+#endif
+
+#if 0
+    FILE *f = fopen(DUMP_FILE, "a");
+
+    for ( i32 i = 0 ; i < m_bodyCount; ++i )
+    {
+        q3BodyRef* bodyRef = m_bodies[ i ];
+        q3Body *body = bodyRef->body();
+        q3VelocityStateOcl *v = m_velocities + i;
+
+        fprintf(f, "Body[%d]:\n", i);
+        fprintf(f, "  linear velocity: (%.9f, %.9f, %.9f)\n", v->v.x, v->v.y, v->v.z);
+        fprintf(f, "  angular velocity: (%.9f, %.9f, %.9f)\n", v->w.x, v->w.y, v->w.z);
+        fprintf(f, "  inertia: [[%.9f, %.9f, %.9f,], [%.9f, %.9f, %.9f,], [%.9f, %.9f, %.9f,]]\n",
+            body->m_invInertiaWorld.ex.x, body->m_invInertiaWorld.ex.y, body->m_invInertiaWorld.ex.z,
+            body->m_invInertiaWorld.ey.x, body->m_invInertiaWorld.ey.y, body->m_invInertiaWorld.ey.z,
+            body->m_invInertiaWorld.ez.x, body->m_invInertiaWorld.ez.y, body->m_invInertiaWorld.ez.z
+        );
+    }
+
+    fprintf(f, "------------------------------------------------\n\n");
+
+    fclose(f);
+#endif
+
     q3TimerStart("solve");
 
     if(m_contactCount > 0) {
         InitializeContacts();
 
+        m_clBufferVelocity = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities, &clErr);
+        CHECK_CL_ERROR(clErr, "Buffer q3VelocityStateOcl");
         m_clBufferContactState = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates, &clErr);
         CHECK_CL_ERROR(clErr, "Buffer q3ContactStateOcl");
         m_clBufferContactConstraintState = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates, &clErr);
         CHECK_CL_ERROR(clErr, "Buffer q3ContactConstraintStateOcl");
 
+        m_clGC.addMemObject(m_clBufferVelocity);
         m_clGC.addMemObject(m_clBufferContactState);
         m_clGC.addMemObject(m_clBufferContactConstraintState);
 
@@ -317,6 +397,9 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
         clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, true, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates);
         CHECK_CL_ERROR(clErr, "Read buffer q3ContactStateOcl");
+
+        clErr = m_clQueue.enqueueReadBuffer(*m_clBufferVelocity, true, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
+        CHECK_CL_ERROR(clErr, "Read buffer q3VelocityStateOcl");
     }
 
     q3TimerStop("solve");
@@ -339,23 +422,45 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     }
 
     // Integrate positions
-    clErr = m_clKernelIntegrate.setArg(0, clBufferBody);
-    CHECK_CL_ERROR(clErr, "Set integrate kernel param 0 (body)");
-    clErr = m_clKernelIntegrate.setArg(1, *m_clBufferVelocity);
-    CHECK_CL_ERROR(clErr, "Set integrate kernel param 1 (velocity)");
-    clErr = m_clKernelIntegrate.setArg(2, (cl_float)dt);
-    CHECK_CL_ERROR(clErr, "Set integrate kernel param 2 (dt)");
-    clErr = m_clKernelIntegrate.setArg(3, clBufferIndicies);
-    CHECK_CL_ERROR(clErr, "Set integrate kernel param 3 (indicies)");
-    clErr = m_clKernelIntegrate.setArg(4, m_bodyCount);
-    CHECK_CL_ERROR(clErr, "Set integrate kernel param 4 (body count)");
+    // clErr = m_clKernelIntegrate.setArg(0, clBufferBody);
+    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 0 (body)");
+    // clErr = m_clKernelIntegrate.setArg(1, *m_clBufferVelocity);
+    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 1 (velocity)");
+    // clErr = m_clKernelIntegrate.setArg(2, (cl_float)dt);
+    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 2 (dt)");
+    // clErr = m_clKernelIntegrate.setArg(3, clBufferIndicies);
+    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 3 (indicies)");
+    // clErr = m_clKernelIntegrate.setArg(4, m_bodyCount);
+    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 4 (body count)");
+    //
+    // global = cl::NDRange(CEIL_TO(m_bodyCount,local[0]));
+    // clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelIntegrate, cl::NullRange, global, local);
+    // CHECK_CL_ERROR(clErr, "Run integrate kernel");
+    //
+    // clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
+    // CHECK_CL_ERROR(clErr, "Read body buffer");
 
-    global = cl::NDRange(CEIL_TO(m_bodyCount,local[0]));
-    clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelIntegrate, cl::NullRange, global, local);
-    CHECK_CL_ERROR(clErr, "Run integrate kernel");
+    // Integrate positions
+    for ( i32 i = 0 ; i < m_bodyCount; ++i )
+    {
+        q3BodyRef* bodyRef = m_bodies[ i ];
+        q3Body *body = bodyRef->body();
+        q3VelocityStateOcl *v = m_velocities + i;
 
-    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
-    CHECK_CL_ERROR(clErr, "Read body buffer");
+        if ( body->m_flags & q3Body::eStatic )
+            continue;
+
+        body->m_linearVelocity = v->v;
+        body->m_angularVelocity = v->w;
+
+        // Integrate position
+        body->m_worldCenter += body->m_linearVelocity * dt;
+        body->m_q.Integrate( body->m_angularVelocity, dt );
+        body->m_q = q3Normalize( body->m_q );
+        body->m_tx.rotation = body->m_q.ToMat3( );
+    }
+
+    delete[] m_velocities;
 
     if ( m_scene->m_allowSleep )
     {

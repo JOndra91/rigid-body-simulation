@@ -250,34 +250,33 @@ kernel void prepare
 
     uint idx = indicies[global_x];
     q3Body body = bodies[idx];
-
-    if (!(body.m_flags & eDynamic))
-    {
-        return;
-    }
-
     q3VelocityStateOcl v = velocities[global_x];
 
-    body_ApplyLinearForce( &body, gravity * body.m_gravityScale );
+    if (body.m_flags & eDynamic)
+    {
 
-    // Calculate world space intertia tensor
-    q3Mat3 r = body.m_tx.rotation;
-    body.m_invInertiaWorld = mmMul(r, mmMul(body.m_invInertiaModel, mTranspose( r )));
+        body_ApplyLinearForce( &body, gravity * body.m_gravityScale );
 
-    // Integrate velocity
-    body.m_linearVelocity += (body.m_force * body.m_invMass) * dt;
-    body.m_angularVelocity += mvMul(body.m_invInertiaWorld, body.m_torque) * dt;
+        // Calculate world space intertia tensor
+        q3Mat3 r = body.m_tx.rotation;
+        body.m_invInertiaWorld = mmMul(r, mmMul(body.m_invInertiaModel, mTranspose( r )));
 
-    // From Box2D!
-    // Apply damping.
-    // ODE: dv/dt + c * v = 0
-    // Solution: v(t) = v0 * exp(-c * t)
-    // Time step: v(t + dt) = v0 * exp(-c * (t + dt)) = v0 * exp(-c * t) * exp(-c * dt) = v * exp(-c * dt)
-    // v2 = exp(-c * dt) * v1
-    // Pade approximation:
-    // v2 = v1 * 1 / (1 + c * dt)
-    body.m_linearVelocity *= 1.0f / (1.0f + dt * 0.0f);
-    body.m_angularVelocity *= 1.0f / (1.0f + dt * 0.1f);
+        // Integrate velocity
+        body.m_linearVelocity += (body.m_force * body.m_invMass) * dt;
+        body.m_angularVelocity += mvMul(body.m_invInertiaWorld, body.m_torque) * dt;
+
+        // From Box2D!
+        // Apply damping.
+        // ODE: dv/dt + c * v = 0
+        // Solution: v(t) = v0 * exp(-c * t)
+        // Time step: v(t + dt) = v0 * exp(-c * (t + dt)) = v0 * exp(-c * t) * exp(-c * dt) = v * exp(-c * dt)
+        // v2 = exp(-c * dt) * v1
+        // Pade approximation:
+        // v2 = v1 * 1 / (1 + c * dt)
+        body.m_linearVelocity *= 1.0f / (1.0f + dt * 0.0f);
+        body.m_angularVelocity *= 1.0f / (1.0f + dt * 0.1f);
+
+    }
 
     v.v = body.m_linearVelocity;
     v.w = body.m_angularVelocity;
