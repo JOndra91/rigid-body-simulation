@@ -116,6 +116,7 @@ typedef struct
     i32 m_flags;
     u32 m_bodyIndex;
     i32 m_islandIndex;
+    u32 m_islandId;
 } q3Body;
 
 typedef union

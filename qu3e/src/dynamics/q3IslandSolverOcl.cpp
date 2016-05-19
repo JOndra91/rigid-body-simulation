@@ -70,6 +70,7 @@ q3IslandSolverOcl::q3IslandSolverOcl(q3Container *container, cl::Context *ctx)
     assert_size(q3VelocityStateOcl, sizeof(cl_float3) * 2);
     assert_size(q3ContactStateOcl, 80);
     assert_size(q3ContactConstraintStateOcl, 208);
+    assert_size(q3Body, 320);
 
     m_container = container;
     m_clContext = ctx;
@@ -134,6 +135,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     // Build each active island and then solve each built island
     i32 stackSize = s_bodyCount;
     q3BodyRef** stack = (q3BodyRef**)s_stack->Allocate( sizeof( q3Body* ) * stackSize );
+    m_islandId = 0;
     for ( auto seedRef : scene->m_container.bodies() )
     {
         q3Body *seed = seedRef->body();
@@ -207,11 +209,15 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                 other->body()->m_flags |= q3Body::eIsland;
             }
         }
+        m_islandId++;
     }
 
     if(m_bodyCount == 0) {
         return;
     }
+
+    // If this happens, add 1 to prevent empty cl::Buffer initialization.
+    assert(m_islandId != 0);
 
     m_contactStates = (q3ContactStateOcl *)s_stack->Allocate( sizeof( q3ContactStateOcl ) * m_contactStateCount );
     m_contactConstraintStates = (q3ContactConstraintStateOcl *)s_stack->Allocate( sizeof( q3ContactConstraintStateOcl ) * m_contactCount );
@@ -393,6 +399,9 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     q3TimerStop("solve");
     q3TimerPrint("solve", "  Solve");
 
+    cl::Buffer clBufferIslandMin = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(cl_float) * m_islandId, NULL, &clErr);
+    CHECK_CL_ERROR(clErr, "Read buffer island min");
+
     // Integrate positions
     clErr = m_clKernelIntegrate.setArg(0, clBufferBody);
     CHECK_CL_ERROR(clErr, "Set integrate kernel param 0 (body)");
@@ -404,6 +413,12 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     CHECK_CL_ERROR(clErr, "Set integrate kernel param 3 (indicies)");
     clErr = m_clKernelIntegrate.setArg(4, m_bodyCount);
     CHECK_CL_ERROR(clErr, "Set integrate kernel param 4 (body count)");
+    clErr = m_clKernelIntegrate.setArg(5, (cl_uint)m_scene->m_allowSleep);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 5 (allow sleep)");
+    clErr = m_clKernelIntegrate.setArg(6, (cl_float)Q3_SLEEP_TIME);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 6 (sleep time)");
+    clErr = m_clKernelIntegrate.setArg(7, clBufferIslandMin);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 7 (clBufferIslandMin)");
 
     global = cl::NDRange(CEIL_TO(m_bodyCount,local[0]));
     clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelIntegrate, cl::NullRange, global, local);
@@ -425,9 +440,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         }
     }
 
-    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
-    CHECK_CL_ERROR(clErr, "Read body buffer");
-
 #if 0
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
     {
@@ -448,7 +460,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         body->m_tx.rotation = body->m_q.ToMat3( );
     }
 #endif
-#if 1
+#if 0
     if ( m_scene->m_allowSleep )
     {
         // Find minimum sleep time of the entire island
@@ -490,6 +502,9 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         }
     }
 #endif
+
+    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
+    CHECK_CL_ERROR(clErr, "Read body buffer");
 
     s_stack->Free(m_contactConstraintStates);
     s_stack->Free(m_contactStates);
@@ -579,6 +594,7 @@ void q3IslandSolverOcl::Add( q3BodyRef *body )
     assert( m_bodyCount < m_bodyCapacity );
 
     body->body()->m_islandIndex = m_bodyCount;
+    body->body()->m_islandId = m_islandId;
 
     m_bodies[ m_bodyCount++ ] = body;
 }

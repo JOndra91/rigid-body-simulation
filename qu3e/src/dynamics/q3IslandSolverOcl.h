@@ -105,6 +105,7 @@ struct q3IslandSolverOcl : q3IslandSolver
     i32 m_contactCount;
     i32 m_contactStateCount;
     i32 m_bodyCount;
+    u32 m_islandId;
 
 
     //-----------------------------------------------------------

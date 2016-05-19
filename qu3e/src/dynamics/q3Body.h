@@ -145,6 +145,7 @@ private:
     // q3Body* m_prev;
     u32 m_bodyIndex;
     i32 m_islandIndex;
+    u32 m_islandId;
 
     friend class q3Scene;
     friend struct q3Manifold;

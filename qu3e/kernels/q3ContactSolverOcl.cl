@@ -7,6 +7,10 @@ typedef float4 q3Quaternion;
 #define Q3_BAUMGARTE 0.2f
 #define Q3_PENETRATION_SLOP 0.05f
 
+#define Q3_PI 3.14159265
+#define Q3_SLEEP_LINEAR 0.01
+#define Q3_SLEEP_ANGULAR ((3.0 / 180.0) * Q3_PI)
+
 typedef struct
 {
   q3Vec3 ex;
@@ -90,6 +94,7 @@ typedef struct
     i32 m_flags;
     u32 m_bodyIndex;
     i32 m_islandIndex;
+    u32 m_islandId;
 } q3Body;
 
 inline q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
@@ -162,6 +167,18 @@ void body_SetToAwake( q3Body *body )
         body->m_flags |= eAwake;
         body->m_sleepTime = 0.0f;
     }
+}
+
+void body_SetToSleep( q3Body *body )
+{
+    body->m_flags &= ~eAwake;
+    body->m_sleepTime = 0.0f;
+
+    // Set identities
+    body->m_linearVelocity = (q3Vec3)(0.0, 0.0, 0.0);
+    body->m_angularVelocity = (q3Vec3)(0.0, 0.0, 0.0);
+    body->m_force = (q3Vec3)(0.0, 0.0, 0.0);
+    body->m_torque = (q3Vec3)(0.0, 0.0, 0.0);
 }
 
 void body_ApplyLinearForce( q3Body *body, const q3Vec3 force )
@@ -248,6 +265,19 @@ kernel void prepare
         return;
     }
 
+    // if(global_x == 0) {
+    //     printf("sizeof(i32) = %u\n", sizeof(i32));
+    //     printf("sizeof(r32) = %u\n", sizeof(r32));
+    //     printf("sizeof(u32) = %u\n", sizeof(u32));
+    //     printf("sizeof(q3Vec3) = %u\n", sizeof(q3Vec3));
+    //     printf("sizeof(q3Mat3) = %u\n", sizeof(q3Mat3));
+    //     printf("sizeof(q3Transform) = %u\n", sizeof(q3Transform));
+    //     printf("sizeof(q3VelocityStateOcl) = %u\n", sizeof(q3VelocityStateOcl));
+    //     printf("sizeof(q3ContactStateOcl) = %u\n", sizeof(q3ContactStateOcl));
+    //     printf("sizeof(q3ContactConstraintStateOcl) = %u\n", sizeof(q3ContactConstraintStateOcl));
+    //     printf("sizeof(q3Body) = %u\n", sizeof(q3Body));
+    // }
+
     uint idx = indicies[global_x];
     q3Body body = bodies[idx];
     q3VelocityStateOcl v;
@@ -285,12 +315,20 @@ kernel void prepare
     velocities[global_x] = v;
 }
 
+typedef union {
+    float f;
+    uint u;
+} mixType;
+
 kernel void integrate
     ( global q3Body *bodies
     , const global q3VelocityStateOcl *velocities
-    , r32 dt
+    , const r32 dt
     , const global uint *indicies
-    , uint bodyCount
+    , const uint bodyCount
+    , const uint sleepEnable
+    , const r32 SLEEP_TIME
+    , global mixType *minBuffer
     ) {
 
     uint global_x = (uint)get_global_id(0);
@@ -318,6 +356,52 @@ kernel void integrate
     body.m_q = qIntegrate( body.m_q, body.m_angularVelocity, dt );
     body.m_tx.rotation = qToMat3(body.m_q);
 
+    if (sleepEnable)
+    {
+        // Find minimum sleep time of the entire island
+        r32 minSleepTime = FLT_MAX;
+
+        const r32 sqrLinVel = q3Dot( body.m_linearVelocity, body.m_linearVelocity );
+        const r32 cbAngVel = q3Dot( body.m_angularVelocity, body.m_angularVelocity );
+        const r32 linTol = Q3_SLEEP_LINEAR;
+        const r32 angTol = Q3_SLEEP_ANGULAR;
+
+        if ( sqrLinVel > linTol || cbAngVel > angTol )
+        {
+            minSleepTime = 0.0;
+            body.m_sleepTime = 0.0;
+        }
+        else
+        {
+            body.m_sleepTime += dt;
+            minSleepTime = body.m_sleepTime;
+        }
+
+        minBuffer[body.m_islandId].u = UINT_MAX;
+
+        barrier(CLK_GLOBAL_MEM_FENCE);
+
+        uint minSleepTimeInt = minSleepTime * ((float)(UINT_MAX) / 1000.0f);
+        atomic_min(&minBuffer[body.m_islandId].u, minSleepTimeInt);
+
+        if(minBuffer[body.m_islandId].u == minSleepTimeInt) {
+            minBuffer[body.m_islandId].f = minSleepTime;
+        }
+
+        barrier(CLK_GLOBAL_MEM_FENCE);
+
+        minSleepTime = minBuffer[body.m_islandId].f;
+
+        // Put entire island to sleep so long as the minimum found sleep time
+        // is below the threshold. If the minimum sleep time reaches below the
+        // sleeping threshold, the entire island will be reformed next step
+        // and sleep test will be tried again.
+        if ( minSleepTime > SLEEP_TIME )
+        {
+            body_SetToSleep(&body);
+        }
+    }
+
     bodies[idx] = body;
 }
 
@@ -337,17 +421,6 @@ kernel void preSolve
   }
 
   uint totalOffset = global_x + batchOffset;
-
-  // if(totalOffset == 0) {
-  //   printf("sizeof(i32) = %u\n", sizeof(i32));
-  //   printf("sizeof(r32) = %u\n", sizeof(r32));
-  //   printf("sizeof(u32) = %u\n", sizeof(u32));
-  //   printf("sizeof(q3Vec3) = %u\n", sizeof(q3Vec3));
-  //   printf("sizeof(q3Mat3) = %u\n", sizeof(q3Mat3));
-  //   printf("sizeof(q3VelocityStateOcl) = %u\n", sizeof(q3VelocityStateOcl));
-  //   printf("sizeof(q3ContactStateOcl) = %u\n", sizeof(q3ContactStateOcl));
-  //   printf("sizeof(q3ContactConstraintStateOcl) = %u\n", sizeof(q3ContactConstraintStateOcl));
-  // }
 
   global q3ContactStateOcl *c = m_contactStates + batches[totalOffset];
   global q3ContactConstraintStateOcl *cs = m_contactConstraints + c->constraintIndex;
