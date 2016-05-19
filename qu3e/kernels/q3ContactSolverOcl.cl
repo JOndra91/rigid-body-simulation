@@ -250,11 +250,11 @@ kernel void prepare
 
     uint idx = indicies[global_x];
     q3Body body = bodies[idx];
-    q3VelocityStateOcl v = velocities[global_x];
+    q3VelocityStateOcl v;
 
     if (body.m_flags & eDynamic)
     {
-
+        v = velocities[global_x];
         body_ApplyLinearForce( &body, gravity * body.m_gravityScale );
 
         // Calculate world space intertia tensor

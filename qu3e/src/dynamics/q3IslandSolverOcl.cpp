@@ -213,7 +213,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         return;
     }
 
-    q3VelocityStateOcl *m_velocities = new q3VelocityStateOcl[m_bodyCount];
     m_contactStates = (q3ContactStateOcl *)s_stack->Allocate( sizeof( q3ContactStateOcl ) * m_contactStateCount );
     m_contactConstraintStates = (q3ContactConstraintStateOcl *)s_stack->Allocate( sizeof( q3ContactConstraintStateOcl ) * m_contactCount );
 
@@ -391,14 +390,24 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         CHECK_CL_ERROR(clErr, "Read buffer q3ContactStateOcl");
     }
 
-    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
-    CHECK_CL_ERROR(clErr, "Read body buffer");
-
-    clErr = m_clQueue.enqueueReadBuffer(*m_clBufferVelocity, CL_TRUE, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
-    CHECK_CL_ERROR(clErr, "Read buffer q3VelocityStateOcl");
-
     q3TimerStop("solve");
     q3TimerPrint("solve", "  Solve");
+
+    // Integrate positions
+    clErr = m_clKernelIntegrate.setArg(0, clBufferBody);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 0 (body)");
+    clErr = m_clKernelIntegrate.setArg(1, *m_clBufferVelocity);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 1 (velocity)");
+    clErr = m_clKernelIntegrate.setArg(2, (cl_float)dt);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 2 (dt)");
+    clErr = m_clKernelIntegrate.setArg(3, clBufferIndicies);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 3 (indicies)");
+    clErr = m_clKernelIntegrate.setArg(4, m_bodyCount);
+    CHECK_CL_ERROR(clErr, "Set integrate kernel param 4 (body count)");
+
+    global = cl::NDRange(CEIL_TO(m_bodyCount,local[0]));
+    clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelIntegrate, cl::NullRange, global, local);
+    CHECK_CL_ERROR(clErr, "Run integrate kernel");
 
     q3ContactStateOcl *cs = m_contactStates;
     for ( i32 i = 0; i < m_contactCount; ++i )
@@ -416,26 +425,10 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         }
     }
 
-    // Integrate positions
-    // clErr = m_clKernelIntegrate.setArg(0, clBufferBody);
-    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 0 (body)");
-    // clErr = m_clKernelIntegrate.setArg(1, *m_clBufferVelocity);
-    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 1 (velocity)");
-    // clErr = m_clKernelIntegrate.setArg(2, (cl_float)dt);
-    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 2 (dt)");
-    // clErr = m_clKernelIntegrate.setArg(3, clBufferIndicies);
-    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 3 (indicies)");
-    // clErr = m_clKernelIntegrate.setArg(4, m_bodyCount);
-    // CHECK_CL_ERROR(clErr, "Set integrate kernel param 4 (body count)");
-    //
-    // global = cl::NDRange(CEIL_TO(m_bodyCount,local[0]));
-    // clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelIntegrate, cl::NullRange, global, local);
-    // CHECK_CL_ERROR(clErr, "Run integrate kernel");
-    //
-    // clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
-    // CHECK_CL_ERROR(clErr, "Read body buffer");
+    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
+    CHECK_CL_ERROR(clErr, "Read body buffer");
 
-    // Integrate positions
+#if 0
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
     {
         q3BodyRef* bodyRef = m_bodies[ i ];
@@ -454,9 +447,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         body->m_q = q3Normalize( body->m_q );
         body->m_tx.rotation = body->m_q.ToMat3( );
     }
-
-    delete[] m_velocities;
-
+#endif
+#if 1
     if ( m_scene->m_allowSleep )
     {
         // Find minimum sleep time of the entire island
@@ -497,6 +489,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                 m_bodies[ i ]->SetToSleep( );
         }
     }
+#endif
 
     s_stack->Free(m_contactConstraintStates);
     s_stack->Free(m_contactStates);
