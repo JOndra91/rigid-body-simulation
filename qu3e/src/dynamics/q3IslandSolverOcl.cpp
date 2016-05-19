@@ -271,8 +271,9 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     cl::Buffer clBufferIndicies = cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(cl_uint) * m_bodyCount, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Buffer indicies");
 
-    cl::Buffer clBufferVelocities = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityStateOcl) * m_bodyCount, NULL, &clErr);
+    m_clBufferVelocity = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityStateOcl) * m_bodyCount, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Buffer q3VelocityStateOcl");
+    m_clGC.addMemObject(m_clBufferVelocity);
 
     cl_uint *indicies = (cl_uint*)m_clQueue.enqueueMapBuffer(clBufferIndicies, CL_TRUE, CL_MAP_WRITE, 0, sizeof(cl_uint) * m_bodyCount, NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map indicies");
@@ -286,7 +287,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
     clErr = m_clKernelPrepare.setArg(0, clBufferBody);
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 0 (body)");
-    clErr = m_clKernelPrepare.setArg(1, clBufferVelocities);
+    clErr = m_clKernelPrepare.setArg(1, *m_clBufferVelocity);
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 1 (velocity)");
     clErr = m_clKernelPrepare.setArg(2, (cl_float)dt);
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 2 (dt)");
@@ -301,12 +302,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     cl::NDRange global(CEIL_TO(m_bodyCount,local[0]));
     clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelPrepare, cl::NullRange, global, local);
     CHECK_CL_ERROR(clErr, "Run prepare kernel");
-
-    clErr = m_clQueue.enqueueReadBuffer(clBufferVelocities, true, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
-    CHECK_CL_ERROR(clErr, "Read buffer q3VelocityStateOcl");
-
-    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
-    CHECK_CL_ERROR(clErr, "Read body buffer");
 
 #endif
 
@@ -339,14 +334,11 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     if(m_contactCount > 0) {
         InitializeContacts();
 
-        m_clBufferVelocity = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities, &clErr);
-        CHECK_CL_ERROR(clErr, "Buffer q3VelocityStateOcl");
         m_clBufferContactState = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates, &clErr);
         CHECK_CL_ERROR(clErr, "Buffer q3ContactStateOcl");
         m_clBufferContactConstraintState = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates, &clErr);
         CHECK_CL_ERROR(clErr, "Buffer q3ContactConstraintStateOcl");
 
-        m_clGC.addMemObject(m_clBufferVelocity);
         m_clGC.addMemObject(m_clBufferContactState);
         m_clGC.addMemObject(m_clBufferContactConstraintState);
 
@@ -395,12 +387,15 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         PreSolveContacts();
         SolveContacts();
 
-        clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, true, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates);
+        clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, CL_TRUE, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates);
         CHECK_CL_ERROR(clErr, "Read buffer q3ContactStateOcl");
-
-        clErr = m_clQueue.enqueueReadBuffer(*m_clBufferVelocity, true, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
-        CHECK_CL_ERROR(clErr, "Read buffer q3VelocityStateOcl");
     }
+
+    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
+    CHECK_CL_ERROR(clErr, "Read body buffer");
+
+    clErr = m_clQueue.enqueueReadBuffer(*m_clBufferVelocity, CL_TRUE, 0, sizeof(q3VelocityStateOcl) * m_bodyCount, m_velocities);
+    CHECK_CL_ERROR(clErr, "Read buffer q3VelocityStateOcl");
 
     q3TimerStop("solve");
     q3TimerPrint("solve", "  Solve");
