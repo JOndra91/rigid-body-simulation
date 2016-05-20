@@ -385,30 +385,21 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
         cl_uint batchIndex = 1;
         cl_uint batchOffset = 0;
-        cl_uint lastConstraintIndex = UINT32_MAX;
         do
         {
             for(auto it = contactsToPlan.begin(); it != contactsToPlan.end();) {
                 cl_uint constraintIndex = m_constraintIndicies[*it];
                 constraintPair *cc = m_constraintPairs + constraintIndex;
 
-                if(lastConstraintIndex == constraintIndex) {
-                    ++m_clBatches.back().s[1];
-                    it = contactsToPlan.erase(it);
-                }
-                else if(
-                     (bodyAllocationTable[cc->indexA] < batchIndex || (m_bodies[cc->indexA]->body()->m_flags & q3Body::eStatic))
+                if((bodyAllocationTable[cc->indexA] < batchIndex || (m_bodies[cc->indexA]->body()->m_flags & q3Body::eStatic))
                   && (bodyAllocationTable[cc->indexB] < batchIndex || (m_bodies[cc->indexB]->body()->m_flags & q3Body::eStatic)))
                 {
-
                     bodyAllocationTable[cc->indexA] = batchIndex;
                     bodyAllocationTable[cc->indexB] = batchIndex;
 
-                    cl_uint2 v = {.s = {*it, 1}};
-                    m_clBatches.push_back(v);
+                    m_clBatches.push_back(it);
 
                     it = contactsToPlan.erase(it);
-                    lastConstraintIndex = constraintIndex;
                 }
                 else {
                     ++it;
@@ -423,10 +414,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
         } while(!contactsToPlan.empty());
 
-        s_stack->Free(m_constraintPairs);
-        s_stack->Free(m_constraintIndicies);
-
-        m_clBufferBatches = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint2) * m_clBatches.size(), m_clBatches.data(), &clErr);
+        m_clBufferBatches = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint) * m_clBatches.size(), m_clBatches.data(), &clErr);
         CHECK_CL_ERROR(clErr, "Buffer batches");
 
         m_clGC.addMemObject(m_clBufferBatches);
