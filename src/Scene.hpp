@@ -14,6 +14,7 @@ namespace gmu {
 
     using glm::vec3;
     using glm::mat4;
+    using std::string;
 
     class Scene : public IRenderer, public IProcessor, public IEventListener, public RegistrablesContainer {
     private:
@@ -35,6 +36,7 @@ namespace gmu {
         GLint aPosition, aNormal, aColor;
         GLint uSunPosition, uSunColor;
         GLenum polygonMode;
+        string dumpFilePrefix;
 
         void prepareScene();
         static void prepareBuffers(unsigned &index, const q3BoxRef *b, Vertex *vert, GLuint *elem);

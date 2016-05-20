@@ -38,6 +38,18 @@ Scene::Scene(q3OpenCLDevice device)
     : scene(1/60.0f, device, q3Vec3(0.0, -9.8, 0.0), 20)
     , vao(0), vbo(0), ebo(0), loop(0), pause(false), debug(false) {
 
+    switch(device) {
+        case q3OpenCLDevice::NONE:
+            dumpFilePrefix = "none";
+            break;
+        case q3OpenCLDevice::CPU:
+            dumpFilePrefix = "cpu";
+            break;
+        case q3OpenCLDevice::GPU:
+            dumpFilePrefix = "gpu";
+            break;
+    }
+
     prepareScene();
 }
 
@@ -368,7 +380,7 @@ void Scene::step(float time, float delta) {
     // printf("Delta: %f", scene.m_dt);
     scene.Step();
     // char filename[255];
-    // sprintf(filename, "dump/%03d", loop);
+    // sprintf(filename, "dump/%s-%03d", dumpFilePrefix.c_str(), loop);
     // FILE *f = fopen(filename, "w");
     // scene.Dump(f);
     // fclose(f);
