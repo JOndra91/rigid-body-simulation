@@ -219,9 +219,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     // If this happens, add 1 to prevent empty cl::Buffer initialization.
     assert(m_islandId != 0);
 
-    m_contactStates = (q3ContactStateOcl *)s_stack->Allocate( sizeof( q3ContactStateOcl ) * m_contactStateCount );
-    m_contactConstraintStates = (q3ContactConstraintStateOcl *)s_stack->Allocate( sizeof( q3ContactConstraintStateOcl ) * m_contactCount );
-
     // Apply gravity
     // Integrate velocities and create state buffers, calculate world inertia
     r32 dt = m_scene->m_dt;
@@ -334,15 +331,33 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     fclose(f);
 #endif
 
+    m_contactStates = NULL;
+    m_contactConstraintStates = NULL;
+
     q3TimerStart("solve");
 
     if(m_contactCount > 0) {
+
+        m_clBufferContactState = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, NULL, &clErr);
+        CHECK_CL_ERROR(clErr, "Buffer q3ContactStateOcl");
+
+        m_clBufferContactConstraintState = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(q3ContactConstraintStateOcl) * m_contactCount, NULL, &clErr);
+        CHECK_CL_ERROR(clErr, "Buffer q3ContactConstraintStateOcl");
+
+        m_contactStates = (q3ContactStateOcl*)m_clQueue.enqueueMapBuffer(*m_clBufferContactState, CL_TRUE, CL_MAP_WRITE, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, NULL, NULL, &clErr);
+        CHECK_CL_ERROR(clErr, "Map q3ContactStateOcl");
+
+        m_contactConstraintStates = (q3ContactConstraintStateOcl*)m_clQueue.enqueueMapBuffer(*m_clBufferContactConstraintState, CL_TRUE, CL_MAP_WRITE, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, NULL, NULL, &clErr);
+        CHECK_CL_ERROR(clErr, "Map q3ContactConstraintStateOcl");
+
         InitializeContacts();
 
-        m_clBufferContactState = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates, &clErr);
-        CHECK_CL_ERROR(clErr, "Buffer q3ContactStateOcl");
-        m_clBufferContactConstraintState = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(q3ContactConstraintStateOcl) * m_contactCount, m_contactConstraintStates, &clErr);
-        CHECK_CL_ERROR(clErr, "Buffer q3ContactConstraintStateOcl");
+        clErr = m_clQueue.enqueueUnmapMemObject(*m_clBufferContactState, m_contactStates);
+        CHECK_CL_ERROR(clErr, "Unmap q3ContactStateOcl");
+
+        clErr = m_clQueue.enqueueUnmapMemObject(*m_clBufferContactConstraintState, m_contactConstraintStates);
+        CHECK_CL_ERROR(clErr, "Unmap q3ContactStateOcl");
+
 
         m_clGC.addMemObject(m_clBufferContactState);
         m_clGC.addMemObject(m_clBufferContactConstraintState);
@@ -506,8 +521,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
     CHECK_CL_ERROR(clErr, "Read body buffer");
 
-    s_stack->Free(m_contactConstraintStates);
-    s_stack->Free(m_contactStates);
     s_stack->Free(stack);
     s_stack->Free(m_contactConstraints);
     s_stack->Free(m_bodies);
