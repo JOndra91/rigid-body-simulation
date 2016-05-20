@@ -35,7 +35,10 @@ int main(int argc, char **argv) {
             render = false;
         }
         else if(arg == "--limit") {
-            assert(++i < argc);
+            if(++i >= argc) {
+                fprintf(stderr, "%s: Missing parameter for argument\n", arg.c_str());
+                exit(1);
+            }
             limit = atoi(argv[i]);
         }
         else if(arg == "--pause") {
