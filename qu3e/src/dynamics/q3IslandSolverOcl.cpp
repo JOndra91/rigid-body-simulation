@@ -362,11 +362,11 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         m_clGC.addMemObject(m_clBufferContactState);
         m_clGC.addMemObject(m_clBufferContactConstraintState);
 
-        std::set<cl_uint> contactsToPlan;
+        std::list<cl_uint> contactsToPlan;
         std::vector<cl_uint> bodyAllocationTable(m_bodyCount, 0);
 
-        for(int i = 0; i < m_contactStateCount; ++i) {
-            contactsToPlan.insert(i);
+        for(cl_uint i = 0; i < m_contactStateCount; ++i) {
+            contactsToPlan.push_back(i);
         }
 
         m_clBatches.reserve(m_contactStateCount);
@@ -376,13 +376,15 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         cl_uint lastConstraintIndex = UINT32_MAX;
         do
         {
-            for(auto it : contactsToPlan) {
-                q3ContactStateOcl* cs = m_contactStates + it;
+            cl_uint lastIt = 0;
+            for(auto it = contactsToPlan.begin(); it != contactsToPlan.end();) {
+                lastIt = *it;
+                q3ContactStateOcl* cs = m_contactStates + *it;
                 q3ContactConstraintStateOcl *cc = m_contactConstraintStates + cs->constraintIndex;
 
                 if(lastConstraintIndex == cs->constraintIndex) {
                     ++m_clBatches.back().s[1];
-                    contactsToPlan.erase(it);
+                    it = contactsToPlan.erase(it);
                 }
                 else if(
                      (bodyAllocationTable[cc->indexA] < batchIndex || (m_bodies[cc->indexA]->body()->m_flags & q3Body::eStatic))
@@ -392,11 +394,14 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                     bodyAllocationTable[cc->indexA] = batchIndex;
                     bodyAllocationTable[cc->indexB] = batchIndex;
 
-                    cl_uint2 v = {.s = {it, 1}};
+                    cl_uint2 v = {.s = {*it, 1}};
                     m_clBatches.push_back(v);
 
-                    contactsToPlan.erase(it);
+                    it = contactsToPlan.erase(it);
                     lastConstraintIndex = cs->constraintIndex;
+                }
+                else {
+                    ++it;
                 }
             }
 
