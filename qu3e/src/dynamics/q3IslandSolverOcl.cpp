@@ -373,21 +373,30 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
         cl_uint batchIndex = 1;
         cl_uint batchOffset = 0;
+        cl_uint lastConstraintIndex = UINT32_MAX;
         do
         {
             for(auto it : contactsToPlan) {
                 q3ContactStateOcl* cs = m_contactStates + it;
                 q3ContactConstraintStateOcl *cc = m_contactConstraintStates + cs->constraintIndex;
 
-                if((bodyAllocationTable[cc->indexA] < batchIndex || (m_bodies[cc->indexA]->body()->m_flags & q3Body::eStatic))
+                if(lastConstraintIndex == cs->constraintIndex) {
+                    ++m_clBatches.back().s[1];
+                    contactsToPlan.erase(it);
+                }
+                else if(
+                     (bodyAllocationTable[cc->indexA] < batchIndex || (m_bodies[cc->indexA]->body()->m_flags & q3Body::eStatic))
                   && (bodyAllocationTable[cc->indexB] < batchIndex || (m_bodies[cc->indexB]->body()->m_flags & q3Body::eStatic)))
                 {
+
                     bodyAllocationTable[cc->indexA] = batchIndex;
                     bodyAllocationTable[cc->indexB] = batchIndex;
 
-                    m_clBatches.push_back(it);
+                    cl_uint2 v = {.s = {it, 1}};
+                    m_clBatches.push_back(v);
 
                     contactsToPlan.erase(it);
+                    lastConstraintIndex = cs->constraintIndex;
                 }
             }
 
@@ -399,7 +408,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
         } while(!contactsToPlan.empty());
 
-        m_clBufferBatches = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint) * m_clBatches.size(), m_clBatches.data(), &clErr);
+
+        m_clBufferBatches = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint2) * m_clBatches.size(), m_clBatches.data(), &clErr);
         CHECK_CL_ERROR(clErr, "Buffer batches");
 
         m_clGC.addMemObject(m_clBufferBatches);

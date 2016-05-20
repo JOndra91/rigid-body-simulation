@@ -124,7 +124,7 @@ struct q3IslandSolverOcl : q3IslandSolver
     cl::Buffer *m_clBufferBatches;
     GarbageCollector m_clGC;
 
-    std::vector<cl_uint> m_clBatches;
+    std::vector<cl_uint2> m_clBatches;
     std::vector<cl_uint> m_clBatchSizes;
 
     cl_uint m_clLocalSize;
