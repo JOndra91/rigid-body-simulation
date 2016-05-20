@@ -24,4 +24,4 @@ $(BUILDDIR_RELEASE):
 	cd $@; cmake -DCMAKE_BUILD_TYPE=Release ..
 
 clean:
-	$(RM) $(BUILDDIR) $(BINDIR)
+	$(RM) $(BUILDDIR) $(BUILDDIR_RELEASE) $(BINDIR)
