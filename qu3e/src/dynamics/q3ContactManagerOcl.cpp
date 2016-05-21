@@ -52,6 +52,13 @@ q3ContactManagerOcl::q3ContactManagerOcl( q3Stack* stack,  q3Container *containe
     // m_clProgram = buildProgramFromSourceString(*m_clContext, managerKernelSource);
     m_clProgram = buildProgramFromSource(*m_clContext, "./qu3e/kernels/q3ContactManagerOcl.cl");
 
+    std::vector<cl::Device> devices;
+    m_clContext->getInfo(CL_CONTEXT_DEVICES, &devices);
+
+    // std::string log = m_clProgram.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices.front());
+    //
+    // printf("Log: \n%s\n", log.c_str());
+
     std::vector<cl::Kernel> kernels;
     m_clProgram.createKernels(&kernels);
 
@@ -64,9 +71,6 @@ q3ContactManagerOcl::q3ContactManagerOcl( q3Stack* stack,  q3Container *containe
         }
     }
 
-    std::vector<cl::Device> devices;
-
-    m_clContext->getInfo(CL_CONTEXT_DEVICES, &devices);
 
     m_clLocalSize = m_clKernelTestCollisions.getWorkGroupInfo
         <CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE>(devices.front());

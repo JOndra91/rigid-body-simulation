@@ -82,6 +82,13 @@ q3IslandSolverOcl::q3IslandSolverOcl(q3Container *container, cl::Context *ctx)
     std::vector<cl::Kernel> kernels;
     m_clProgram.createKernels(&kernels);
 
+    std::vector<cl::Device> devices;
+    m_clContext->getInfo(CL_CONTEXT_DEVICES, &devices);
+
+    // std::string log = m_clProgram.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices.front());
+    //
+    // printf("Log: \n%s\n", log.c_str());
+
     assert(kernels.size() == 4);
 
     for(auto &kernel : kernels) {
@@ -99,10 +106,6 @@ q3IslandSolverOcl::q3IslandSolverOcl(q3Container *container, cl::Context *ctx)
             m_clKernelIntegrate = kernel;
         }
     }
-
-    std::vector<cl::Device> devices;
-
-    m_clContext->getInfo(CL_CONTEXT_DEVICES, &devices);
 
     m_clLocalSize = m_clKernelSolve.getWorkGroupInfo
         <CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE>(devices.front());
