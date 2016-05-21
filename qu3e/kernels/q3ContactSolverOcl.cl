@@ -332,29 +332,38 @@ kernel void integrate
     ) {
 
     uint global_x = (uint)get_global_id(0);
+    bool terminated = false;
+    uint idx;
+    q3Body body;
 
     if(global_x >= bodyCount)
     {
-        return;
+        terminated = true;
+    }
+    else
+    {
+        idx = indicies[global_x];
+        body = bodies[idx];
     }
 
-    uint idx = indicies[global_x];
-    q3Body body = bodies[idx];
 
     if (body.m_flags & eStatic)
     {
-        return;
+        terminated = true;
     }
 
-    const q3VelocityStateOcl v = velocities[global_x];
+    if(!terminated) {
 
-    body.m_linearVelocity = v.v;
-    body.m_angularVelocity = v.w;
+        const q3VelocityStateOcl v = velocities[global_x];
 
-    // Integrate position
-    body.m_worldCenter += body.m_linearVelocity * dt;
-    body.m_q = qIntegrate( body.m_q, body.m_angularVelocity, dt );
-    body.m_tx.rotation = qToMat3(body.m_q);
+        body.m_linearVelocity = v.v;
+        body.m_angularVelocity = v.w;
+
+        // Integrate position
+        body.m_worldCenter += body.m_linearVelocity * dt;
+        body.m_q = qIntegrate( body.m_q, body.m_angularVelocity, dt );
+        body.m_tx.rotation = qToMat3(body.m_q);
+    }
 
     if (sleepEnable)
     {
@@ -377,22 +386,30 @@ kernel void integrate
             minSleepTime = body.m_sleepTime;
         }
 
-        minBuffer[body.m_islandId].u = UINT_MAX;
+        if(!terminated) {
+            minBuffer[body.m_islandId].u = UINT_MAX;
+        }
 
         const float maxSleepTime = SLEEP_TIME * 2.0;
 
         barrier(CLK_GLOBAL_MEM_FENCE);
 
         uint minSleepTimeInt = min(minSleepTime, maxSleepTime) * ((float)(UINT_MAX) / maxSleepTime);
-        atomic_min(&minBuffer[body.m_islandId].u, minSleepTimeInt);
+        if(!terminated) {
+            atomic_min(&minBuffer[body.m_islandId].u, minSleepTimeInt);
+        }
 
-        if(minBuffer[body.m_islandId].u == minSleepTimeInt) {
-            minBuffer[body.m_islandId].f = minSleepTime;
+        if(!terminated) {
+            if(minBuffer[body.m_islandId].u == minSleepTimeInt) {
+                minBuffer[body.m_islandId].f = minSleepTime;
+            }
         }
 
         barrier(CLK_GLOBAL_MEM_FENCE);
 
-        minSleepTime = minBuffer[body.m_islandId].f;
+        if(!terminated) {
+            minSleepTime = minBuffer[body.m_islandId].f;
+        }
 
         // Put entire island to sleep so long as the minimum found sleep time
         // is below the threshold. If the minimum sleep time reaches below the
@@ -404,7 +421,9 @@ kernel void integrate
         }
     }
 
-    bodies[idx] = body;
+    if(!terminated) {
+        bodies[idx] = body;
+    }
 }
 
 kernel void preSolve
