@@ -71,6 +71,8 @@ q3Scene::q3Scene( r32 dt, q3OpenCLDevice device, const q3Vec3& gravity, i32 iter
         // v This doesn't work :(
         // m_contactManager = new q3ContactManagerOcl(&m_stack, &m_container, &m_clContext);
         m_islandSolver = new q3IslandSolverOcl(&m_container, &m_clContext);
+        // v Use for consistent testing with OpenCL contact manager
+        // m_islandSolver = new q3IslandSolverCpu();
     }
     else {
         m_contactManager = new q3ContactManager(&m_stack);
