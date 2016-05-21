@@ -95,19 +95,6 @@ struct q3ContactConstraintOcl
     };
 } ALIGNED;
 
-struct q3OldContactOcl {
-    r32 tangentImpulse[ 2 ];
-    r32 normalImpulse;           // Accumulated normal impulse
-    q3FeaturePair fp;            // Features on A and B for this contact
-
-    inline void load(const q3Contact &other) {
-        tangentImpulse[0] = other.tangentImpulse[0];
-        tangentImpulse[1] = other.tangentImpulse[1];
-        normalImpulse = other.normalImpulse;
-        fp = other.fp;
-    };
-} ALIGNED;
-
 //--------------------------------------------------------------------------------------------------
 // q3ContactManagerOcl
 //--------------------------------------------------------------------------------------------------

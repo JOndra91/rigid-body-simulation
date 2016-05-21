@@ -87,7 +87,6 @@ q3ContactManagerOcl::q3ContactManagerOcl( q3Stack* stack,  q3Container *containe
     assert_size(q3ManifoldOcl, 64);
     assert_size(q3ContactConstraintOcl, 16);
     assert_size(q3ClipVertex, 32);
-    assert_size(q3OldContactOcl, 16);
 
     // printf("offsetof(Indicies.boxA) = %lu\n", offsetof(Indicies, boxA));
     // printf("offsetof(Indicies.boxB) = %lu\n", offsetof(Indicies, boxB));
@@ -106,11 +105,6 @@ q3ContactManagerOcl::q3ContactManagerOcl( q3Stack* stack,  q3Container *containe
     //
     // printf("offsetof(q3ClipVertex.v) = %lu\n", offsetof(q3ClipVertex, v));
     // printf("offsetof(q3ClipVertex.f) = %lu\n", offsetof(q3ClipVertex, f));
-    //
-    // printf("offsetof(q3OldContactOcl.tangentImpulse[0]) = %lu\n", offsetof(q3OldContactOcl, tangentImpulse[0]));
-    // printf("offsetof(q3OldContactOcl.tangentImpulse[1]) = %lu\n", offsetof(q3OldContactOcl, tangentImpulse[1]));
-    // printf("offsetof(q3OldContactOcl.normalImpulse) = %lu\n", offsetof(q3OldContactOcl, normalImpulse));
-    // printf("offsetof(q3OldContactOcl.fp) = %lu\n", offsetof(q3OldContactOcl, fp));
     //
     // printf("offsetof(q3ManifoldOcl.tangentVectors[0]) = %lu\n", offsetof(q3ManifoldOcl, tangentVectors[0]));
     // printf("offsetof(q3ManifoldOcl.tangentVectors[1]) = %lu\n", offsetof(q3ManifoldOcl, tangentVectors[1]));
@@ -177,12 +171,12 @@ void q3ContactManagerOcl::TestCollisions( void )
         return;
     }
 
+    int i;
     cl_int clErr;
-    Indicies *indexMemory, *indexPtr;
-    q3Contact *contactMemory, *contactPtr;
-    q3OldContactOcl *oldContactMemory, *oldContactPtr;
-    q3ContactConstraintOcl *constraintMemory, *constraintPtr;
-    q3ManifoldOcl *manifoldMemory, *manifoldPtr;
+    Indicies *indexMemory;
+    q3Contact *contactMemory;
+    q3ContactConstraintOcl *constraintMemory;
+    q3ManifoldOcl *manifoldMemory;
     q3ContactConstraint* constraint;
 
     cl::Buffer bodyBuffer(*m_clContext, CL_MEM_READ_ONLY
@@ -195,15 +189,10 @@ void q3ContactManagerOcl::TestCollisions( void )
     );
     CHECK_CL_ERROR(clErr, "Buffer q3Box");
 
-    cl::Buffer contactBuffer(*m_clContext, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR
+    cl::Buffer contactBuffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR
         , m_contactCount * 8 * sizeof(q3Contact), NULL, &clErr
     );
     CHECK_CL_ERROR(clErr, "Buffer q3Contact");
-
-    cl::Buffer oldContactBuffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR
-        , m_contactCount * 8 * sizeof(q3OldContactOcl), NULL, &clErr
-    );
-    CHECK_CL_ERROR(clErr, "Buffer q3OldContactOcl");
 
     cl::Buffer constraintBuffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR
         , m_contactCount * sizeof(q3ContactConstraintOcl), NULL, &clErr
@@ -230,65 +219,64 @@ void q3ContactManagerOcl::TestCollisions( void )
         ( indexBuffer, CL_TRUE, CL_MAP_WRITE, 0
         , m_contactCount * sizeof(Indicies), NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map buffer Indicies");
+    // memset(indexMemory, 0, m_contactCount * sizeof(Indicies));
 
-    oldContactMemory =
-        (q3OldContactOcl*) m_clQueue.enqueueMapBuffer
-        ( oldContactBuffer, CL_TRUE, CL_MAP_WRITE, 0
-        , m_contactCount * 8 * sizeof(q3OldContactOcl), NULL, NULL, &clErr);
-    CHECK_CL_ERROR(clErr, "Map buffer q3OldContactOcl");
+    contactMemory =
+        (q3Contact*) m_clQueue.enqueueMapBuffer
+        ( contactBuffer, CL_TRUE, CL_MAP_WRITE, 0
+        , m_contactCount * 8 * sizeof(q3Contact), NULL, NULL, &clErr);
+    CHECK_CL_ERROR(clErr, "Map buffer q3Contact");
+    // memset(contactMemory, 0, m_contactCount * 8 * sizeof(q3Contact));
 
     constraintMemory =
         (q3ContactConstraintOcl*) m_clQueue.enqueueMapBuffer
         ( constraintBuffer, CL_TRUE, CL_MAP_WRITE, 0
         , m_contactCount * sizeof(q3ContactConstraintOcl), NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map buffer q3ContactConstraintOcl");
+    // memset(constraintMemory, 0, m_contactCount * sizeof(q3ContactConstraintOcl));
 
     manifoldMemory =
-    (q3ManifoldOcl*) m_clQueue.enqueueMapBuffer
-    ( manifoldBuffer, CL_TRUE, CL_MAP_WRITE, 0
+        (q3ManifoldOcl*) m_clQueue.enqueueMapBuffer
+        ( manifoldBuffer, CL_TRUE, CL_MAP_WRITE, 0
         , m_contactCount * sizeof(q3ManifoldOcl), NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map buffer q3ManifoldOcl");
+    // memset(manifoldMemory, 0, m_contactCount * sizeof(q3ManifoldOcl));
 
-    indexPtr = indexMemory;
-    constraintPtr = constraintMemory;
-    manifoldPtr = manifoldMemory;
-    int i = 0;
-    constraint = m_contactList;
-    while(constraint)
-    {
-        indexPtr->load(*constraint);
-        oldContactPtr = oldContactMemory + (i * 8);
+    for(constraint = m_contactList, i = 0; constraint != NULL; constraint = constraint->next, ++i) {
+        indexMemory[i].load(*constraint);
+        q3Contact *contactPtr = contactMemory + (i * 8);
         int contactCount = constraint->manifold.contactCount;
         for(int j = 0; j < contactCount; ++j) {
-            oldContactPtr[j].load(constraint->manifold.contacts[j]);
+            contactPtr[j] = constraint->manifold.contacts[j];
         }
-        constraintPtr->load(*constraint);
-        manifoldPtr->load(constraint->manifold);
-
-        ++indexPtr;
-        ++constraintPtr;
-        ++manifoldPtr;
-        ++i;
-        constraint = constraint->next;
+        constraintMemory[i].load(*constraint);
+        manifoldMemory[i].load(constraint->manifold);
     }
 
-    m_clQueue.enqueueUnmapMemObject(indexBuffer, indexMemory);
-    m_clQueue.enqueueUnmapMemObject(oldContactBuffer, oldContactMemory);
-    m_clQueue.enqueueUnmapMemObject(constraintBuffer, constraintMemory);
-    m_clQueue.enqueueUnmapMemObject(manifoldBuffer, manifoldMemory);
+    clErr = m_clQueue.enqueueUnmapMemObject(indexBuffer, indexMemory);
+    CHECK_CL_ERROR(clErr, "Unmap buffer Indicies");
+    clErr = m_clQueue.enqueueUnmapMemObject(contactBuffer, contactMemory);
+    CHECK_CL_ERROR(clErr, "Unmap buffer q3Contact");
+    clErr = m_clQueue.enqueueUnmapMemObject(constraintBuffer, constraintMemory);
+    CHECK_CL_ERROR(clErr, "Unmap buffer q3ContactConstraintOcl");
+    clErr = m_clQueue.enqueueUnmapMemObject(manifoldBuffer, manifoldMemory);
+    CHECK_CL_ERROR(clErr, "Unmap buffer q3ManifoldOcl");
 
-    m_clQueue.enqueueWriteBuffer(bodyBuffer, CL_FALSE, 0
+    clErr = m_clQueue.enqueueWriteBuffer(bodyBuffer, CL_TRUE, 0
         , m_container->m_bodies.size() * sizeof(q3Body)
         , m_container->m_bodies.data()
     );
-    m_clQueue.enqueueWriteBuffer(boxBuffer, CL_FALSE, 0
+    CHECK_CL_ERROR(clErr, "Write buffer q3Body");
+    clErr = m_clQueue.enqueueWriteBuffer(boxBuffer, CL_TRUE, 0
         , m_container->m_boxes.size() * sizeof(q3Box)
         , m_container->m_boxes.data()
     );
-    m_clQueue.enqueueWriteBuffer(nodeBuffer, CL_FALSE, 0
+    CHECK_CL_ERROR(clErr, "Write buffer q3Box");
+    clErr = m_clQueue.enqueueWriteBuffer(nodeBuffer, CL_TRUE, 0
         , m_broadphase.m_tree.m_count * sizeof(q3DynamicAABBTree::Node)
         , m_broadphase.m_tree.m_nodes
     );
+    CHECK_CL_ERROR(clErr, "Write buffer q3DynamicAABBTree::Node");
 
     // Run kernel here
 
@@ -302,8 +290,6 @@ void q3ContactManagerOcl::TestCollisions( void )
     CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (manifoldBuffer)");
     clErr = m_clKernelTestCollisions.setArg(argument++, contactBuffer);
     CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (contactBuffer)");
-    clErr = m_clKernelTestCollisions.setArg(argument++, oldContactBuffer);
-    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (oldContactBuffer)");
     clErr = m_clKernelTestCollisions.setArg(argument++, bodyBuffer);
     CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (bodyBuffer)");
     clErr = m_clKernelTestCollisions.setArg(argument++, boxBuffer);
@@ -315,7 +301,10 @@ void q3ContactManagerOcl::TestCollisions( void )
 
     cl::NDRange local(m_clLocalSize);
     cl::NDRange global(CEIL_TO(m_contactCount,local[0]));
-    m_clQueue.enqueueNDRangeKernel(m_clKernelTestCollisions, cl::NullRange, global, local);
+    clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelTestCollisions, cl::NullRange, global, local);
+    CHECK_CL_ERROR(clErr, "Run testCollisions kernel");
+    m_clQueue.finish();
+    printf("Kernel done\n");
 
     // Read back
     constraintMemory =
@@ -336,8 +325,6 @@ void q3ContactManagerOcl::TestCollisions( void )
         , m_contactCount * 8 * sizeof(q3Contact), NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map buffer q3Contact");
 
-    // constraintPtr = constraintMemory;
-    // manifoldPtr = manifoldMemory;
     for(constraint = m_contactList, i = 0; constraint; constraint = constraint->next, ++i)
     {
         constraintMemory[i].update(*constraint);
@@ -352,7 +339,7 @@ void q3ContactManagerOcl::TestCollisions( void )
         // printf("Contact count[%d]\n: %d", i, manifoldMemory[i].contactCount);
 
         int contactCount = constraint->manifold.contactCount;
-        contactPtr = contactMemory + (i * 8);
+        q3Contact *contactPtr = contactMemory + (i * 8);
         for(int j = 0; j < contactCount; ++j) {
             constraint->manifold.contacts[j] = contactPtr[j];
         }
@@ -377,9 +364,14 @@ void q3ContactManagerOcl::TestCollisions( void )
         }
     }
 
-    m_clQueue.enqueueUnmapMemObject(constraintBuffer, constraintMemory);
-    m_clQueue.enqueueUnmapMemObject(manifoldBuffer, manifoldMemory);
-    m_clQueue.enqueueUnmapMemObject(contactBuffer, contactMemory);
+    m_clQueue.finish();
+
+    clErr = m_clQueue.enqueueUnmapMemObject(constraintBuffer, constraintMemory);
+    CHECK_CL_ERROR(clErr, "Unmap buffer q3ContactConstraintOcl");
+    clErr = m_clQueue.enqueueUnmapMemObject(manifoldBuffer, manifoldMemory);
+    CHECK_CL_ERROR(clErr, "Unmap buffer q3ManifoldOcl");
+    clErr = m_clQueue.enqueueUnmapMemObject(contactBuffer, contactMemory);
+    CHECK_CL_ERROR(clErr, "Unmap buffer q3Contact");
 
     // const char *spaces = "                    ";
     // constraint = m_contactList;

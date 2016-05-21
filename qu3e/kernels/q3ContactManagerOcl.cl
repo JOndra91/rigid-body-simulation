@@ -289,10 +289,10 @@ inline void mSetRows(q3Mat3 *m, q3Vec3 x, q3Vec3 y, q3Vec3 z) {
 inline bool bodiesCanColide(const q3Body a, const q3Body b);
 inline bool bodyIsAwake(const q3Body body);
 inline bool aabbOverlaps(q3AABB a, q3AABB b);
-void solveCollision(global q3ContactOcl *contacts, q3ContactConstraintOcl *c, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
+void solveCollision(global q3ContactOcl *contacts, q3ContactConstraintOcl *c, q3ManifoldOcl *m, const q3Body *bodyA, const q3Box *boxA, const q3Body *bodyB, const q3Box *boxB);
 inline bool q3TrackFaceAxis(i32 *axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal);
 inline bool q3TrackEdgeAxis(i32* axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q3Vec3 *axisNormal);
-void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB);
+void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *bodyA, const q3Box *boxA, const q3Body *bodyB, const q3Box *boxB);
 void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* out);
 void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 axis, u8* out, q3Mat3* basis, q3Vec3* e);
 void q3SupportEdge(q3Transform tx, q3Vec3 e, q3Vec3 n, q3Vec3* aOut, q3Vec3* bOut);
@@ -309,11 +309,10 @@ kernel void testCollisions
     , global q3ContactConstraintOcl *constraintBuffer
     , global q3ManifoldOcl *manifoldBuffer
     , global q3ContactOcl *contactBuffer
-    , const global q3OldContactOcl *oldContactBuffer // read only
-    , const global q3Body *bodyBuffer
-    , const global q3Box *boxBuffer
+    , const global q3Body *bodyBuffer // read only
+    , const global q3Box *boxBuffer // read only
     , const global aabbNode *aabbNodeBuffer // read only
-    , uint constraintCount
+    , const uint constraintCount
     )
 {
     uint global_x = (uint)get_global_id(0);
@@ -322,6 +321,7 @@ kernel void testCollisions
     {
         return;
     }
+
 
     // if(global_x == 0) {
     //     printf("sizeof(i32) = %u\n", sizeof(i32));
@@ -359,11 +359,6 @@ kernel void testCollisions
     //
     //     printf("offsetof(q3ClipVertex.v) = %u\n", offsetof(q3ClipVertex, v));
     //     printf("offsetof(q3ClipVertex.f) = %u\n", offsetof(q3ClipVertex, f));
-    //
-    //     printf("offsetof(q3OldContactOcl.tangentImpulse[0]) = %u\n", offsetof(q3OldContactOcl, tangentImpulse[0]));
-    //     printf("offsetof(q3OldContactOcl.tangentImpulse[1]) = %u\n", offsetof(q3OldContactOcl, tangentImpulse[1]));
-    //     printf("offsetof(q3OldContactOcl.normalImpulse) = %u\n", offsetof(q3OldContactOcl, normalImpulse));
-    //     printf("offsetof(q3OldContactOcl.fp) = %u\n", offsetof(q3OldContactOcl, fp));
     //
     //     printf("offsetof(q3ManifoldOcl.tangentVectors[0]) = %u\n", offsetof(q3ManifoldOcl, tangentVectors[0]));
     //     printf("offsetof(q3ManifoldOcl.tangentVectors[1]) = %u\n", offsetof(q3ManifoldOcl, tangentVectors[1]));
@@ -454,7 +449,13 @@ kernel void testCollisions
 
     global q3ContactOcl *contacts = contactBuffer + (global_x * 8);
 
-    // Solve collision
+    q3ContactOcl oldContacts[8];
+
+    for(int i = 0; i < manifold.contactCount; ++i) {
+        oldContacts[i] = contacts[i];
+    }
+
+    // // Solve collision
     solveCollision(contacts, &constraint, &manifold, &bodyA, &boxA, &bodyB, &boxB);
     q3ComputeBasis(manifold.normal, manifold.tangentVectors, manifold.tangentVectors + 1);
 
@@ -465,10 +466,10 @@ kernel void testCollisions
         u8 oldWarmStart = c->warmStarted;
         c->warmStarted = 0;
 
-        const global q3OldContactOcl *ocPtr = oldContactBuffer + (8 * global_x);
         for ( i32 j = 0; j < oldManifold.contactCount; ++j )
         {
-            const global q3OldContactOcl *oc = ocPtr + j;
+            q3ContactOcl *oc = oldContacts + j;
+
             if ( c->fp.key == oc->fp.key )
             {
                 c->normalImpulse = oc->normalImpulse;
@@ -506,7 +507,15 @@ inline bool aabbOverlaps(q3AABB a, q3AABB b) {
         !(a.max.z < b.min.z || a.min.z > b.max.z);
 }
 
-void solveCollision(global q3ContactOcl *contacts, q3ContactConstraintOcl *c, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
+void solveCollision
+    ( global q3ContactOcl *contacts
+    , q3ContactConstraintOcl *c
+    , q3ManifoldOcl *m
+    , const q3Body *bodyA
+    , const q3Box *boxA
+    , const q3Body *bodyB
+    , const q3Box *boxB
+    ) {
     m->contactCount = 0;
 
     q3BoxToBox(contacts, m, bodyA, boxA, bodyB, boxB);
@@ -991,7 +1000,7 @@ inline void q3ComputeBasis( const q3Vec3 a, q3Vec3* b, q3Vec3* c ) {
     *c = q3Cross( a, *b );
 }
 
-void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, q3Body *bodyA, q3Box *boxA, q3Body *bodyB, q3Box *boxB) {
+void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *bodyA, const q3Box *boxA, const q3Body *bodyB, const q3Box *boxB) {
     q3Transform atx = bodyA->m_tx;
     q3Transform btx = bodyB->m_tx;
     q3Transform aL = boxA->localTransform;
