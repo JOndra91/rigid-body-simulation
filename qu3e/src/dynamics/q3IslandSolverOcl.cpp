@@ -267,15 +267,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 #else
 #define DUMP_FILE "ocl.dump"
 
-    cl::Buffer clBufferBody = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data(), &clErr);
-    CHECK_CL_ERROR(clErr, "Buffer q3Body");
-
     cl::Buffer clBufferIndicies = cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(cl_uint) * m_bodyCount, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Buffer indicies");
-
-    m_clBufferVelocity = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityStateOcl) * m_bodyCount, NULL, &clErr);
-    CHECK_CL_ERROR(clErr, "Buffer q3VelocityStateOcl");
-    m_clGC.addMemObject(m_clBufferVelocity);
 
     cl_uint *indicies = (cl_uint*)m_clQueue.enqueueMapBuffer(clBufferIndicies, CL_TRUE, CL_MAP_WRITE, 0, sizeof(cl_uint) * m_bodyCount, NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map indicies");
@@ -286,6 +279,14 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
     clErr = m_clQueue.enqueueUnmapMemObject(clBufferIndicies, indicies);
     CHECK_CL_ERROR(clErr, "Unmap indicies");
+
+    cl::Buffer clBufferBody = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data(), &clErr);
+    CHECK_CL_ERROR(clErr, "Buffer q3Body");
+
+    m_clBufferVelocity = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityStateOcl) * m_bodyCount, NULL, &clErr);
+    CHECK_CL_ERROR(clErr, "Buffer q3VelocityStateOcl");
+    m_clGC.addMemObject(m_clBufferVelocity);
+
 
     clErr = m_clKernelPrepare.setArg(0, clBufferBody);
     CHECK_CL_ERROR(clErr, "Set prepare kernel param 0 (body)");
@@ -547,6 +548,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
     clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
     CHECK_CL_ERROR(clErr, "Read body buffer");
+
+    m_clQueue.finish();
 
     s_stack->Free(stack);
     s_stack->Free(m_contactConstraints);
