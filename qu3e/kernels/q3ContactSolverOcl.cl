@@ -67,7 +67,7 @@ kernel void prepare
     velocities[global_x] = v;
 }
 
-typedef union {
+typedef struct {
     float f;
     uint u;
 } mixType;
@@ -79,8 +79,6 @@ kernel void integrate
     , const global uint *indicies
     , const uint bodyCount
     , const uint sleepEnable
-    , const r32 SLEEP_TIME
-    , global mixType *minBuffer
     ) {
 
     uint global_x = (uint)get_global_id(0);
@@ -88,34 +86,26 @@ kernel void integrate
     uint idx;
     q3Body body;
 
-    if(global_x >= bodyCount)
-    {
-        terminated = true;
-    }
-    else
-    {
-        idx = indicies[global_x];
-        body = bodies[idx];
+    if(global_x >= bodyCount) {
+        return;
     }
 
+    idx = indicies[global_x];
+    body = bodies[idx];
 
-    if (body.m_flags & eStatic)
-    {
-        terminated = true;
+    if (body.m_flags & eStatic) {
+        return;
     }
 
-    if(!terminated) {
+    const q3VelocityStateOcl v = velocities[global_x];
 
-        const q3VelocityStateOcl v = velocities[global_x];
+    body.m_linearVelocity = v.v;
+    body.m_angularVelocity = v.w;
 
-        body.m_linearVelocity = v.v;
-        body.m_angularVelocity = v.w;
-
-        // Integrate position
-        body.m_worldCenter += body.m_linearVelocity * dt;
-        body.m_q = qIntegrate( body.m_q, body.m_angularVelocity, dt );
-        body.m_tx.rotation = qToMat3(body.m_q);
-    }
+    // Integrate position
+    body.m_worldCenter += body.m_linearVelocity * dt;
+    body.m_q = qIntegrate( body.m_q, body.m_angularVelocity, dt );
+    body.m_tx.rotation = qToMat3(body.m_q);
 
     if (sleepEnable)
     {
@@ -127,55 +117,15 @@ kernel void integrate
         const r32 linTol = Q3_SLEEP_LINEAR;
         const r32 angTol = Q3_SLEEP_ANGULAR;
 
-        if ( sqrLinVel > linTol || cbAngVel > angTol )
-        {
-            minSleepTime = 0.0;
+        if ( sqrLinVel > linTol || cbAngVel > angTol ) {
             body.m_sleepTime = 0.0;
         }
-        else
-        {
+        else {
             body.m_sleepTime += dt;
-            minSleepTime = body.m_sleepTime;
-        }
-
-        if(!terminated) {
-            minBuffer[body.m_islandId].u = UINT_MAX;
-        }
-
-        const float maxSleepTime = SLEEP_TIME * 2.0;
-
-        barrier(CLK_GLOBAL_MEM_FENCE);
-
-        uint minSleepTimeInt = min(minSleepTime, maxSleepTime) * ((float)(UINT_MAX) / maxSleepTime);
-        if(!terminated) {
-            atomic_min(&minBuffer[body.m_islandId].u, minSleepTimeInt);
-        }
-
-        if(!terminated) {
-            if(minBuffer[body.m_islandId].u == minSleepTimeInt) {
-                minBuffer[body.m_islandId].f = minSleepTime;
-            }
-        }
-
-        barrier(CLK_GLOBAL_MEM_FENCE);
-
-        if(!terminated) {
-            minSleepTime = minBuffer[body.m_islandId].f;
-        }
-
-        // Put entire island to sleep so long as the minimum found sleep time
-        // is below the threshold. If the minimum sleep time reaches below the
-        // sleeping threshold, the entire island will be reformed next step
-        // and sleep test will be tried again.
-        if ( minSleepTime > SLEEP_TIME )
-        {
-            body_SetToSleep(&body);
         }
     }
 
-    if(!terminated) {
-        bodies[idx] = body;
-    }
+    bodies[idx] = body;
 }
 
 kernel void preSolve

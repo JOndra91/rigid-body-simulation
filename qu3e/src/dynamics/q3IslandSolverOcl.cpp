@@ -441,9 +441,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     q3TimerPrint("solve", "  Solve");
 #endif
 
-    cl::Buffer clBufferIslandMin = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(cl_float) * m_islandId, NULL, &clErr);
-    CHECK_CL_ERROR(clErr, "Read buffer island min");
-
     // Integrate positions
     clErr = m_clKernelIntegrate.setArg(0, clBufferBody);
     CHECK_CL_ERROR(clErr, "Set integrate kernel param 0 (body)");
@@ -457,10 +454,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     CHECK_CL_ERROR(clErr, "Set integrate kernel param 4 (body count)");
     clErr = m_clKernelIntegrate.setArg(5, (cl_uint)m_scene->m_allowSleep);
     CHECK_CL_ERROR(clErr, "Set integrate kernel param 5 (allow sleep)");
-    clErr = m_clKernelIntegrate.setArg(6, (cl_float)Q3_SLEEP_TIME);
-    CHECK_CL_ERROR(clErr, "Set integrate kernel param 6 (sleep time)");
-    clErr = m_clKernelIntegrate.setArg(7, clBufferIslandMin);
-    CHECK_CL_ERROR(clErr, "Set integrate kernel param 7 (clBufferIslandMin)");
 
     global = cl::NDRange(CEIL_TO(m_bodyCount,local[0]));
     clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelIntegrate, cl::NullRange, global, local);
@@ -512,11 +505,16 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         body->m_tx.rotation = body->m_q.ToMat3( );
     }
 #endif
-#if 0
+
+    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
+    CHECK_CL_ERROR(clErr, "Read body buffer");
+
+    m_clQueue.finish();
+
     if ( m_scene->m_allowSleep )
     {
         // Find minimum sleep time of the entire island
-        f32 minSleepTime = Q3_R32_MAX;
+        std::vector<r32> minSleepTimes(m_islandId, Q3_R32_MAX);
         for ( i32 i = 0; i < m_bodyCount; ++i )
         {
             q3BodyRef* bodyRef = m_bodies[ i ];
@@ -525,40 +523,23 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
             if ( body->m_flags & q3Body::eStatic )
                 continue;
 
-            const r32 sqrLinVel = q3Dot( body->m_linearVelocity, body->m_linearVelocity );
-            const r32 cbAngVel = q3Dot( body->m_angularVelocity, body->m_angularVelocity );
-            const r32 linTol = Q3_SLEEP_LINEAR;
-            const r32 angTol = Q3_SLEEP_ANGULAR;
-
-            if ( sqrLinVel > linTol || cbAngVel > angTol )
-            {
-                minSleepTime = r32( 0.0 );
-                body->m_sleepTime = r32( 0.0 );
-            }
-
-            else
-            {
-                body->m_sleepTime += dt;
-                minSleepTime = q3Min( minSleepTime, body->m_sleepTime );
-            }
+            // Sleep time for bodies was already pre-computed
+            minSleepTimes[body->m_islandId] = q3Min( minSleepTimes[body->m_islandId], body->m_sleepTime );
         }
 
         // Put entire island to sleep so long as the minimum found sleep time
         // is below the threshold. If the minimum sleep time reaches below the
         // sleeping threshold, the entire island will be reformed next step
         // and sleep test will be tried again.
-        if ( minSleepTime > Q3_SLEEP_TIME )
-        {
-            for ( i32 i = 0; i < m_bodyCount; ++i )
-                m_bodies[ i ]->SetToSleep( );
+        for ( i32 i = 0; i < m_bodyCount; ++i ) {
+            q3BodyRef* bodyRef = m_bodies[ i ];
+            q3Body *body = bodyRef->body();
+
+            if ( minSleepTimes[body->m_islandId] > Q3_SLEEP_TIME ) {
+                body->SetToSleep();
+            }
         }
     }
-#endif
-
-    clErr = m_clQueue.enqueueReadBuffer(clBufferBody, CL_TRUE, 0, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data());
-    CHECK_CL_ERROR(clErr, "Read body buffer");
-
-    m_clQueue.finish();
 
     s_stack->Free(stack);
     s_stack->Free(m_contactConstraints);
