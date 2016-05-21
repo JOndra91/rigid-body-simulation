@@ -319,6 +319,9 @@ inline void q3ComputeBasis( const q3Vec3 a, q3Vec3* b, q3Vec3* c );
 i32 q3Clip(const q3Vec3 rPos, const q3Vec3 e, u8* clipEdges, const q3Mat3 basis, q3ClipVertex* incident, q3ClipVertex* outVerts, r32* outDepths);
 i32 q3Orthographic( r32 sign, r32 e, i32 axis, i32 clipEdge, q3ClipVertex* in, i32 inCount, q3ClipVertex* out );
 
+#define offsetofinstance(obj, member) (((char*)&(obj).member)-((char*)&(obj)))
+#define offsetof(type, member) ({type type ## _; offsetofinstance(type ## _, member);})
+
 kernel void testCollisions
     ( const global Indicies *indexBuffer // read only
     , global q3ContactConstraintOcl *constraintBuffer
@@ -339,23 +342,103 @@ kernel void testCollisions
     }
 
     // if(global_x == 0) {
-    //   printf("sizeof(i32) = %u\n", sizeof(i32));
-    //   printf("sizeof(r32) = %u\n", sizeof(r32));
-    //   printf("sizeof(u32) = %u\n", sizeof(u32));
-    //   printf("sizeof(q3Vec3) = %u\n", sizeof(q3Vec3));
-    //   printf("sizeof(q3Mat3) = %u\n", sizeof(q3Mat3));
-    //   printf("sizeof(Indicies) = %u\n", sizeof(Indicies));
-    //   printf("sizeof(q3AABB) = %u\n", sizeof(q3AABB));
-    //   printf("sizeof(aabbNode) = %u\n", sizeof(aabbNode));
-    //   printf("sizeof(q3Transform) = %u\n", sizeof(q3Transform));
-    //   printf("sizeof(q3Box) = %u\n", sizeof(q3Box));
-    //   printf("sizeof(q3Body) = %u\n", sizeof(q3Body));
-    //   printf("sizeof(q3FeaturePairOcl) = %u\n", sizeof(q3FeaturePairOcl));
-    //   printf("sizeof(q3ContactOcl) = %u\n", sizeof(q3ContactOcl));
-    //   printf("sizeof(q3ManifoldOcl) = %u\n", sizeof(q3ManifoldOcl));
-    //   printf("sizeof(q3ContactConstraintOcl) = %u\n", sizeof(q3ContactConstraintOcl));
-    //   printf("sizeof(q3ClipVertex) = %u\n", sizeof(q3ClipVertex));
-    //   printf("sizeof(q3OldContactOcl) = %u\n", sizeof(q3OldContactOcl));
+    //     printf("sizeof(i32) = %u\n", sizeof(i32));
+    //     printf("sizeof(r32) = %u\n", sizeof(r32));
+    //     printf("sizeof(u32) = %u\n", sizeof(u32));
+    //     printf("sizeof(q3Vec3) = %u\n", sizeof(q3Vec3));
+    //     printf("sizeof(q3Mat3) = %u\n", sizeof(q3Mat3));
+    //     printf("sizeof(Indicies) = %u\n", sizeof(Indicies));
+    //     printf("sizeof(q3AABB) = %u\n", sizeof(q3AABB));
+    //     printf("sizeof(aabbNode) = %u\n", sizeof(aabbNode));
+    //     printf("sizeof(q3Transform) = %u\n", sizeof(q3Transform));
+    //     printf("sizeof(q3Box) = %u\n", sizeof(q3Box));
+    //     printf("sizeof(q3Body) = %u\n", sizeof(q3Body));
+    //     printf("sizeof(q3FeaturePairOcl) = %u\n", sizeof(q3FeaturePairOcl));
+    //     printf("sizeof(q3ContactOcl) = %u\n", sizeof(q3ContactOcl));
+    //     printf("sizeof(q3ManifoldOcl) = %u\n", sizeof(q3ManifoldOcl));
+    //     printf("sizeof(q3ContactConstraintOcl) = %u\n", sizeof(q3ContactConstraintOcl));
+    //     printf("sizeof(q3ClipVertex) = %u\n", sizeof(q3ClipVertex));
+    //     printf("sizeof(q3OldContactOcl) = %u\n", sizeof(q3OldContactOcl));
+    //
+    //     printf("offsetof(Indicies.boxA) = %u\n", offsetof(Indicies, boxA));
+    //     printf("offsetof(Indicies.boxB) = %u\n", offsetof(Indicies, boxB));
+    //     printf("offsetof(Indicies.bodyA) = %u\n", offsetof(Indicies, bodyA));
+    //     printf("offsetof(Indicies.bodyB) = %u\n", offsetof(Indicies, bodyB));
+    //
+    //     printf("offsetof(q3AABB.min) = %u\n", offsetof(q3AABB, min));
+    //     printf("offsetof(q3AABB.max) = %u\n", offsetof(q3AABB, max));
+    //
+    //     printf("offsetof(aabbNode.aabb) = %u\n", offsetof(aabbNode, aabb));
+    //     printf("offsetof(aabbNode.height) = %u\n", offsetof(aabbNode, height));
+    //
+    //     printf("offsetof(q3ContactConstraintOcl.friction) = %u\n", offsetof(q3ContactConstraintOcl, friction));
+    //     printf("offsetof(q3ContactConstraintOcl.restitution) = %u\n", offsetof(q3ContactConstraintOcl, restitution));
+    //     printf("offsetof(q3ContactConstraintOcl.m_flags) = %u\n", offsetof(q3ContactConstraintOcl, m_flags));
+    //
+    //     printf("offsetof(q3ClipVertex.v) = %u\n", offsetof(q3ClipVertex, v));
+    //     printf("offsetof(q3ClipVertex.f) = %u\n", offsetof(q3ClipVertex, f));
+    //
+    //     printf("offsetof(q3OldContactOcl.tangentImpulse[0]) = %u\n", offsetof(q3OldContactOcl, tangentImpulse[0]));
+    //     printf("offsetof(q3OldContactOcl.tangentImpulse[1]) = %u\n", offsetof(q3OldContactOcl, tangentImpulse[1]));
+    //     printf("offsetof(q3OldContactOcl.normalImpulse) = %u\n", offsetof(q3OldContactOcl, normalImpulse));
+    //     printf("offsetof(q3OldContactOcl.fp) = %u\n", offsetof(q3OldContactOcl, fp));
+    //
+    //     printf("offsetof(q3ManifoldOcl.tangentVectors[0]) = %u\n", offsetof(q3ManifoldOcl, tangentVectors[0]));
+    //     printf("offsetof(q3ManifoldOcl.tangentVectors[1]) = %u\n", offsetof(q3ManifoldOcl, tangentVectors[1]));
+    //     printf("offsetof(q3ManifoldOcl.normal) = %u\n", offsetof(q3ManifoldOcl, normal));
+    //     printf("offsetof(q3ManifoldOcl.contactCount) = %u\n", offsetof(q3ManifoldOcl, contactCount));
+    //     printf("offsetof(q3ManifoldOcl.sensor) = %u\n", offsetof(q3ManifoldOcl, sensor));
+    //
+    //     printf("offsetof(q3FeaturePairOcl.key) = %u\n", offsetof(q3FeaturePairOcl, key));
+    //     printf("offsetof(q3FeaturePairOcl.inR) = %u\n", offsetof(q3FeaturePairOcl, inR));
+    //     printf("offsetof(q3FeaturePairOcl.outR) = %u\n", offsetof(q3FeaturePairOcl, outR));
+    //     printf("offsetof(q3FeaturePairOcl.inI) = %u\n", offsetof(q3FeaturePairOcl, inI));
+    //     printf("offsetof(q3FeaturePairOcl.outI) = %u\n", offsetof(q3FeaturePairOcl, outI));
+    //
+    //     printf("offsetof(q3ContactOcl.position) = %u\n", offsetof(q3ContactOcl, position));
+    //     printf("offsetof(q3ContactOcl.penetration) = %u\n", offsetof(q3ContactOcl, penetration));
+    //     printf("offsetof(q3ContactOcl.normalImpulse) = %u\n", offsetof(q3ContactOcl, normalImpulse));
+    //     printf("offsetof(q3ContactOcl.tangentImpulse[0]) = %u\n", offsetof(q3ContactOcl, tangentImpulse[0]));
+    //     printf("offsetof(q3ContactOcl.tangentImpulse[1]) = %u\n", offsetof(q3ContactOcl, tangentImpulse[1]));
+    //     printf("offsetof(q3ContactOcl.bias) = %u\n", offsetof(q3ContactOcl, bias));
+    //     printf("offsetof(q3ContactOcl.normalMass) = %u\n", offsetof(q3ContactOcl, normalMass));
+    //     printf("offsetof(q3ContactOcl.tangentMass[0]) = %u\n", offsetof(q3ContactOcl, tangentMass[0]));
+    //     printf("offsetof(q3ContactOcl.tangentMass[1]) = %u\n", offsetof(q3ContactOcl, tangentMass[1]));
+    //     printf("offsetof(q3ContactOcl.fp) = %u\n", offsetof(q3ContactOcl, fp));
+    //     printf("offsetof(q3ContactOcl.warmStarted) = %u\n", offsetof(q3ContactOcl, warmStarted));
+    //
+    //     printf("offsetof(q3Body.m_invInertiaModel) = %u\n", offsetof(q3Body, m_invInertiaModel));
+    //     printf("offsetof(q3Body.m_invInertiaWorld) = %u\n", offsetof(q3Body, m_invInertiaWorld));
+    //     printf("offsetof(q3Body.m_mass) = %u\n", offsetof(q3Body, m_mass));
+    //     printf("offsetof(q3Body.m_invMass) = %u\n", offsetof(q3Body, m_invMass));
+    //     printf("offsetof(q3Body.m_linearVelocity) = %u\n", offsetof(q3Body, m_linearVelocity));
+    //     printf("offsetof(q3Body.m_angularVelocity) = %u\n", offsetof(q3Body, m_angularVelocity));
+    //     printf("offsetof(q3Body.m_force) = %u\n", offsetof(q3Body, m_force));
+    //     printf("offsetof(q3Body.m_torque) = %u\n", offsetof(q3Body, m_torque));
+    //     printf("offsetof(q3Body.m_tx) = %u\n", offsetof(q3Body, m_tx));
+    //     printf("offsetof(q3Body.m_q) = %u\n", offsetof(q3Body, m_q));
+    //     printf("offsetof(q3Body.m_localCenter) = %u\n", offsetof(q3Body, m_localCenter));
+    //     printf("offsetof(q3Body.m_worldCenter) = %u\n", offsetof(q3Body, m_worldCenter));
+    //     printf("offsetof(q3Body.m_sleepTime) = %u\n", offsetof(q3Body, m_sleepTime));
+    //     printf("offsetof(q3Body.m_gravityScale) = %u\n", offsetof(q3Body, m_gravityScale));
+    //     printf("offsetof(q3Body.m_layers) = %u\n", offsetof(q3Body, m_layers));
+    //     printf("offsetof(q3Body.m_flags) = %u\n", offsetof(q3Body, m_flags));
+    //     printf("offsetof(q3Body.m_bodyIndex) = %u\n", offsetof(q3Body, m_bodyIndex));
+    //     printf("offsetof(q3Body.m_islandIndex) = %u\n", offsetof(q3Body, m_islandIndex));
+    //     printf("offsetof(q3Body.m_islandId) = %u\n", offsetof(q3Body, m_islandId));
+    //
+    //     printf("offsetof(q3Box.localTransform) = %u\n", offsetof(q3Box, localTransform));
+    //     printf("offsetof(q3Box.e) = %u\n", offsetof(q3Box, e));
+    //     printf("offsetof(q3Box.friction) = %u\n", offsetof(q3Box, friction));
+    //     printf("offsetof(q3Box.restitution) = %u\n", offsetof(q3Box, restitution));
+    //     printf("offsetof(q3Box.density) = %u\n", offsetof(q3Box, density));
+    //     printf("offsetof(q3Box.broadPhaseIndex) = %u\n", offsetof(q3Box, broadPhaseIndex));
+    //     printf("offsetof(q3Box.sensor) = %u\n", offsetof(q3Box, sensor));
+    //     printf("offsetof(q3Box.m_boxIndex) = %u\n", offsetof(q3Box, m_boxIndex));
+    //     printf("offsetof(q3Box.m_bodyIndex) = %u\n", offsetof(q3Box, m_bodyIndex));
+    //
+    //     printf("offsetof(q3Transform.rotation) = %u\n", offsetof(q3Transform, rotation));
+    //     printf("offsetof(q3Transform.position) = %u\n", offsetof(q3Transform, position));
     // }
 
     const Indicies indicies = indexBuffer[global_x];

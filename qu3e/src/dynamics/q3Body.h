@@ -150,6 +150,7 @@ private:
     friend class q3Scene;
     friend struct q3Manifold;
     friend class q3ContactManager;
+    friend class q3ContactManagerOcl;
     friend struct q3Island;
     friend struct q3IslandSolverCpu;
     friend struct q3IslandSolverOcl;
