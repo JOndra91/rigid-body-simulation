@@ -379,9 +379,11 @@ kernel void integrate
 
         minBuffer[body.m_islandId].u = UINT_MAX;
 
+        const float maxSleepTime = SLEEP_TIME * 2.0;
+
         barrier(CLK_GLOBAL_MEM_FENCE);
 
-        uint minSleepTimeInt = minSleepTime * ((float)(UINT_MAX) / 1000.0f);
+        uint minSleepTimeInt = min(minSleepTime, maxSleepTime) * ((float)(UINT_MAX) / maxSleepTime);
         atomic_min(&minBuffer[body.m_islandId].u, minSleepTimeInt);
 
         if(minBuffer[body.m_islandId].u == minSleepTimeInt) {
