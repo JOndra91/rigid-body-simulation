@@ -335,7 +335,10 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     m_contactStates = NULL;
     m_contactConstraintStates = NULL;
 
+#ifdef TIMERS_ENABLED
+    m_clQueue.finish();
     q3TimerStart("solve");
+#endif
 
     if(m_contactCount > 0) {
 
@@ -428,9 +431,12 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         PreSolveContacts();
         SolveContacts();
     }
+#ifdef TIMERS_ENABLED
+    m_clQueue.finish();
 
     q3TimerStop("solve");
     q3TimerPrint("solve", "  Solve");
+#endif
 
     cl::Buffer clBufferIslandMin = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(cl_float) * m_islandId, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Read buffer island min");
