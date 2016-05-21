@@ -95,15 +95,15 @@ struct q3Contact
 
     void print(const char *padding) {
         fprintf(stderr, "%sContact:\n", padding);
-        fprintf(stderr, "%s  position: vec3(%f, %f, %f)\n", padding, position.x, position.y, position.z);
-        fprintf(stderr, "%s  penetration: %f\n", padding, penetration);
-        fprintf(stderr, "%s  normalImpulse: %f\n", padding, normalImpulse);
-        fprintf(stderr, "%s  tangentImpulse[0]: %f\n", padding, tangentImpulse[0]);
-        fprintf(stderr, "%s  tangentImpulse[1]: %f\n", padding, tangentImpulse[1]);
-        fprintf(stderr, "%s  bias: %f\n", padding, bias);
-        fprintf(stderr, "%s  normalMass: %f\n", padding, normalMass);
-        fprintf(stderr, "%s  tangentMass[0]: %f\n", padding, tangentMass[0]);
-        fprintf(stderr, "%s  tangentMass[1]: %f\n", padding, tangentMass[1]);
+        fprintf(stderr, "%s  position: vec3(%.10f, %.10f, %.10f)\n", padding, position.x, position.y, position.z);
+        fprintf(stderr, "%s  penetration: %.10f\n", padding, penetration);
+        fprintf(stderr, "%s  normalImpulse: %.10f\n", padding, normalImpulse);
+        fprintf(stderr, "%s  tangentImpulse[0]: %.10f\n", padding, tangentImpulse[0]);
+        fprintf(stderr, "%s  tangentImpulse[1]: %.10f\n", padding, tangentImpulse[1]);
+        fprintf(stderr, "%s  bias: %.10f\n", padding, bias);
+        fprintf(stderr, "%s  normalMass: %.10f\n", padding, normalMass);
+        fprintf(stderr, "%s  tangentMass[0]: %.10f\n", padding, tangentMass[0]);
+        fprintf(stderr, "%s  tangentMass[1]: %.10f\n", padding, tangentMass[1]);
         fprintf(stderr, "%s  fp: 0x%x\n", padding, fp.key);
         fprintf(stderr, "%s  warmStarted: %d\n", padding, warmStarted);
     };
@@ -130,10 +130,10 @@ struct q3Manifold
         fprintf(stderr, "%sManifold:\n", padding);
         fprintf(stderr, "%s  boxA: %d\n", padding, A->getBoxIndex());
         fprintf(stderr, "%s  boxB: %d\n", padding, B->getBoxIndex());
-        fprintf(stderr, "%s  normal: vec3(%f, %f, %f)\n", padding, normal.x, normal.y, normal.z);
-        fprintf(stderr, "%s  tangentVectors[0]: vec3(%f, %f, %f)\n", padding, tangentVectors[0].x, tangentVectors[0].y, tangentVectors[0].z);
-        fprintf(stderr, "%s  tangentVectors[1]: vec3(%f, %f, %f)\n", padding, tangentVectors[1].x, tangentVectors[1].y, tangentVectors[1].z);
-        fprintf(stderr, "%s  normal: vec3(%f, %f, %f)\n", padding, normal.x, normal.y, normal.z);
+        fprintf(stderr, "%s  normal: vec3(%.10f, %.10f, %.10f)\n", padding, normal.x, normal.y, normal.z);
+        fprintf(stderr, "%s  tangentVectors[0]: vec3(%.10f, %.10f, %.10f)\n", padding, tangentVectors[0].x, tangentVectors[0].y, tangentVectors[0].z);
+        fprintf(stderr, "%s  tangentVectors[1]: vec3(%.10f, %.10f, %.10f)\n", padding, tangentVectors[1].x, tangentVectors[1].y, tangentVectors[1].z);
+        fprintf(stderr, "%s  normal: vec3(%.10f, %.10f, %.10f)\n", padding, normal.x, normal.y, normal.z);
         fprintf(stderr, "%s  sensor: %d\n", padding, sensor);
         fprintf(stderr, "%s  contactCount: %d\n", padding, contactCount);
         for(int i = 0; i < contactCount; ++i) {
@@ -183,8 +183,8 @@ struct q3ContactConstraint
         fprintf(stderr, "%s  boxB: %d\n", padding, B->getBoxIndex());
         fprintf(stderr, "%s  bodyA: %d\n", padding, A->getBodyIndex());
         fprintf(stderr, "%s  bodyB: %d\n", padding, B->getBodyIndex());
-        fprintf(stderr, "%s  friction: %f\n", padding, friction);
-        fprintf(stderr, "%s  restitution: %f\n", padding, restitution);
+        fprintf(stderr, "%s  friction: %.10f\n", padding, friction);
+        fprintf(stderr, "%s  restitution: %.10f\n", padding, restitution);
         fprintf(stderr, "%s  m_flags: 0x%x\n", padding, m_flags);
         manifold.print(padding - 2);
     };
