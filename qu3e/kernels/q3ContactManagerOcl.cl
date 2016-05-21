@@ -6,15 +6,14 @@ typedef float3 q3Vec3;
 typedef float4 q3Quaternion;
 
 #define Q3_R32_MAX FLT_MAX
-#define assert(cnd) do{if(!(cnd)) printf("Assert failed: %s\n", #cnd);} while(0)
+// #define assert(cnd) do{if(!(cnd)) printf("Assert failed: %s\n", #cnd);} while(0)
+#define assert(cnd)
 
-typedef union
-{
-    struct {
-        q3Vec3 ex;
-        q3Vec3 ey;
-        q3Vec3 ez;
-    };
+
+typedef struct {
+    q3Vec3 ex;
+    q3Vec3 ey;
+    q3Vec3 ez;
 } q3Mat3;
 
 typedef struct
@@ -175,39 +174,27 @@ typedef struct
     q3FeaturePairOcl f;
 } q3ClipVertex;
 
-typedef struct {
-    r32 tangentImpulse[2];
-    r32 normalImpulse;
-    q3FeaturePairOcl fp;
-} q3OldContactOcl;
-
-inline q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b)
-{
+inline q3Vec3 q3Cross(q3Vec3 a, q3Vec3 b) {
   return cross(a, b);
 }
 
-inline r32 q3Dot(q3Vec3 a, q3Vec3 b)
-{
+inline r32 q3Dot(q3Vec3 a, q3Vec3 b) {
   return dot(a, b);
 }
 
-inline r32 q3Clamp(r32 minval, r32 maxval, r32 x)
-{
+inline r32 q3Clamp(r32 minval, r32 maxval, r32 x) {
   return clamp(x, minval, maxval);
 }
 
-inline r32 q3Abs(r32 a)
-{
+inline r32 q3Abs(r32 a) {
     return fabs(a);
 }
 
-inline q3Vec3 vAbs(q3Vec3 a)
-{
+inline q3Vec3 vAbs(q3Vec3 a) {
     return (q3Vec3)(fabs(a.x), fabs(a.y), fabs(a.z));
 }
 
-inline r32 q3Length( const q3Vec3 v )
-{
+inline r32 q3Length( const q3Vec3 v ) {
     return length(v);
 }
 
@@ -220,15 +207,29 @@ inline const q3Vec3 q3Normalize( const q3Vec3 v )
     return normalize(v);
 }
 
+inline q3Vec3 mCol0( const q3Mat3 m )
+{
+    return (q3Vec3)( m.ex.x, m.ey.x, m.ez.x );
+}
+
+inline q3Vec3 mCol1( const q3Mat3 m )
+{
+    return (q3Vec3)( m.ex.y, m.ey.y, m.ez.y );
+}
+
+inline q3Vec3 mCol2( const q3Mat3 m )
+{
+    return (q3Vec3)( m.ex.z, m.ey.z, m.ez.z );
+}
+
 /**
  * Matrix vector multiplication
  */
-inline q3Vec3 mvMul(const q3Mat3 m, const q3Vec3 v)
-{
+inline q3Vec3 mvMul(const q3Mat3 m, const q3Vec3 v) {
   return (q3Vec3)(
-    m.ex.x * v.x + m.ey.x * v.y + m.ez.x * v.z,
-    m.ex.y * v.x + m.ey.y * v.y + m.ez.y * v.z,
-    m.ex.z * v.x + m.ey.z * v.y + m.ez.z * v.z
+    dot(mCol0(m), v),
+    dot(mCol1(m), v),
+    dot(mCol2(m), v)
   );
 }
 
@@ -247,8 +248,7 @@ inline q3Mat3 mmMul(const q3Mat3 m, const q3Mat3 n) {
 /**
  * Transform transform multiplication
  */
-inline q3Transform ttMul(const q3Transform t, const q3Transform u)
-{
+inline q3Transform ttMul(const q3Transform t, const q3Transform u) {
     q3Transform v;
     v.rotation = mmMul( t.rotation, u.rotation );
     v.position = mvMul( t.rotation, u.position ) + t.position;
@@ -258,13 +258,11 @@ inline q3Transform ttMul(const q3Transform t, const q3Transform u)
 /*
  * Transform matrix multiplication
  */
-inline q3Vec3 tvMul(const q3Transform tx, const q3Vec3 v)
-{
+inline q3Vec3 tvMul(const q3Transform tx, const q3Vec3 v) {
     return mvMul(tx.rotation, v) + tx.position;
 }
 
-inline const q3Mat3 mTranspose( const q3Mat3 m )
-{
+inline const q3Mat3 mTranspose( const q3Mat3 m ) {
     q3Mat3 n;
     n.ex = (q3Vec3)(m.ex.x, m.ey.x, m.ez.x);
     n.ey = (q3Vec3)(m.ex.y, m.ey.y, m.ez.y);
@@ -272,24 +270,8 @@ inline const q3Mat3 mTranspose( const q3Mat3 m )
     return n;
 }
 
-inline q3Vec3 mvMulT( const q3Mat3 r, const q3Vec3 v )
-{
+inline q3Vec3 mvMulT( const q3Mat3 r, const q3Vec3 v ) {
     return mvMul(mTranspose( r ), v);
-}
-
-inline q3Vec3 mCol0( const q3Mat3 m )
-{
-    return (q3Vec3)( m.ex.x, m.ey.x, m.ez.x );
-}
-
-inline q3Vec3 mCol1( const q3Mat3 m )
-{
-    return (q3Vec3)( m.ex.y, m.ey.y, m.ez.y );
-}
-
-inline q3Vec3 mCol2( const q3Mat3 m )
-{
-    return (q3Vec3)( m.ex.z, m.ey.z, m.ez.z );
 }
 
 inline void vSet(q3Vec3 *v, r32 x, r32 y, r32 z) {
