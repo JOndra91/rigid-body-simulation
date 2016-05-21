@@ -50,7 +50,7 @@ q3ContactManagerOcl::q3ContactManagerOcl( q3Stack* stack,  q3Container *containe
     m_clQueue = cl::CommandQueue(*m_clContext);
 
     // m_clProgram = buildProgramFromSourceString(*m_clContext, managerKernelSource);
-    m_clProgram = buildProgramFromSource(*m_clContext, "./qu3e/kernels/q3ContactManagerOcl.cl");
+    m_clProgram = buildProgramFromSource(*m_clContext, "./qu3e/kernels/q3ContactManagerOcl.cl", "-I./qu3e/kernels");
 
     std::vector<cl::Device> devices;
     m_clContext->getInfo(CL_CONTEXT_DEVICES, &devices);
