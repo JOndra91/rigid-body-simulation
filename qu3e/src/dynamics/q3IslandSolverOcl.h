@@ -75,6 +75,11 @@ struct q3ContactConstraintStateOcl
     i32 indexB;
 } ALIGNED;
 
+struct constraintPair {
+    i32 indexA;
+    i32 indexB;
+};
+
 //--------------------------------------------------------------------------------------------------
 // q3IslandSolverOcl
 //--------------------------------------------------------------------------------------------------
@@ -97,6 +102,8 @@ struct q3IslandSolverOcl : q3IslandSolver
     q3ContactStateOcl *m_contactStates;
     q3ContactConstraint **m_contactConstraints;
     q3BodyRef **m_bodies;
+    u32 *m_constraintIndicies;
+    constraintPair *m_constraintPairs;
 
     q3Scene *m_scene;
 
@@ -128,6 +135,8 @@ struct q3IslandSolverOcl : q3IslandSolver
     std::vector<cl_uint> m_clBatchSizes;
 
     cl_uint m_clLocalSize;
+
+    cl::Event m_clEvent;
 };
 
 #endif // Q3ISLANDSOLVEROCL_H

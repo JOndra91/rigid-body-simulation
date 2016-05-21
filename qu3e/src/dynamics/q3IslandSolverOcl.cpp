@@ -350,12 +350,17 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         m_contactConstraintStates = (q3ContactConstraintStateOcl*)m_clQueue.enqueueMapBuffer(*m_clBufferContactConstraintState, CL_TRUE, CL_MAP_WRITE, 0, sizeof(q3ContactConstraintStateOcl) * m_contactCount, NULL, NULL, &clErr);
         CHECK_CL_ERROR(clErr, "Map q3ContactConstraintStateOcl");
 
+        m_constraintIndicies = (u32*) s_stack->Allocate( sizeof(u32) * m_contactStateCount);
+        m_constraintPairs = (constraintPair*) s_stack->Allocate( sizeof(constraintPair) * m_contactCount);
+
         InitializeContacts();
 
         clErr = m_clQueue.enqueueUnmapMemObject(*m_clBufferContactState, m_contactStates);
+        m_contactStates = NULL;
         CHECK_CL_ERROR(clErr, "Unmap q3ContactStateOcl");
 
         clErr = m_clQueue.enqueueUnmapMemObject(*m_clBufferContactConstraintState, m_contactConstraintStates);
+        m_contactConstraintStates = NULL;
         CHECK_CL_ERROR(clErr, "Unmap q3ContactStateOcl");
 
 
@@ -376,13 +381,11 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         cl_uint lastConstraintIndex = UINT32_MAX;
         do
         {
-            cl_uint lastIt = 0;
             for(auto it = contactsToPlan.begin(); it != contactsToPlan.end();) {
-                lastIt = *it;
-                q3ContactStateOcl* cs = m_contactStates + *it;
-                q3ContactConstraintStateOcl *cc = m_contactConstraintStates + cs->constraintIndex;
+                cl_uint constraintIndex = m_constraintIndicies[*it];
+                constraintPair *cc = m_constraintPairs + constraintIndex;
 
-                if(lastConstraintIndex == cs->constraintIndex) {
+                if(lastConstraintIndex == constraintIndex) {
                     ++m_clBatches.back().s[1];
                     it = contactsToPlan.erase(it);
                 }
@@ -398,7 +401,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                     m_clBatches.push_back(v);
 
                     it = contactsToPlan.erase(it);
-                    lastConstraintIndex = cs->constraintIndex;
+                    lastConstraintIndex = constraintIndex;
                 }
                 else {
                     ++it;
@@ -413,6 +416,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
         } while(!contactsToPlan.empty());
 
+        s_stack->Free(m_constraintPairs);
+        s_stack->Free(m_constraintIndicies);
 
         m_clBufferBatches = new cl::Buffer(*m_clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(cl_uint2) * m_clBatches.size(), m_clBatches.data(), &clErr);
         CHECK_CL_ERROR(clErr, "Buffer batches");
@@ -421,9 +426,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
         PreSolveContacts();
         SolveContacts();
-
-        clErr = m_clQueue.enqueueReadBuffer(*m_clBufferContactState, CL_TRUE, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, m_contactStates);
-        CHECK_CL_ERROR(clErr, "Read buffer q3ContactStateOcl");
     }
 
     q3TimerStop("solve");
@@ -454,20 +456,30 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelIntegrate, cl::NullRange, global, local);
     CHECK_CL_ERROR(clErr, "Run integrate kernel");
 
-    q3ContactStateOcl *cs = m_contactStates;
-    for ( i32 i = 0; i < m_contactCount; ++i )
-    {
-        q3ContactConstraint *cc = m_contactConstraints[ i ];
+    if(m_contactCount > 0) {
 
-        for ( i32 j = 0; j < cc->manifold.contactCount; ++j )
+        m_contactStates = (q3ContactStateOcl*)m_clQueue.enqueueMapBuffer(*m_clBufferContactState, CL_TRUE, CL_MAP_READ, 0, sizeof(q3ContactStateOcl) * m_contactStateCount, NULL, NULL, &clErr);
+        CHECK_CL_ERROR(clErr, "Map q3ContactStateOcl");
+
+        q3ContactStateOcl *cs = m_contactStates;
+        for ( i32 i = 0; i < m_contactCount; ++i )
         {
-            q3Contact *oc = cc->manifold.contacts + j;
-            oc->normalImpulse = cs->normalImpulse;
-            oc->tangentImpulse[ 0 ] = cs->tangentImpulse[ 0 ];
-            oc->tangentImpulse[ 1 ] = cs->tangentImpulse[ 1 ];
+            q3ContactConstraint *cc = m_contactConstraints[ i ];
 
-            cs++;
+            for ( i32 j = 0; j < cc->manifold.contactCount; ++j )
+            {
+                q3Contact *oc = cc->manifold.contacts + j;
+                oc->normalImpulse = cs->normalImpulse;
+                oc->tangentImpulse[ 0 ] = cs->tangentImpulse[ 0 ];
+                oc->tangentImpulse[ 1 ] = cs->tangentImpulse[ 1 ];
+
+                cs++;
+            }
         }
+
+        clErr = m_clQueue.enqueueUnmapMemObject(*m_clBufferContactState, m_contactStates);
+        m_contactStates = NULL;
+        CHECK_CL_ERROR(clErr, "Unmap q3ContactStateOcl");
     }
 
 #if 0
@@ -668,6 +680,12 @@ void q3IslandSolverOcl::InitializeContacts() {
         {
             q3ContactStateOcl *s = m_contactStates + contactStateCount;
             q3Contact *cp = cc->manifold.contacts + j;
+
+            m_constraintIndicies[contactStateCount] = i;
+            m_constraintPairs[contactStateCount] = {
+                .indexA = c->indexA,
+                .indexB = c->indexB,
+            };
 
             s->constraintIndex = i;
             s->ra = cp->position - c->centerA;
