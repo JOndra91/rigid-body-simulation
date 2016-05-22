@@ -1,6 +1,14 @@
 #include "types.cl"
 #include "functions.cl"
 
+typedef struct
+{
+    u32 boxA;
+    u32 boxB;
+    u32 bodyA;
+    u32 bodyB;
+} Indicies;
+
 inline bool bodiesCanColide(const q3Body a, const q3Body b);
 inline bool bodyIsAwake(const q3Body body);
 inline bool aabbOverlaps(q3AABB a, q3AABB b);
