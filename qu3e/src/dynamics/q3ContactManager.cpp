@@ -280,13 +280,13 @@ void q3ContactManager::TestCollisions( void )
         constraint = constraint->next;
     }
 
-    // constraint = m_contactList;
-    //
-    // const char *spaces = "                    ";
-    // while( constraint ) {
-    //     constraint->print(spaces + 20);
-    //     constraint = constraint->next;
-    // }
+    constraint = m_contactList;
+
+    const char *spaces = "                    ";
+    while( constraint ) {
+        constraint->print(spaces + 20);
+        constraint = constraint->next;
+    }
 }
 
 //--------------------------------------------------------------------------------------------------

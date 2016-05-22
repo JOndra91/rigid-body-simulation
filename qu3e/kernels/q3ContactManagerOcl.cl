@@ -300,7 +300,9 @@ inline bool q3TrackEdgeAxis(i32* axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q
     if ( s > 0.0f )
         return true;
 
+    // printf("normal: (%f, %f, %f)\n", normal.x, normal.y, normal.z);
     r32 l = 1.0f / q3Length( normal );
+    // printf("l: %f\n", l);
     s *= l;
 
     if ( s > *sMax )
@@ -309,6 +311,8 @@ inline bool q3TrackEdgeAxis(i32* axis, i32 n, r32 s, r32 *sMax, q3Vec3 normal, q
         *axis = n;
         *axisNormal = normal * l;
     }
+
+    // printf("sMax: %f, axis: %d, axisNormal: (%f, %f, %f)\n", *sMax, *axis, axisNormal->x, axisNormal->y, axisNormal->z);
 
     return false;
 }
@@ -320,6 +324,8 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
 
     if ( axis >= 3 )
         axis -= 3;
+
+    // printf("Axis: %d\n", axis);
 
     switch ( axis )
     {
@@ -395,6 +401,13 @@ void q3ComputeReferenceEdgesAndBasis(q3Vec3 eR, q3Transform rtx, q3Vec3 n, i32 a
         }
         break;
     }
+
+    // printf("e: (%f, %f, %f)\n", e->x, e->y, e->z);
+    // printf("basis: [\n  [%f, %f, %f],\n  [%f, %f, %f], \n  [%f, %f, %f]]\n",
+    //     basis->ex.x, basis->ex.y, basis->ex.z,
+    //     basis->ey.x, basis->ey.y, basis->ey.z,
+    //     basis->ez.x, basis->ez.y, basis->ez.z
+    // );
 }
 
 void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* out) {
@@ -512,8 +525,12 @@ void q3ComputeIncidentFace(q3Transform itx, q3Vec3 e, q3Vec3 n, q3ClipVertex* ou
         }
     }
 
-    for ( i32 i = 0; i < 4; ++i )
+    for ( i32 i = 0; i < 4; ++i ) {
         out[i].v = tvMul( itx, out[i].v );
+        // printf("out[%i]: v: (%f, %f, %f), f: 0x%x", i,
+        //     out[i].v.x, out[i].v.y, out[i].v.z, out[i].f.key
+        // );
+    }
 }
 
 #define InFront( a ) \
@@ -698,6 +715,10 @@ void q3SupportEdge(q3Transform tx, q3Vec3 e, q3Vec3 n, q3Vec3* aOut, q3Vec3* bOu
     r32 signy = q3Sign( n.y );
     r32 signz = q3Sign( n.z );
 
+    // printf("signx: %f, %f\n", n.x, signx);
+    // printf("signy: %f, %f\n", n.y, signy);
+    // printf("signz: %f, %f\n", n.z, signz);
+
     a.x *= signx;
     a.y *= signy;
     a.z *= signz;
@@ -733,6 +754,18 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
     q3Vec3 eA = boxA->e;
     q3Vec3 eB = boxB->e;
 
+    // printf("atx: [[%f, %f, %f], [%f, %f, %f], [%f, %f, %f]]\n",
+    //     atx.rotation.ex.x, atx.rotation.ex.y, atx.rotation.ex.z,
+    //     atx.rotation.ey.x, atx.rotation.ey.y, atx.rotation.ey.z,
+    //     atx.rotation.ez.x, atx.rotation.ez.y, atx.rotation.ez.z
+    // );
+    //
+    // printf("btx: [[%f, %f, %f], [%f, %f, %f], [%f, %f, %f]]\n",
+    //     btx.rotation.ex.x, btx.rotation.ex.y, btx.rotation.ex.z,
+    //     btx.rotation.ey.x, btx.rotation.ey.y, btx.rotation.ey.z,
+    //     btx.rotation.ez.x, btx.rotation.ez.y, btx.rotation.ez.z
+    // );
+
     q3Mat3 C = mmMul(mTranspose( atx.rotation ), btx.rotation);
 
     q3Mat3 absC;
@@ -745,8 +778,18 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
     q3Vec3 maxCv = max(max(absC.ex, absC.ey), absC.ez);
     parallel = any(isgreaterequal(maxCv, (q3Vec3)(1.0f - kCosTol)));
 
+    // printf("Parallel: %d\n", parallel);
+    //
+    // printf("AbsC: [[%f, %f, %f], [%f, %f, %f], [%f, %f, %f]]\n",
+    //     absC.ex.x, absC.ex.y, absC.ex.z,
+    //     absC.ey.x, absC.ey.y, absC.ey.z,
+    //     absC.ez.x, absC.ez.y, absC.ez.z
+    // );
+
     // Vector from center A to center B in A's space
     q3Vec3 t = mvMulT( atx.rotation, btx.position - atx.position );
+
+    // printf("t: (%f, %f, %f)\n", t.x, t.y, t.z );
 
     // Query states
     r32 s;
@@ -767,26 +810,31 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
     s = q3Abs( t.x ) - (eA.x + q3Dot( mCol0(absC), eB ));
     if ( q3TrackFaceAxis( &aAxis, 0, s, &aMax, atx.rotation.ex, &nA ) )
         return;
+    // printf("s: %f\n", s);
 
     // a's y axis
     s = q3Abs( t.y ) - (eA.y + q3Dot( mCol1(absC), eB ));
     if ( q3TrackFaceAxis( &aAxis, 1, s, &aMax, atx.rotation.ey, &nA ) )
         return;
+    // printf("s: %f\n", s);
 
     // a's z axis
     s = q3Abs( t.z ) - (eA.z + q3Dot( mCol2(absC), eB ));
     if ( q3TrackFaceAxis( &aAxis, 2, s, &aMax, atx.rotation.ez, &nA ) )
         return;
+    // printf("s: %f\n", s);
 
     // b's x axis
     s = q3Abs( q3Dot( t, C.ex ) ) - (eB.x + q3Dot( absC.ex, eA ));
     if ( q3TrackFaceAxis( &bAxis, 3, s, &bMax, btx.rotation.ex, &nB ) )
         return;
+    // printf("s: %f\n", s);
 
     // b's y axis
     s = q3Abs( q3Dot( t, C.ey ) ) - (eB.y + q3Dot( absC.ey, eA ));
     if ( q3TrackFaceAxis( &bAxis, 4, s, &bMax, btx.rotation.ey, &nB ) )
         return;
+    // printf("s: %f\n", s);
 
     // b's z axis
     s = q3Abs( q3Dot( t, C.ez ) ) - (eB.z + q3Dot( absC.ez, eA ));
@@ -805,6 +853,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         s = q3Abs( t.z * C.ex.y - t.y * C.ex.z ) - (rA + rB);
         if ( q3TrackEdgeAxis( &eAxis, 6, s, &eMax, (q3Vec3)( 0.0f, -C.ex.z, C.ex.y ), &nE ) )
             return;
+        // printf("s: %f ra: %f, rb: %f\n", s, rA, rB);
 
         // Cross( a.x, b.y )
         rA = eA.y * absC.ey.z + eA.z * absC.ey.y;
@@ -812,6 +861,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         s = q3Abs( t.z * C.ey.y - t.y * C.ey.z ) - (rA + rB);
         if ( q3TrackEdgeAxis( &eAxis, 7, s, &eMax, (q3Vec3)( 0.0f, -C.ey.z, C.ey.y ), &nE ) )
             return;
+        // printf("s: %f ra: %f, rb: %f\n", s, rA, rB);
 
         // Cross( a.x, b.z )
         rA = eA.y * absC.ez.z + eA.z * absC.ez.y;
@@ -819,6 +869,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         s = q3Abs( t.z * C.ez.y - t.y * C.ez.z ) - (rA + rB);
         if ( q3TrackEdgeAxis( &eAxis, 8, s, &eMax, (q3Vec3)( 0.0f, -C.ez.z, C.ez.y ), &nE ) )
             return;
+        // printf("s: %f ra: %f, rb: %f\n", s, rA, rB);
 
         // Cross( a.y, b.x )
         rA = eA.x * absC.ex.z + eA.z * absC.ex.x;
@@ -826,6 +877,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         s = q3Abs( t.x * C.ex.z - t.z * C.ex.x ) - (rA + rB);
         if ( q3TrackEdgeAxis( &eAxis, 9, s, &eMax, (q3Vec3)( C.ex.z, 0.0f, -C.ex.x ), &nE ) )
             return;
+        // printf("s: %f ra: %f, rb: %f\n", s, rA, rB);
 
         // Cross( a.y, b.y )
         rA = eA.x * absC.ey.z + eA.z * absC.ey.x;
@@ -833,6 +885,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         s = q3Abs( t.x * C.ey.z - t.z * C.ey.x ) - (rA + rB);
         if ( q3TrackEdgeAxis( &eAxis, 10, s, &eMax, (q3Vec3)( C.ey.z, 0.0f, -C.ey.x ), &nE ) )
             return;
+        // printf("s: %f ra: %f, rb: %f\n", s, rA, rB);
 
         // Cross( a.y, b.z )
         rA = eA.x * absC.ez.z + eA.z * absC.ez.x;
@@ -840,6 +893,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         s = q3Abs( t.x * C.ez.z - t.z * C.ez.x ) - (rA + rB);
         if ( q3TrackEdgeAxis( &eAxis, 11, s, &eMax, (q3Vec3)( C.ez.z, 0.0f, -C.ez.x ), &nE ) )
             return;
+        // printf("s: %f ra: %f, rb: %f\n", s, rA, rB);
 
         // Cross( a.z, b.x )
         rA = eA.x * absC.ex.y + eA.y * absC.ex.x;
@@ -847,6 +901,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         s = q3Abs( t.y * C.ex.x - t.x * C.ex.y ) - (rA + rB);
         if ( q3TrackEdgeAxis( &eAxis, 12, s, &eMax, (q3Vec3)( -C.ex.y, C.ex.x, 0.0f ), &nE ) )
             return;
+        // printf("s: %f ra: %f, rb: %f\n", s, rA, rB);
 
         // Cross( a.z, b.y )
         rA = eA.x * absC.ey.y + eA.y * absC.ey.x;
@@ -854,6 +909,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         s = q3Abs( t.y * C.ey.x - t.x * C.ey.y ) - (rA + rB);
         if ( q3TrackEdgeAxis( &eAxis, 13, s, &eMax, (q3Vec3)( -C.ey.y, C.ey.x, 0.0f ), &nE ) )
             return;
+        // printf("s: %f ra: %f, rb: %f\n", s, rA, rB);
 
         // Cross( a.z, b.z )
         rA = eA.x * absC.ez.y + eA.y * absC.ez.x;
@@ -861,6 +917,7 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         s = q3Abs( t.y * C.ez.x - t.x * C.ez.y ) - (rA + rB);
         if ( q3TrackEdgeAxis( &eAxis, 14, s, &eMax, (q3Vec3)( -C.ez.y, C.ez.x, 0.0f ), &nE ) )
             return;
+        // printf("s: %f ra: %f, rb: %f\n", s, rA, rB);
     }
 
     // Artificial axis bias to improve frame coherence
@@ -892,6 +949,8 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
             n = nA;
         }
     }
+
+    // printf("Axis: %d\n", axis);
 
     if ( q3Dot( n, btx.position - atx.position ) < 0.0 )
         n = -n;
@@ -946,6 +1005,24 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
         i32 outNum;
         outNum = q3Clip(rtx.position, e, clipEdges, basis, incident, out, depths);
 
+        // for(int i = 0; i < 4; ++i) {
+        //     printf("clipEdge[%d]: %d\n", i, clipEdges[i]);
+        //     printf("incident[%i]: v: (%f, %f, %f), f: 0x%x\n", i,
+        //         incident[i].v.x, incident[i].v.y, incident[i].v.z,
+        //         incident[i].f.key
+        //     );
+        // }
+        //
+        // for(int i = 0; i < outNum; ++i) {
+        //     printf("depths[%d]: %f\n", i, depths[i]);
+        //     printf("out[%i]: v: (%f, %f, %f), f: 0x%x\n", i,
+        //         out[i].v.x, out[i].v.y, out[i].v.z,
+        //         out[i].f.key
+        //     );
+        // }
+
+        printf("Out num: %d\n", outNum);
+
         if ( outNum )
         {
             m->contactCount = outNum;
@@ -981,16 +1058,28 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
     {
         n = mvMul(atx.rotation, n);
 
+        printf("n: (%f, %f, %f)\n", n.x, n.y, n.z);
+
         if ( q3Dot( n, btx.position - atx.position ) < 0.0f )
             n = -n;
+
+        printf("Fail here\n");
 
         q3Vec3 PA, QA;
         q3Vec3 PB, QB;
         q3SupportEdge( atx, eA, n, &PA, &QA );
         q3SupportEdge( btx, eB, -n, &PB, &QB );
 
+        // printf("PA: (%f, %f, %f)\n", PA.x, PA.y, PA.z);
+        // printf("QA: (%f, %f, %f)\n", QA.x, QA.y, QA.z);
+        // printf("PB: (%f, %f, %f)\n", PB.x, PB.y, PB.z);
+        // printf("QB: (%f, %f, %f)\n", QB.x, QB.y, QB.z);
+
         q3Vec3 CA, CB;
         q3EdgesContact( &CA, &CB, PA, QA, PB, QB );
+
+        // printf("CA: (%f, %f, %f)\n", CA.x, CA.y, CA.z);
+        // printf("CB: (%f, %f, %f)\n", CB.x, CB.y, CB.z);
 
         m->normal = n;
         m->contactCount = 1;
