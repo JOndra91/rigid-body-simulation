@@ -46,8 +46,11 @@ inline r32 q3Length( const q3Vec3 v ) {
     return length(v);
 }
 
+/**
+ * Return 1.0 if a >= 0.0, -1.0 otherwise
+ */
 inline r32 q3Sign(r32 a) {
-    return sign(a);
+    return (r32)((a >= 0) << 1) - 1;
 }
 
 inline const q3Vec3 q3Normalize( const q3Vec3 v ) {
