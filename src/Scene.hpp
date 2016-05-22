@@ -44,6 +44,7 @@ namespace gmu {
         int loop;
         bool pause;
         bool debug;
+        bool nextStep;
         Scene(q3OpenCLDevice device);
         Scene(Camera *camera, q3OpenCLDevice device);
 

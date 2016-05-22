@@ -372,9 +372,11 @@ void Scene::prepareBuffers(unsigned &index, const q3BoxRef* box, Vertex* vert, G
 
 
 void Scene::step(float time, float delta) {
-    if(pause) {
+    if(pause && !nextStep) {
         return;
     }
+
+    nextStep = false;
 
     std::cout << "Loop: " << loop << std::endl;
     // printf("Delta: %f", scene.m_dt);
@@ -406,10 +408,12 @@ IEventListener::EventResponse Scene::onEvent(SDL_Event* evt) {
                     break;
             }
             return EVT_PROCESSED;
-        }
-        else if(e->keysym.sym == SDLK_SPACE) {
+        } else if(e->keysym.sym == SDLK_SPACE) {
             pause = !pause;
             printf("Pause: %d\n", pause);
+            return EVT_PROCESSED;
+        } else if(e->keysym.sym == SDLK_n) {
+            nextStep = true;
             return EVT_PROCESSED;
         } else if(e->keysym.sym == SDLK_TAB) {
             debug = !debug;
