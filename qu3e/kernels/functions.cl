@@ -33,6 +33,15 @@ inline q3Vec3 vAbs(q3Vec3 a) {
     return (q3Vec3)(fabs(a.x), fabs(a.y), fabs(a.z));
 }
 
+inline q3Mat3 mAbs(q3Mat3 m) {
+    q3Mat3 o;
+    o.ex = vAbs(m.ex);
+    o.ey = vAbs(m.ey);
+    o.ez = vAbs(m.ez);
+
+    return o;
+}
+
 inline r32 q3Length( const q3Vec3 v ) {
     return length(v);
 }
