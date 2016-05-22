@@ -134,7 +134,7 @@ void Scene::prepareScene() {
     int numColors = (sizeof(Scene::colors) / sizeof(u8vec3)) - 1;
     int colorIndex = 0;
 
-    int width = 16, height = 80, depth = 16;
+    int width = 1, height = 1, depth = 1;
 
     boxes.clear();
     boxes.reserve(width*height*depth + 1);
@@ -158,7 +158,7 @@ void Scene::prepareScene() {
     boxes.push_back(box);
 
     q3Vec3 blockSize( 1.0f, 1.0f, 1.0f );
-    q3Vec3 blockMargin( 0.1f, 0.1f, 0.1f);
+    q3Vec3 blockMargin( 1.0f, 0.0f, 1.0f);
     q3Vec3 blockSpace = blockSize + blockMargin;
 
     bodyDef.bodyType = eDynamicBody;
@@ -166,7 +166,7 @@ void Scene::prepareScene() {
 
     q3Vec3 off;
     off.x = -((width - 1) * blockSpace.x)/2.0;
-    off.y = 5.0f;
+    off.y = 3.0f;
     off.z = -((depth - 1) * blockSpace.y)/2.0;
 
     for ( int i = 0; i < height; ++i )
@@ -180,6 +180,7 @@ void Scene::prepareScene() {
                     , off.y + blockSpace.y * i
                     , off.z + blockSpace.z * k
                     );
+                bodyDef.linearVelocity.Set(0.0f, -50.0f, 0.0f);
                 b = scene.CreateBody( bodyDef );
                 box = b->AddBox( boxDef );
 
