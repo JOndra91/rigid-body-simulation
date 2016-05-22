@@ -748,8 +748,8 @@ void q3BoxToBox(global q3ContactOcl *contacts, q3ManifoldOcl *m, const q3Body *b
     absC.ex.y = val;
     parallel = parallel || (val + kCosTol >= 1.0f);
 
-    val = q3Abs( C.ex.y );
-    absC.ex.y = val;
+    val = q3Abs( C.ex.z );
+    absC.ex.z = val;
     parallel = parallel || (val + kCosTol >= 1.0f);
 
     val = q3Abs( C.ey.x );
