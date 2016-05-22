@@ -134,7 +134,7 @@ void Scene::prepareScene() {
     int numColors = (sizeof(Scene::colors) / sizeof(u8vec3)) - 1;
     int colorIndex = 0;
 
-    int width = 1, height = 1, depth = 1;
+    int width = 1, height = 3, depth = 1;
 
     boxes.clear();
     boxes.reserve(width*height*depth + 1);
@@ -158,7 +158,7 @@ void Scene::prepareScene() {
     boxes.push_back(box);
 
     q3Vec3 blockSize( 1.0f, 1.0f, 1.0f );
-    q3Vec3 blockMargin( 1.0f, 0.0f, 1.0f);
+    q3Vec3 blockMargin( 1.0f, 0.3f, 1.0f);
     q3Vec3 blockSpace = blockSize + blockMargin;
 
     bodyDef.bodyType = eDynamicBody;
