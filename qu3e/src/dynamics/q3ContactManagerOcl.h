@@ -114,6 +114,7 @@ private:
     cl::CommandQueue m_clQueue;
     cl::Program m_clProgram;
     cl::Kernel m_clKernelTestCollisions;
+    cl::Kernel m_clKernelBroadTestCollisions;
     cl_uint m_clLocalSize;
 };
 

@@ -62,12 +62,15 @@ q3ContactManagerOcl::q3ContactManagerOcl( q3Stack* stack,  q3Container *containe
     std::vector<cl::Kernel> kernels;
     m_clProgram.createKernels(&kernels);
 
-    assert(kernels.size() == 1);
+    assert(kernels.size() == 2);
 
     for(auto &kernel : kernels) {
         std::string name = kernel.getInfo<CL_KERNEL_FUNCTION_NAME>();
         if(name == "testCollisions") {
             m_clKernelTestCollisions = kernel;
+        }
+        else if(name == "broadTestCollisions") {
+            m_clKernelBroadTestCollisions = kernel;
         }
     }
 
@@ -177,6 +180,7 @@ void q3ContactManagerOcl::TestCollisions( void )
 
     int i;
     cl_int clErr;
+    cl_uint argument;
     Indicies *indexMemory;
     q3Contact *contactMemory;
     q3ContactConstraintOcl *constraintMemory;
@@ -282,33 +286,74 @@ void q3ContactManagerOcl::TestCollisions( void )
     );
     CHECK_CL_ERROR(clErr, "Write buffer q3DynamicAABBTree::Node");
 
-    // Run kernel here
+    // Run kernels here
 
-    cl_uint argument = 0;
+    cl_uint passedContactCount = 0;
+    cl::Buffer countBuffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
+        sizeof(cl_uint), &passedContactCount, &clErr);
+    CHECK_CL_ERROR(clErr, "Buffer globalCount");
 
-    clErr = m_clKernelTestCollisions.setArg(argument++, indexBuffer);
-    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (indexBuffer)");
-    clErr = m_clKernelTestCollisions.setArg(argument++, constraintBuffer);
-    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (constraintBuffer)");
-    clErr = m_clKernelTestCollisions.setArg(argument++, manifoldBuffer);
-    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (manifoldBuffer)");
-    clErr = m_clKernelTestCollisions.setArg(argument++, contactBuffer);
-    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (contactBuffer)");
-    clErr = m_clKernelTestCollisions.setArg(argument++, bodyBuffer);
-    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (bodyBuffer)");
-    clErr = m_clKernelTestCollisions.setArg(argument++, boxBuffer);
-    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (boxBuffer)");
-    clErr = m_clKernelTestCollisions.setArg(argument++, nodeBuffer);
-    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (nodeBuffer)");
-    clErr = m_clKernelTestCollisions.setArg(argument++, m_contactCount);
-    CHECK_CL_ERROR(clErr, "Set pre-solve kernel param %d (m_contactCount)");
+    cl::Buffer contactIndexBuffer(*m_clContext, CL_MEM_READ_WRITE
+        , m_contactCount * sizeof(cl_uint), NULL, &clErr
+    );
+    CHECK_CL_ERROR(clErr, "Buffer contact indicies");
 
     cl::NDRange local(m_clLocalSize);
-    cl::NDRange global(CEIL_TO(m_contactCount,local[0]));
-    clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelTestCollisions, cl::NullRange, global, local);
-    CHECK_CL_ERROR(clErr, "Run testCollisions kernel");
+    cl::NDRange global;
+
+    argument = 0;
+    clErr = m_clKernelBroadTestCollisions.setArg(argument++, indexBuffer);
+    CHECK_CL_ERROR(clErr, "Set broadTestCollisions kernel param %d (indexBuffer)");
+    clErr = m_clKernelBroadTestCollisions.setArg(argument++, constraintBuffer);
+    CHECK_CL_ERROR(clErr, "Set broadTestCollisions kernel param %d (constraintBuffer)");
+    clErr = m_clKernelBroadTestCollisions.setArg(argument++, bodyBuffer);
+    CHECK_CL_ERROR(clErr, "Set broadTestCollisions kernel param %d (bodyBuffer)");
+    clErr = m_clKernelBroadTestCollisions.setArg(argument++, boxBuffer);
+    CHECK_CL_ERROR(clErr, "Set broadTestCollisions kernel param %d (boxBuffer)");
+    clErr = m_clKernelBroadTestCollisions.setArg(argument++, nodeBuffer);
+    CHECK_CL_ERROR(clErr, "Set broadTestCollisions kernel param %d (nodeBuffer)");
+    clErr = m_clKernelBroadTestCollisions.setArg(argument++, countBuffer);
+    CHECK_CL_ERROR(clErr, "Set broadTestCollisions kernel param %d (countBuffer)");
+    clErr = m_clKernelBroadTestCollisions.setArg(argument++, contactIndexBuffer);
+    CHECK_CL_ERROR(clErr, "Set broadTestCollisions kernel param %d (contactIndexBuffer)");
+    clErr = m_clKernelBroadTestCollisions.setArg(argument++, m_contactCount);
+    CHECK_CL_ERROR(clErr, "Set broadTestCollisions kernel param %d (m_contactCount)");
+
+    global = cl::NDRange(CEIL_TO(m_contactCount,local[0]));
+    clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelBroadTestCollisions, cl::NullRange, global, local);
+    CHECK_CL_ERROR(clErr, "Run broadTestCollisions kernel");
+
     m_clQueue.finish();
-    printf("Kernel done\n");
+
+    clErr = m_clQueue.enqueueReadBuffer(countBuffer, CL_TRUE, 0, sizeof(cl_uint), &passedContactCount);
+    printf("Passed contacts: %u\n", passedContactCount);
+
+    if(passedContactCount > 0) {
+
+        argument = 0;
+        clErr = m_clKernelTestCollisions.setArg(argument++, indexBuffer);
+        CHECK_CL_ERROR(clErr, "Set testCollisions kernel param %d (indexBuffer)");
+        clErr = m_clKernelTestCollisions.setArg(argument++, constraintBuffer);
+        CHECK_CL_ERROR(clErr, "Set testCollisions kernel param %d (constraintBuffer)");
+        clErr = m_clKernelTestCollisions.setArg(argument++, manifoldBuffer);
+        CHECK_CL_ERROR(clErr, "Set testCollisions kernel param %d (manifoldBuffer)");
+        clErr = m_clKernelTestCollisions.setArg(argument++, contactBuffer);
+        CHECK_CL_ERROR(clErr, "Set testCollisions kernel param %d (contactBuffer)");
+        clErr = m_clKernelTestCollisions.setArg(argument++, bodyBuffer);
+        CHECK_CL_ERROR(clErr, "Set testCollisions kernel param %d (bodyBuffer)");
+        clErr = m_clKernelTestCollisions.setArg(argument++, boxBuffer);
+        CHECK_CL_ERROR(clErr, "Set testCollisions kernel param %d (boxBuffer)");
+        clErr = m_clKernelTestCollisions.setArg(argument++, contactIndexBuffer);
+        CHECK_CL_ERROR(clErr, "Set broadTestCollisions kernel param %d (contactIndexBuffer)");
+        clErr = m_clKernelTestCollisions.setArg(argument++, passedContactCount);
+        CHECK_CL_ERROR(clErr, "Set testCollisions kernel param %d (passedContactCount)");
+
+        global = cl::NDRange(CEIL_TO(passedContactCount,local[0]));
+        clErr = m_clQueue.enqueueNDRangeKernel(m_clKernelTestCollisions, cl::NullRange, global, local);
+        CHECK_CL_ERROR(clErr, "Run testCollisions kernel");
+    }
+
+    m_clQueue.finish();
 
     // Read back
     constraintMemory =

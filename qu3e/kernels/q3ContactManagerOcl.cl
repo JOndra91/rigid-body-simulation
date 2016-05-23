@@ -27,6 +27,66 @@ i32 q3Orthographic( r32 sign, r32 e, i32 axis, i32 clipEdge, q3ClipVertex* in, i
 #define offsetofinstance(obj, member) (((char*)&(obj).member)-((char*)&(obj)))
 #define offsetof(type, member) ({type type ## _; offsetofinstance(type ## _, member);})
 
+kernel void broadTestCollisions
+    ( const global Indicies *indexBuffer // read only
+    , global q3ContactConstraintOcl *constraintBuffer
+    , const global q3Body *bodyBuffer // read only
+    , const global q3Box *boxBuffer // read only
+    , const global aabbNode *aabbNodeBuffer // read only
+    , global uint *globalCount
+    , global uint *contactIndicies
+    , const uint contactCount
+    ) {
+
+    uint global_x = (uint)get_global_id(0);
+    uint local_x = (uint)get_local_id(0);
+    bool threadAlive = true;
+    uint globalOffset;
+
+    if(global_x >= contactCount) {
+        threadAlive = false;
+    }
+
+    uint increment = 0;
+    if(threadAlive) {
+
+        increment = 1;
+
+        const Indicies indicies = indexBuffer[global_x];
+        const q3Body bodyA = bodyBuffer[indicies.bodyA];
+        const q3Body bodyB = bodyBuffer[indicies.bodyB];
+
+        if(!bodiesCanColide(bodyA, bodyB)) {
+            constraintBuffer[global_x].m_flags |= eRemove;
+            threadAlive = false;
+        }
+
+        if(!bodyIsAwake(bodyA) && !bodyIsAwake(bodyB)) {
+            threadAlive = false;
+        }
+
+        if(threadAlive) {
+            uint boxIndexA = boxBuffer[indicies.boxA].broadPhaseIndex;
+            uint boxIndexB = boxBuffer[indicies.boxB].broadPhaseIndex;
+
+            const q3AABB aabbA = aabbNodeBuffer[boxIndexA].aabb;
+            const q3AABB aabbB = aabbNodeBuffer[boxIndexB].aabb;
+
+            if(!aabbOverlaps(aabbA, aabbB)) {
+                constraintBuffer[global_x].m_flags |= eRemove;
+                threadAlive = false;
+            }
+        }
+    }
+
+    globalOffset = atomic_add(globalCount, increment);
+
+    if(threadAlive) {
+        // printf("Global offset: %u\n", globalOffset);
+        contactIndicies[globalOffset] = global_x;
+    }
+}
+
 kernel void testCollisions
     ( const global Indicies *indexBuffer // read only
     , global q3ContactConstraintOcl *constraintBuffer
@@ -34,7 +94,7 @@ kernel void testCollisions
     , global q3ContactOcl *contactBuffer
     , const global q3Body *bodyBuffer // read only
     , const global q3Box *boxBuffer // read only
-    , const global aabbNode *aabbNodeBuffer // read only
+    , const global uint *constraintIndicies
     , const uint constraintCount
     )
 {
@@ -44,6 +104,8 @@ kernel void testCollisions
     {
         return;
     }
+
+    global_x = constraintIndicies[global_x];
 
 
     // if(global_x == 0) {
@@ -145,24 +207,8 @@ kernel void testCollisions
     const q3Body bodyA = bodyBuffer[indicies.bodyA];
     const q3Body bodyB = bodyBuffer[indicies.bodyB];
 
-    if(!bodiesCanColide(bodyA, bodyB)) {
-        constraintBuffer[global_x].m_flags |= eRemove;
-        return;
-    }
-
-    if(!bodyIsAwake(bodyA) && !bodyIsAwake(bodyB)) {
-        return;
-    }
-
     const q3Box boxA = boxBuffer[indicies.boxA];
     const q3Box boxB = boxBuffer[indicies.boxB];
-    const q3AABB aabbA = aabbNodeBuffer[boxA.broadPhaseIndex].aabb;
-    const q3AABB aabbB = aabbNodeBuffer[boxB.broadPhaseIndex].aabb;
-
-    if(!aabbOverlaps(aabbA, aabbB)) {
-        constraintBuffer[global_x].m_flags |= eRemove;
-        return;
-    }
 
     q3ContactConstraintOcl constraint = constraintBuffer[global_x];
     q3ManifoldOcl manifold = manifoldBuffer[global_x];
