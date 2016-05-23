@@ -396,7 +396,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
                     bodyAllocationTable[cc->indexA] = batchIndex;
                     bodyAllocationTable[cc->indexB] = batchIndex;
 
-                    m_clBatches.push_back(it);
+                    m_clBatches.push_back(*it);
 
                     it = contactsToPlan.erase(it);
                 }
