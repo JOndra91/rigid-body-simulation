@@ -132,6 +132,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     m_contactStateCount = 0;
     m_contactCapacity = s_manager->m_contactCount;
 
+    q3TimerStart("solve-cpu");
+
     m_bodies = (q3BodyRef**) s_stack->Allocate( sizeof(q3BodyRef*) * m_bodyCapacity);
     m_contactConstraints = (q3ContactConstraint **)s_stack->Allocate( sizeof( q3ContactConstraint* ) * m_contactCapacity );
 
@@ -226,6 +228,8 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     // Integrate velocities and create state buffers, calculate world inertia
     r32 dt = m_scene->m_dt;
 
+    q3TimerPause("solve-cpu");
+    q3TimerStart("solve");
 #if 0
 #define DUMP_FILE "cpu.dump"
 
@@ -338,11 +342,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     m_contactStates = NULL;
     m_contactConstraintStates = NULL;
 
-#ifdef TIMERS_ENABLED
-    m_clQueue.finish();
-    q3TimerStart("solve");
-#endif
-
     if(m_contactCount > 0) {
 
         m_clBufferContactState = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof(q3ContactStateOcl) * m_contactStateCount, NULL, &clErr);
@@ -434,12 +433,6 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         PreSolveContacts();
         SolveContacts();
     }
-#ifdef TIMERS_ENABLED
-    m_clQueue.finish();
-
-    q3TimerStop("solve");
-    q3TimerPrint("solve", "  Solve");
-#endif
 
     // Integrate positions
     clErr = m_clKernelIntegrate.setArg(0, clBufferBody);
@@ -484,6 +477,14 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
         m_contactStates = NULL;
         CHECK_CL_ERROR(clErr, "Unmap q3ContactStateOcl");
     }
+
+#ifdef TIMERS_ENABLED
+    m_clQueue.finish();
+
+    q3TimerStop("solve");
+    q3TimerPrint("solve", "  Solve");
+    q3TimerStart("solve-cpu");
+#endif
 
 #if 0
     for ( i32 i = 0 ; i < m_bodyCount; ++i )
@@ -540,6 +541,10 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
             }
         }
     }
+
+    q3TimerPause("solve-cpu");
+    q3TimerPrint("solve-cpu", "  SolveCPU");
+    q3TimerClear("solve-cpu");
 
     s_stack->Free(stack);
     s_stack->Free(m_contactConstraints);

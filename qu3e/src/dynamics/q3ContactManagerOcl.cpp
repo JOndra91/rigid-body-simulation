@@ -30,6 +30,7 @@
 #include "q3Contact.h"
 #include "../scene/q3Scene.h"
 #include <openCLUtilities.hpp>
+#include "../debug/q3Timers.h"
 
 #ifdef NO_KERNEL_SOURCE
 std::string managerKernelSource = "";
@@ -183,6 +184,8 @@ void q3ContactManagerOcl::TestCollisions( void )
     q3ManifoldOcl *manifoldMemory;
     q3ContactConstraint* constraint;
 
+    q3TimerStart("manager-ocl");
+
     cl::Buffer bodyBuffer(*m_clContext, CL_MEM_READ_ONLY
         , m_container->m_bodies.size() * sizeof(q3Body), NULL, &clErr
     );
@@ -329,6 +332,10 @@ void q3ContactManagerOcl::TestCollisions( void )
         , m_contactCount * 8 * sizeof(q3Contact), NULL, NULL, &clErr);
     CHECK_CL_ERROR(clErr, "Map buffer q3Contact");
 
+    q3TimerStop("manager-ocl");
+    q3TimerPrint("manager-ocl", "  ManagerOCL");
+    q3TimerStart("manager-cpu");
+
     for(constraint = m_contactList, i = 0; constraint; constraint = constraint->next, ++i)
     {
         constraintMemory[i].update(*constraint);
@@ -369,6 +376,8 @@ void q3ContactManagerOcl::TestCollisions( void )
     }
 
     m_clQueue.finish();
+    q3TimerStop("manager-cpu");
+    q3TimerPrint("manager-cpu", "  ManagerCPU");
 
     clErr = m_clQueue.enqueueUnmapMemObject(constraintBuffer, constraintMemory);
     CHECK_CL_ERROR(clErr, "Unmap buffer q3ContactConstraintOcl");
