@@ -148,7 +148,7 @@ void Scene::prepareScene() {
     boxDef.SetRestitution(0.0f);
     q3Transform tx;
     q3Identity(tx);
-    q3Vec3 baseSize(width + 3.0f, 3.0f, depth + 3.0f);
+    q3Vec3 baseSize(50.0f, 3.0f, 50.0f);
     tx.position = -baseSize / 2.0;
     tx.position.y = -baseSize.y;
     boxDef.Set(tx, baseSize);
