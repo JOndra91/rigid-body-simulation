@@ -46,8 +46,8 @@ main() {
     for f in none cpu gpu; do
       local m=`printf %02d $i`
       local out=`realpath --relative-base "$PWD" "$outDir/$m-$f.log"`
-      echo "Running bin/rigid_body --$f --no-render > $out"
-      optirun bin/rigid_body --$f --no-render > "$outDir/$m-$f.log" || true
+      echo "Running bin/rigid_body --$f --no-render --limit 500 > $out"
+      optirun bin/rigid_body --$f --no-render --limit 500 > "$outDir/$m-$f.log" || true
     done
   done
 

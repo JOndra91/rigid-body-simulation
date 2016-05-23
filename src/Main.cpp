@@ -99,6 +99,30 @@ void Main::run() {
     #endif
 
     while (!quitFlag) {
+
+        runRenderers();
+
+        if(renderingEnabled) {
+            glFinish();
+            SDL_GL_SwapWindow(sdlWindow);
+
+            ticks = SDL_GetTicks();
+            // cout << "Ticks: " << ticks << endl;
+            t = (ticks - initTicks)/1000.0f;
+            dt = (ticks - lastFrameTicks)/1000.0f;
+            // cout << "DT: " << dt << endl;
+            lastFrameTicks = ticks;
+
+            #ifdef FPS_CTR
+            frameCounter++;
+            if(frameCounter > 60) {
+                cout << "FPS: " << (frameCounter/(t-ft)) << endl;
+                frameCounter = 0;
+                ft = t;
+            }
+            #endif
+        }
+
         SDL_Event evt;
         while (SDL_PollEvent(&evt)) {
             int processed = 0;
@@ -123,29 +147,6 @@ drop:
         }
 
         runProcessors(t, dt);
-
-        runRenderers();
-
-        if(renderingEnabled) {
-            glFinish();
-            SDL_GL_SwapWindow(sdlWindow);
-
-            ticks = SDL_GetTicks();
-            // cout << "Ticks: " << ticks << endl;
-            t = (ticks - initTicks)/1000.0f;
-            dt = (ticks - lastFrameTicks)/1000.0f;
-            // cout << "DT: " << dt << endl;
-            lastFrameTicks = ticks;
-
-            #ifdef FPS_CTR
-            frameCounter++;
-            if(frameCounter > 60) {
-                cout << "FPS: " << (frameCounter/(t-ft)) << endl;
-                frameCounter = 0;
-                ft = t;
-            }
-            #endif
-        }
 
        if(limit > 0 && scene->loop > limit) {
          quit();
