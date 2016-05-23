@@ -420,6 +420,9 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
 
         PreSolveContacts();
         SolveContacts();
+
+        s_stack->Free(m_constraintPairs);
+        s_stack->Free(m_constraintIndicies);
     }
 
     // Integrate positions
