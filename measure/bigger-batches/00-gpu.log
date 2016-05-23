@@ -1,0 +1,3007 @@
+Using platform vendor: NVIDIA Corporation
+Loop: 0
+  Solve: 5.5756ms
+  SolveCPU: 22.1506ms
+ Island solver: 28.8892ms
+Step: 365.6226ms
+====================================
+Loop: 1
+  Solve: 5.5068ms
+  SolveCPU: 21.7807ms
+ Island solver: 28.4976ms
+Step: 184.4742ms
+====================================
+Loop: 2
+  Solve: 5.5296ms
+  SolveCPU: 21.4697ms
+ Island solver: 28.1380ms
+Step: 186.7536ms
+====================================
+Loop: 3
+  Solve: 5.5096ms
+  SolveCPU: 22.1944ms
+ Island solver: 28.8531ms
+Step: 183.6848ms
+====================================
+Loop: 4
+  Solve: 5.4909ms
+  SolveCPU: 22.7305ms
+ Island solver: 29.3914ms
+Step: 184.4979ms
+====================================
+Loop: 5
+  Solve: 5.4780ms
+  SolveCPU: 21.4501ms
+ Island solver: 28.1326ms
+Step: 186.3469ms
+====================================
+Loop: 6
+  Solve: 5.5231ms
+  SolveCPU: 21.4732ms
+ Island solver: 28.1578ms
+Step: 182.9586ms
+====================================
+Loop: 7
+  Solve: 5.6506ms
+  SolveCPU: 21.5529ms
+ Island solver: 28.3597ms
+Step: 183.2273ms
+====================================
+Loop: 8
+  Solve: 5.5250ms
+  SolveCPU: 21.6761ms
+ Island solver: 28.3503ms
+Step: 184.8991ms
+====================================
+Loop: 9
+  Solve: 5.3923ms
+  SolveCPU: 21.6467ms
+ Island solver: 28.1558ms
+Step: 182.2698ms
+====================================
+Loop: 10
+  Solve: 5.5388ms
+  SolveCPU: 21.4222ms
+ Island solver: 28.0853ms
+Step: 185.4112ms
+====================================
+Loop: 11
+  Solve: 5.5336ms
+  SolveCPU: 21.5405ms
+ Island solver: 28.2169ms
+Step: 185.0258ms
+====================================
+Loop: 12
+  Solve: 5.6853ms
+  SolveCPU: 21.4008ms
+ Island solver: 28.2323ms
+Step: 183.6871ms
+====================================
+Loop: 13
+  Solve: 5.4869ms
+  SolveCPU: 21.6823ms
+ Island solver: 28.2721ms
+Step: 184.4379ms
+====================================
+Loop: 14
+  Solve: 5.4912ms
+  SolveCPU: 21.4573ms
+ Island solver: 28.1667ms
+Step: 184.4515ms
+====================================
+Loop: 15
+  Solve: 6.2938ms
+  SolveCPU: 21.7875ms
+ Island solver: 29.2215ms
+Step: 185.5188ms
+====================================
+Loop: 16
+  Solve: 5.5673ms
+  SolveCPU: 21.7456ms
+ Island solver: 28.4479ms
+Step: 186.4666ms
+====================================
+Loop: 17
+  Solve: 5.6369ms
+  SolveCPU: 22.6929ms
+ Island solver: 29.4500ms
+Step: 185.6055ms
+====================================
+Loop: 18
+  Solve: 5.5129ms
+  SolveCPU: 24.0123ms
+ Island solver: 30.9905ms
+Step: 345.1966ms
+====================================
+Loop: 19
+  Solve: 5.5072ms
+  SolveCPU: 21.5400ms
+ Island solver: 28.1952ms
+Step: 183.6254ms
+====================================
+Loop: 20
+  Solve: 5.5175ms
+  SolveCPU: 21.3720ms
+ Island solver: 28.0194ms
+Step: 186.5054ms
+====================================
+Loop: 21
+  Solve: 5.4883ms
+  SolveCPU: 21.6356ms
+ Island solver: 28.2582ms
+Step: 183.7157ms
+====================================
+Loop: 22
+  Solve: 5.5167ms
+  SolveCPU: 21.7723ms
+ Island solver: 28.4156ms
+Step: 184.1208ms
+====================================
+Loop: 23
+  Solve: 5.6337ms
+  SolveCPU: 21.7790ms
+ Island solver: 28.5438ms
+Step: 184.6147ms
+====================================
+Loop: 24
+  Solve: 5.5549ms
+  SolveCPU: 21.6250ms
+ Island solver: 28.3799ms
+Step: 183.8749ms
+====================================
+Loop: 25
+  Solve: 5.5590ms
+  SolveCPU: 22.5183ms
+ Island solver: 29.2310ms
+Step: 185.3112ms
+====================================
+Loop: 26
+  Solve: 5.6697ms
+  SolveCPU: 21.9346ms
+ Island solver: 28.7804ms
+Step: 343.0624ms
+====================================
+Loop: 27
+  Solve: 5.5725ms
+  SolveCPU: 21.6036ms
+ Island solver: 28.3227ms
+Step: 184.4734ms
+====================================
+Loop: 28
+  Solve: 5.5157ms
+  SolveCPU: 22.1179ms
+ Island solver: 28.8497ms
+Step: 184.8481ms
+====================================
+Loop: 29
+  Solve: 5.5834ms
+  SolveCPU: 21.6944ms
+ Island solver: 28.4606ms
+Step: 183.9817ms
+====================================
+Loop: 30
+  Solve: 5.5947ms
+  SolveCPU: 21.6603ms
+ Island solver: 28.3943ms
+Step: 186.0246ms
+====================================
+Loop: 31
+  Solve: 5.5550ms
+  SolveCPU: 22.3592ms
+ Island solver: 29.0726ms
+Step: 184.5443ms
+====================================
+Loop: 32
+  Solve: 5.5070ms
+  SolveCPU: 21.7706ms
+ Island solver: 28.4061ms
+Step: 184.6120ms
+====================================
+Loop: 33
+  Solve: 5.5403ms
+  SolveCPU: 21.4077ms
+ Island solver: 28.1573ms
+Step: 360.5299ms
+====================================
+Loop: 34
+  Solve: 5.4756ms
+  SolveCPU: 22.5682ms
+ Island solver: 29.1753ms
+Step: 187.7456ms
+====================================
+Loop: 35
+  Solve: 5.5478ms
+  SolveCPU: 21.5407ms
+ Island solver: 28.2145ms
+Step: 185.9384ms
+====================================
+Loop: 36
+  Solve: 5.6984ms
+  SolveCPU: 21.7434ms
+ Island solver: 28.6659ms
+Step: 183.3363ms
+====================================
+Loop: 37
+  Solve: 5.7320ms
+  SolveCPU: 25.3803ms
+ Island solver: 32.2374ms
+Step: 188.4505ms
+====================================
+Loop: 38
+  Solve: 5.5165ms
+  SolveCPU: 21.5933ms
+ Island solver: 28.2394ms
+Step: 341.7032ms
+====================================
+Loop: 39
+  Solve: 5.6627ms
+  SolveCPU: 21.5687ms
+ Island solver: 28.4157ms
+Step: 186.4389ms
+====================================
+Loop: 40
+  Solve: 5.5167ms
+  SolveCPU: 21.5253ms
+ Island solver: 28.1567ms
+Step: 184.1084ms
+====================================
+Loop: 41
+  Solve: 5.5193ms
+  SolveCPU: 22.1628ms
+ Island solver: 28.8104ms
+Step: 185.1570ms
+====================================
+Loop: 42
+  Solve: 5.5082ms
+  SolveCPU: 21.6055ms
+ Island solver: 28.2353ms
+Step: 184.2319ms
+====================================
+Loop: 43
+  Solve: 5.5358ms
+  SolveCPU: 21.9421ms
+ Island solver: 28.6031ms
+Step: 341.8409ms
+====================================
+Loop: 44
+  Solve: 5.5268ms
+  SolveCPU: 21.6626ms
+ Island solver: 28.3332ms
+Step: 185.2682ms
+====================================
+Loop: 45
+  Solve: 5.5406ms
+  SolveCPU: 21.2356ms
+ Island solver: 27.8953ms
+Step: 182.1440ms
+====================================
+Loop: 46
+  Solve: 5.7331ms
+  SolveCPU: 23.1825ms
+ Island solver: 30.1269ms
+Step: 185.2672ms
+====================================
+Loop: 47
+  Solve: 13.7586ms
+  SolveCPU: 21.7512ms
+ Island solver: 36.8844ms
+Step: 348.4696ms
+====================================
+Loop: 48
+  Solve: 22.1325ms
+  SolveCPU: 23.4189ms
+ Island solver: 46.8029ms
+Step: 206.3830ms
+====================================
+Loop: 49
+  Solve: 22.4781ms
+  SolveCPU: 22.1611ms
+ Island solver: 45.9045ms
+Step: 203.3218ms
+====================================
+Loop: 50
+  Solve: 22.8529ms
+  SolveCPU: 22.1842ms
+ Island solver: 46.2960ms
+Step: 205.0577ms
+====================================
+Loop: 51
+  Solve: 23.4875ms
+  SolveCPU: 21.8394ms
+ Island solver: 46.7070ms
+Step: 356.5147ms
+====================================
+Loop: 52
+  Solve: 23.6670ms
+  SolveCPU: 23.8052ms
+ Island solver: 48.8409ms
+Step: 211.8706ms
+====================================
+Loop: 53
+  Solve: 23.9764ms
+  SolveCPU: 22.4944ms
+ Island solver: 47.8150ms
+Step: 210.4031ms
+====================================
+Loop: 54
+  Solve: 24.9908ms
+  SolveCPU: 23.0631ms
+ Island solver: 49.8897ms
+Step: 210.8369ms
+====================================
+Loop: 55
+  Solve: 26.2379ms
+  SolveCPU: 23.5067ms
+ Island solver: 51.4598ms
+Step: 359.0103ms
+====================================
+Loop: 56
+  Solve: 27.9349ms
+  SolveCPU: 23.5723ms
+ Island solver: 53.2313ms
+Step: 220.1645ms
+====================================
+Loop: 57
+  Solve: 27.7512ms
+  SolveCPU: 23.0300ms
+ Island solver: 52.4895ms
+Step: 218.8372ms
+====================================
+Loop: 58
+  Solve: 27.6320ms
+  SolveCPU: 23.2985ms
+ Island solver: 52.6373ms
+Step: 218.3785ms
+====================================
+Loop: 59
+  Solve: 28.0208ms
+  SolveCPU: 23.7344ms
+ Island solver: 53.4719ms
+Step: 354.6071ms
+====================================
+Loop: 60
+  Solve: 29.8288ms
+  SolveCPU: 25.5395ms
+ Island solver: 57.1351ms
+Step: 228.0767ms
+====================================
+Loop: 61
+  Solve: 29.1218ms
+  SolveCPU: 23.8786ms
+ Island solver: 54.7485ms
+Step: 223.4990ms
+====================================
+Loop: 62
+  Solve: 29.7429ms
+  SolveCPU: 24.0478ms
+ Island solver: 55.5487ms
+Step: 353.6200ms
+====================================
+Loop: 63
+  Solve: 30.9053ms
+  SolveCPU: 24.6221ms
+ Island solver: 57.2895ms
+Step: 234.2897ms
+====================================
+Loop: 64
+  Solve: 32.0648ms
+  SolveCPU: 26.0729ms
+ Island solver: 59.9188ms
+Step: 237.6956ms
+====================================
+Loop: 65
+  Solve: 32.9406ms
+  SolveCPU: 24.2946ms
+ Island solver: 59.2677ms
+Step: 357.1982ms
+====================================
+Loop: 66
+  Solve: 33.4925ms
+  SolveCPU: 25.9919ms
+ Island solver: 61.5289ms
+Step: 241.7543ms
+====================================
+Loop: 67
+  Solve: 34.5449ms
+  SolveCPU: 25.8017ms
+ Island solver: 62.4338ms
+Step: 240.2580ms
+====================================
+Loop: 68
+  Solve: 35.0124ms
+  SolveCPU: 25.1391ms
+ Island solver: 62.2616ms
+Step: 359.4511ms
+====================================
+Loop: 69
+  Solve: 36.2579ms
+  SolveCPU: 26.0686ms
+ Island solver: 64.4242ms
+Step: 247.0777ms
+====================================
+Loop: 70
+  Solve: 37.1860ms
+  SolveCPU: 26.3798ms
+ Island solver: 65.7914ms
+Step: 252.3081ms
+====================================
+Loop: 71
+  Solve: 41.9267ms
+  SolveCPU: 26.5055ms
+ Island solver: 70.6686ms
+Step: 363.6564ms
+====================================
+Loop: 72
+  Solve: 44.0622ms
+  SolveCPU: 27.3207ms
+ Island solver: 73.5879ms
+Step: 257.3328ms
+====================================
+Loop: 73
+  Solve: 46.3232ms
+  SolveCPU: 26.8229ms
+ Island solver: 75.4455ms
+Step: 261.0078ms
+====================================
+Loop: 74
+  Solve: 47.3531ms
+  SolveCPU: 27.2532ms
+ Island solver: 76.8144ms
+Step: 370.4866ms
+====================================
+Loop: 75
+  Solve: 49.1757ms
+  SolveCPU: 27.7675ms
+ Island solver: 79.1878ms
+Step: 268.3633ms
+====================================
+Loop: 76
+  Solve: 50.6251ms
+  SolveCPU: 30.4119ms
+ Island solver: 83.2754ms
+Step: 273.0423ms
+====================================
+Loop: 77
+  Solve: 53.5761ms
+  SolveCPU: 27.8998ms
+ Island solver: 83.7608ms
+Step: 376.5030ms
+====================================
+Loop: 78
+  Solve: 54.6805ms
+  SolveCPU: 29.6557ms
+ Island solver: 86.5483ms
+Step: 284.0213ms
+====================================
+Loop: 79
+  Solve: 62.2031ms
+  SolveCPU: 29.7368ms
+ Island solver: 94.1659ms
+Step: 291.2298ms
+====================================
+Loop: 80
+  Solve: 74.0878ms
+  SolveCPU: 30.9405ms
+ Island solver: 107.2813ms
+Step: 402.1635ms
+====================================
+Loop: 81
+  Solve: 84.7033ms
+  SolveCPU: 32.3071ms
+ Island solver: 119.3296ms
+Step: 327.4137ms
+====================================
+Loop: 82
+  Solve: 87.0283ms
+  SolveCPU: 32.9911ms
+ Island solver: 122.3728ms
+Step: 331.6909ms
+====================================
+Loop: 83
+  Solve: 87.8843ms
+  SolveCPU: 32.4149ms
+ Island solver: 123.0338ms
+Step: 426.0623ms
+====================================
+Loop: 84
+  Solve: 92.2595ms
+  SolveCPU: 33.2979ms
+ Island solver: 128.0214ms
+Step: 346.6148ms
+====================================
+Loop: 85
+  Solve: 92.4718ms
+  SolveCPU: 34.0900ms
+ Island solver: 129.0679ms
+Step: 351.1566ms
+====================================
+Loop: 86
+  Solve: 95.4336ms
+  SolveCPU: 35.6889ms
+ Island solver: 133.6879ms
+Step: 443.9449ms
+====================================
+Loop: 87
+  Solve: 98.4364ms
+  SolveCPU: 36.3461ms
+ Island solver: 137.7102ms
+Step: 370.2815ms
+====================================
+Loop: 88
+  Solve: 100.0163ms
+  SolveCPU: 36.1923ms
+ Island solver: 138.9004ms
+Step: 378.0034ms
+====================================
+Loop: 89
+  Solve: 104.9893ms
+  SolveCPU: 36.1745ms
+ Island solver: 143.8770ms
+Step: 466.0027ms
+====================================
+Loop: 90
+  Solve: 104.2738ms
+  SolveCPU: 37.7620ms
+ Island solver: 144.8187ms
+Step: 394.6386ms
+====================================
+Loop: 91
+  Solve: 110.2725ms
+  SolveCPU: 40.9576ms
+ Island solver: 154.0186ms
+Step: 412.5120ms
+====================================
+Loop: 92
+  Solve: 108.6488ms
+  SolveCPU: 38.5906ms
+ Island solver: 150.0923ms
+Step: 484.5288ms
+====================================
+Loop: 93
+  Solve: 115.4971ms
+  SolveCPU: 41.1320ms
+ Island solver: 159.6313ms
+Step: 432.9140ms
+====================================
+Loop: 94
+  Solve: 119.1436ms
+  SolveCPU: 41.4882ms
+ Island solver: 163.5503ms
+Step: 507.7573ms
+====================================
+Loop: 95
+  Solve: 121.0518ms
+  SolveCPU: 42.4218ms
+ Island solver: 166.5560ms
+Step: 455.1843ms
+====================================
+Loop: 96
+  Solve: 118.8083ms
+  SolveCPU: 42.8408ms
+ Island solver: 164.7923ms
+Step: 518.1929ms
+====================================
+Loop: 97
+  Solve: 124.9920ms
+  SolveCPU: 45.0883ms
+ Island solver: 173.0976ms
+Step: 477.3512ms
+====================================
+Loop: 98
+  Solve: 125.4212ms
+  SolveCPU: 45.7785ms
+ Island solver: 174.6557ms
+Step: 538.0730ms
+====================================
+Loop: 99
+  Solve: 133.6764ms
+  SolveCPU: 46.6100ms
+ Island solver: 183.5232ms
+Step: 497.3081ms
+====================================
+Loop: 100
+  Solve: 130.7671ms
+  SolveCPU: 46.6737ms
+ Island solver: 180.9820ms
+Step: 556.0260ms
+====================================
+Loop: 101
+  Solve: 132.9695ms
+  SolveCPU: 48.1962ms
+ Island solver: 184.4020ms
+Step: 509.0246ms
+====================================
+Loop: 102
+  Solve: 133.8841ms
+  SolveCPU: 48.8712ms
+ Island solver: 186.1775ms
+Step: 565.6442ms
+====================================
+Loop: 103
+  Solve: 132.2751ms
+  SolveCPU: 54.3217ms
+ Island solver: 190.0101ms
+Step: 529.8962ms
+====================================
+Loop: 104
+  Solve: 131.3413ms
+  SolveCPU: 51.8402ms
+ Island solver: 186.5555ms
+Step: 575.5374ms
+====================================
+Loop: 105
+  Solve: 135.6328ms
+  SolveCPU: 52.2777ms
+ Island solver: 191.3046ms
+Step: 542.9733ms
+====================================
+Loop: 106
+  Solve: 134.9806ms
+  SolveCPU: 53.7237ms
+ Island solver: 192.1335ms
+Step: 590.2936ms
+====================================
+Loop: 107
+  Solve: 134.3261ms
+  SolveCPU: 54.0546ms
+ Island solver: 191.6462ms
+Step: 551.8044ms
+====================================
+Loop: 108
+  Solve: 137.2619ms
+  SolveCPU: 55.5951ms
+ Island solver: 196.1493ms
+Step: 605.2012ms
+====================================
+Loop: 109
+  Solve: 138.6559ms
+  SolveCPU: 55.5076ms
+ Island solver: 197.6582ms
+Step: 570.3961ms
+====================================
+Loop: 110
+  Solve: 136.0867ms
+  SolveCPU: 60.6469ms
+ Island solver: 200.2146ms
+Step: 614.1117ms
+====================================
+Loop: 111
+  Solve: 138.6280ms
+  SolveCPU: 58.7891ms
+ Island solver: 200.9443ms
+Step: 585.5945ms
+====================================
+Loop: 112
+  Solve: 136.6184ms
+  SolveCPU: 58.4982ms
+ Island solver: 200.6240ms
+Step: 626.9418ms
+====================================
+Loop: 113
+  Solve: 147.0432ms
+  SolveCPU: 60.3515ms
+ Island solver: 210.8175ms
+Step: 609.8853ms
+====================================
+Loop: 114
+  Solve: 141.4344ms
+  SolveCPU: 62.6650ms
+ Island solver: 207.7079ms
+Step: 645.8467ms
+====================================
+Loop: 115
+  Solve: 142.5652ms
+  SolveCPU: 61.8180ms
+ Island solver: 207.9965ms
+Step: 624.3101ms
+====================================
+Loop: 116
+  Solve: 143.7657ms
+  SolveCPU: 64.4277ms
+ Island solver: 211.7844ms
+Step: 664.0451ms
+====================================
+Loop: 117
+  Solve: 146.6646ms
+  SolveCPU: 65.7894ms
+ Island solver: 216.0548ms
+Step: 644.7241ms
+====================================
+Loop: 118
+  Solve: 143.4285ms
+  SolveCPU: 65.2091ms
+ Island solver: 212.2417ms
+Step: 680.1551ms
+====================================
+Loop: 119
+  Solve: 147.4124ms
+  SolveCPU: 66.7935ms
+ Island solver: 217.7386ms
+Step: 680.4037ms
+====================================
+Loop: 120
+  Solve: 152.1041ms
+  SolveCPU: 67.2249ms
+ Island solver: 223.0143ms
+Step: 694.0895ms
+====================================
+Loop: 121
+  Solve: 148.3591ms
+  SolveCPU: 69.5151ms
+ Island solver: 221.5590ms
+Step: 688.5649ms
+====================================
+Loop: 122
+  Solve: 153.9316ms
+  SolveCPU: 70.7419ms
+ Island solver: 228.3558ms
+Step: 720.4476ms
+====================================
+Loop: 123
+  Solve: 150.9431ms
+  SolveCPU: 72.5289ms
+ Island solver: 227.4250ms
+Step: 708.5413ms
+====================================
+Loop: 124
+  Solve: 155.7192ms
+  SolveCPU: 72.7705ms
+ Island solver: 232.2614ms
+Step: 735.3973ms
+====================================
+Loop: 125
+  Solve: 156.9522ms
+  SolveCPU: 76.9284ms
+ Island solver: 237.7102ms
+Step: 738.5556ms
+====================================
+Loop: 126
+  Solve: 160.7392ms
+  SolveCPU: 77.6197ms
+ Island solver: 242.3930ms
+Step: 757.2647ms
+====================================
+Loop: 127
+  Solve: 159.4153ms
+  SolveCPU: 78.5665ms
+ Island solver: 241.8120ms
+Step: 759.2096ms
+====================================
+Loop: 128
+  Solve: 159.2067ms
+  SolveCPU: 77.7905ms
+ Island solver: 240.8233ms
+Step: 776.3090ms
+====================================
+Loop: 129
+  Solve: 158.5099ms
+  SolveCPU: 78.8210ms
+ Island solver: 241.1128ms
+Step: 801.5737ms
+====================================
+Loop: 130
+  Solve: 162.8913ms
+  SolveCPU: 82.3012ms
+ Island solver: 249.0715ms
+Step: 797.6649ms
+====================================
+Loop: 131
+  Solve: 157.1161ms
+  SolveCPU: 79.4946ms
+ Island solver: 240.3029ms
+Step: 781.0078ms
+====================================
+Loop: 132
+  Solve: 158.6217ms
+  SolveCPU: 82.0998ms
+ Island solver: 244.4767ms
+Step: 782.9092ms
+====================================
+Loop: 133
+  Solve: 153.3520ms
+  SolveCPU: 81.7175ms
+ Island solver: 238.7109ms
+Step: 791.1671ms
+====================================
+Loop: 134
+  Solve: 150.4289ms
+  SolveCPU: 84.0218ms
+ Island solver: 238.2302ms
+Step: 791.5479ms
+====================================
+Loop: 135
+  Solve: 153.0429ms
+  SolveCPU: 82.7041ms
+ Island solver: 239.3879ms
+Step: 795.4331ms
+====================================
+Loop: 136
+  Solve: 149.9827ms
+  SolveCPU: 81.7570ms
+ Island solver: 235.5672ms
+Step: 800.5689ms
+====================================
+Loop: 137
+  Solve: 150.6209ms
+  SolveCPU: 84.1121ms
+ Island solver: 238.3383ms
+Step: 802.2593ms
+====================================
+Loop: 138
+  Solve: 144.8155ms
+  SolveCPU: 85.2895ms
+ Island solver: 233.7062ms
+Step: 804.2208ms
+====================================
+Loop: 139
+  Solve: 147.2646ms
+  SolveCPU: 86.0272ms
+ Island solver: 237.0150ms
+Step: 807.8301ms
+====================================
+Loop: 140
+  Solve: 147.8736ms
+  SolveCPU: 84.0083ms
+ Island solver: 235.3740ms
+Step: 802.1358ms
+====================================
+Loop: 141
+  Solve: 146.8427ms
+  SolveCPU: 83.5346ms
+ Island solver: 234.2995ms
+Step: 815.6685ms
+====================================
+Loop: 142
+  Solve: 144.7585ms
+  SolveCPU: 84.3105ms
+ Island solver: 232.6467ms
+Step: 804.7322ms
+====================================
+Loop: 143
+  Solve: 142.4813ms
+  SolveCPU: 82.5559ms
+ Island solver: 228.5112ms
+Step: 802.5845ms
+====================================
+Loop: 144
+  Solve: 139.8017ms
+  SolveCPU: 83.5815ms
+ Island solver: 227.2265ms
+Step: 799.8321ms
+====================================
+Loop: 145
+  Solve: 138.7682ms
+  SolveCPU: 82.6728ms
+ Island solver: 224.8752ms
+Step: 791.1428ms
+====================================
+Loop: 146
+  Solve: 134.9402ms
+  SolveCPU: 83.0423ms
+ Island solver: 221.4765ms
+Step: 788.2630ms
+====================================
+Loop: 147
+  Solve: 137.5295ms
+  SolveCPU: 82.9185ms
+ Island solver: 224.2047ms
+Step: 790.4330ms
+====================================
+Loop: 148
+  Solve: 133.0018ms
+  SolveCPU: 83.2528ms
+ Island solver: 219.7219ms
+Step: 790.0696ms
+====================================
+Loop: 149
+  Solve: 130.3122ms
+  SolveCPU: 86.8360ms
+ Island solver: 220.5507ms
+Step: 785.1193ms
+====================================
+Loop: 150
+  Solve: 128.5239ms
+  SolveCPU: 81.9827ms
+ Island solver: 213.8959ms
+Step: 779.2136ms
+====================================
+Loop: 151
+  Solve: 126.9994ms
+  SolveCPU: 82.3360ms
+ Island solver: 212.7395ms
+Step: 778.0407ms
+====================================
+Loop: 152
+  Solve: 127.1737ms
+  SolveCPU: 82.5905ms
+ Island solver: 213.1902ms
+Step: 777.6457ms
+====================================
+Loop: 153
+  Solve: 128.9648ms
+  SolveCPU: 97.2606ms
+ Island solver: 229.7768ms
+Step: 817.3403ms
+====================================
+Loop: 154
+  Solve: 125.5429ms
+  SolveCPU: 84.6954ms
+ Island solver: 213.5183ms
+Step: 780.7354ms
+====================================
+Loop: 155
+  Solve: 126.4240ms
+  SolveCPU: 80.9981ms
+ Island solver: 211.1924ms
+Step: 785.6071ms
+====================================
+Loop: 156
+  Solve: 124.0117ms
+  SolveCPU: 84.5591ms
+ Island solver: 212.0380ms
+Step: 832.6701ms
+====================================
+Loop: 157
+  Solve: 120.5587ms
+  SolveCPU: 79.6632ms
+ Island solver: 203.4588ms
+Step: 782.7679ms
+====================================
+Loop: 158
+  Solve: 123.9868ms
+  SolveCPU: 80.1018ms
+ Island solver: 207.5576ms
+Step: 763.3488ms
+====================================
+Loop: 159
+  Solve: 122.4308ms
+  SolveCPU: 80.7730ms
+ Island solver: 206.2352ms
+Step: 760.0711ms
+====================================
+Loop: 160
+  Solve: 119.0637ms
+  SolveCPU: 79.5582ms
+ Island solver: 201.8710ms
+Step: 748.0526ms
+====================================
+Loop: 161
+  Solve: 117.3276ms
+  SolveCPU: 79.9570ms
+ Island solver: 200.3554ms
+Step: 752.1613ms
+====================================
+Loop: 162
+  Solve: 113.6474ms
+  SolveCPU: 78.3581ms
+ Island solver: 195.2466ms
+Step: 742.0669ms
+====================================
+Loop: 163
+  Solve: 115.4451ms
+  SolveCPU: 79.0001ms
+ Island solver: 197.4084ms
+Step: 743.6928ms
+====================================
+Loop: 164
+  Solve: 111.9272ms
+  SolveCPU: 78.8411ms
+ Island solver: 193.8195ms
+Step: 739.0397ms
+====================================
+Loop: 165
+  Solve: 109.5098ms
+  SolveCPU: 78.1803ms
+ Island solver: 191.0925ms
+Step: 738.3998ms
+====================================
+Loop: 166
+  Solve: 107.7765ms
+  SolveCPU: 77.3994ms
+ Island solver: 188.2013ms
+Step: 736.5848ms
+====================================
+Loop: 167
+  Solve: 109.2816ms
+  SolveCPU: 77.5682ms
+ Island solver: 189.8192ms
+Step: 735.5919ms
+====================================
+Loop: 168
+  Solve: 113.8005ms
+  SolveCPU: 80.2261ms
+ Island solver: 197.0580ms
+Step: 733.6691ms
+====================================
+Loop: 169
+  Solve: 105.2996ms
+  SolveCPU: 78.0520ms
+ Island solver: 186.5360ms
+Step: 734.9209ms
+====================================
+Loop: 170
+  Solve: 104.7532ms
+  SolveCPU: 79.1385ms
+ Island solver: 186.8464ms
+Step: 724.5889ms
+====================================
+Loop: 171
+  Solve: 103.7403ms
+  SolveCPU: 75.9474ms
+ Island solver: 182.6653ms
+Step: 720.8969ms
+====================================
+Loop: 172
+  Solve: 99.8663ms
+  SolveCPU: 75.6764ms
+ Island solver: 178.3708ms
+Step: 713.5086ms
+====================================
+Loop: 173
+  Solve: 100.9622ms
+  SolveCPU: 75.2047ms
+ Island solver: 179.0699ms
+Step: 714.1852ms
+====================================
+Loop: 174
+  Solve: 99.2001ms
+  SolveCPU: 75.0016ms
+ Island solver: 177.0468ms
+Step: 715.2228ms
+====================================
+Loop: 175
+  Solve: 100.3815ms
+  SolveCPU: 75.6692ms
+ Island solver: 178.9575ms
+Step: 714.0694ms
+====================================
+Loop: 176
+  Solve: 97.4030ms
+  SolveCPU: 75.0361ms
+ Island solver: 175.4170ms
+Step: 716.8746ms
+====================================
+Loop: 177
+  Solve: 96.3925ms
+  SolveCPU: 78.2430ms
+ Island solver: 177.5104ms
+Step: 710.3456ms
+====================================
+Loop: 178
+  Solve: 94.8202ms
+  SolveCPU: 73.3856ms
+ Island solver: 171.2555ms
+Step: 707.8629ms
+====================================
+Loop: 179
+  Solve: 96.0226ms
+  SolveCPU: 73.4115ms
+ Island solver: 172.2051ms
+Step: 702.9698ms
+====================================
+Loop: 180
+  Solve: 94.1986ms
+  SolveCPU: 73.2018ms
+ Island solver: 170.4001ms
+Step: 698.8698ms
+====================================
+Loop: 181
+  Solve: 91.1924ms
+  SolveCPU: 73.4766ms
+ Island solver: 167.5965ms
+Step: 698.4857ms
+====================================
+Loop: 182
+  Solve: 92.4810ms
+  SolveCPU: 77.0866ms
+ Island solver: 172.3560ms
+Step: 697.0267ms
+====================================
+Loop: 183
+  Solve: 92.5492ms
+  SolveCPU: 76.7831ms
+ Island solver: 172.1524ms
+Step: 702.5286ms
+====================================
+Loop: 184
+  Solve: 93.5145ms
+  SolveCPU: 78.6457ms
+ Island solver: 175.1105ms
+Step: 703.7988ms
+====================================
+Loop: 185
+  Solve: 92.1296ms
+  SolveCPU: 73.2717ms
+ Island solver: 168.2137ms
+Step: 690.1218ms
+====================================
+Loop: 186
+  Solve: 92.5061ms
+  SolveCPU: 73.2106ms
+ Island solver: 168.7096ms
+Step: 702.7943ms
+====================================
+Loop: 187
+  Solve: 93.5443ms
+  SolveCPU: 78.1669ms
+ Island solver: 174.6060ms
+Step: 725.1933ms
+====================================
+Loop: 188
+  Solve: 93.7608ms
+  SolveCPU: 83.5069ms
+ Island solver: 179.9994ms
+Step: 751.8120ms
+====================================
+Loop: 189
+  Solve: 89.8551ms
+  SolveCPU: 73.4202ms
+ Island solver: 166.3057ms
+Step: 695.8422ms
+====================================
+Loop: 190
+  Solve: 88.3652ms
+  SolveCPU: 72.8863ms
+ Island solver: 164.0839ms
+Step: 696.2913ms
+====================================
+Loop: 191
+  Solve: 91.3821ms
+  SolveCPU: 71.2463ms
+ Island solver: 165.3345ms
+Step: 696.7537ms
+====================================
+Loop: 192
+  Solve: 86.3022ms
+  SolveCPU: 77.3658ms
+ Island solver: 166.5915ms
+Step: 694.4432ms
+====================================
+Loop: 193
+  Solve: 87.9879ms
+  SolveCPU: 73.0951ms
+ Island solver: 163.9059ms
+Step: 704.3154ms
+====================================
+Loop: 194
+  Solve: 86.3107ms
+  SolveCPU: 75.2046ms
+ Island solver: 164.4423ms
+Step: 700.4824ms
+====================================
+Loop: 195
+  Solve: 85.0486ms
+  SolveCPU: 70.2022ms
+ Island solver: 158.2953ms
+Step: 687.0902ms
+====================================
+Loop: 196
+  Solve: 86.5359ms
+  SolveCPU: 70.4299ms
+ Island solver: 160.0694ms
+Step: 698.7783ms
+====================================
+Loop: 197
+  Solve: 85.2083ms
+  SolveCPU: 75.0718ms
+ Island solver: 163.1021ms
+Step: 691.8868ms
+====================================
+Loop: 198
+  Solve: 87.6956ms
+  SolveCPU: 69.2767ms
+ Island solver: 159.7836ms
+Step: 694.9836ms
+====================================
+Loop: 199
+  Solve: 88.4480ms
+  SolveCPU: 70.2996ms
+ Island solver: 161.6684ms
+Step: 702.5087ms
+====================================
+Loop: 200
+  Solve: 88.2965ms
+  SolveCPU: 68.5904ms
+ Island solver: 159.6840ms
+Step: 692.7535ms
+====================================
+Loop: 201
+  Solve: 84.9452ms
+  SolveCPU: 71.2455ms
+ Island solver: 158.8894ms
+Step: 697.8212ms
+====================================
+Loop: 202
+  Solve: 85.4482ms
+  SolveCPU: 72.6487ms
+ Island solver: 160.7511ms
+Step: 688.4102ms
+====================================
+Loop: 203
+  Solve: 83.7737ms
+  SolveCPU: 73.1489ms
+ Island solver: 159.7602ms
+Step: 689.8510ms
+====================================
+Loop: 204
+  Solve: 85.0422ms
+  SolveCPU: 71.6224ms
+ Island solver: 159.3186ms
+Step: 693.6155ms
+====================================
+Loop: 205
+  Solve: 86.0652ms
+  SolveCPU: 73.9712ms
+ Island solver: 162.6699ms
+Step: 689.6681ms
+====================================
+Loop: 206
+  Solve: 84.7246ms
+  SolveCPU: 67.5627ms
+ Island solver: 155.2015ms
+Step: 698.9074ms
+====================================
+Loop: 207
+  Solve: 83.3772ms
+  SolveCPU: 70.5307ms
+ Island solver: 156.6282ms
+Step: 688.9620ms
+====================================
+Loop: 208
+  Solve: 83.1843ms
+  SolveCPU: 67.3845ms
+ Island solver: 153.3112ms
+Step: 681.7245ms
+====================================
+Loop: 209
+  Solve: 83.7562ms
+  SolveCPU: 66.4883ms
+ Island solver: 153.5077ms
+Step: 691.2650ms
+====================================
+Loop: 210
+  Solve: 85.5486ms
+  SolveCPU: 70.9040ms
+ Island solver: 159.1928ms
+Step: 690.5310ms
+====================================
+Loop: 211
+  Solve: 79.5831ms
+  SolveCPU: 68.4013ms
+ Island solver: 150.7066ms
+Step: 685.9416ms
+====================================
+Loop: 212
+  Solve: 80.6897ms
+  SolveCPU: 69.7243ms
+ Island solver: 153.4415ms
+Step: 691.1567ms
+====================================
+Loop: 213
+  Solve: 79.6440ms
+  SolveCPU: 71.7952ms
+ Island solver: 154.0439ms
+Step: 685.7756ms
+====================================
+Loop: 214
+  Solve: 81.5763ms
+  SolveCPU: 65.8212ms
+ Island solver: 150.1959ms
+Step: 683.1419ms
+====================================
+Loop: 215
+  Solve: 82.3829ms
+  SolveCPU: 68.8922ms
+ Island solver: 154.0481ms
+Step: 684.9760ms
+====================================
+Loop: 216
+  Solve: 82.7598ms
+  SolveCPU: 65.8735ms
+ Island solver: 151.3300ms
+Step: 682.5925ms
+====================================
+Loop: 217
+  Solve: 83.9078ms
+  SolveCPU: 66.1525ms
+ Island solver: 152.7578ms
+Step: 691.6183ms
+====================================
+Loop: 218
+  Solve: 84.6493ms
+  SolveCPU: 67.2001ms
+ Island solver: 154.5666ms
+Step: 679.1441ms
+====================================
+Loop: 219
+  Solve: 80.2740ms
+  SolveCPU: 67.4557ms
+ Island solver: 150.4384ms
+Step: 680.6017ms
+====================================
+Loop: 220
+  Solve: 80.1525ms
+  SolveCPU: 64.5978ms
+ Island solver: 147.3387ms
+Step: 678.2790ms
+====================================
+Loop: 221
+  Solve: 81.5924ms
+  SolveCPU: 71.1598ms
+ Island solver: 155.4585ms
+Step: 685.7678ms
+====================================
+Loop: 222
+  Solve: 80.2611ms
+  SolveCPU: 67.3584ms
+ Island solver: 150.3211ms
+Step: 683.6839ms
+====================================
+Loop: 223
+  Solve: 78.7578ms
+  SolveCPU: 76.9058ms
+ Island solver: 158.3110ms
+Step: 696.8157ms
+====================================
+Loop: 224
+  Solve: 77.2840ms
+  SolveCPU: 67.6958ms
+ Island solver: 147.7863ms
+Step: 682.9590ms
+====================================
+Loop: 225
+  Solve: 77.7873ms
+  SolveCPU: 65.1907ms
+ Island solver: 145.5296ms
+Step: 684.9025ms
+====================================
+Loop: 226
+  Solve: 79.1787ms
+  SolveCPU: 68.6109ms
+ Island solver: 150.9609ms
+Step: 682.1449ms
+====================================
+Loop: 227
+  Solve: 81.1035ms
+  SolveCPU: 65.3058ms
+ Island solver: 148.9615ms
+Step: 677.2300ms
+====================================
+Loop: 228
+  Solve: 78.0311ms
+  SolveCPU: 63.2764ms
+ Island solver: 144.0953ms
+Step: 679.1887ms
+====================================
+Loop: 229
+  Solve: 78.7094ms
+  SolveCPU: 66.1076ms
+ Island solver: 147.4692ms
+Step: 680.1360ms
+====================================
+Loop: 230
+  Solve: 78.9066ms
+  SolveCPU: 64.7107ms
+ Island solver: 146.2406ms
+Step: 684.1085ms
+====================================
+Loop: 231
+  Solve: 77.4893ms
+  SolveCPU: 63.5484ms
+ Island solver: 143.8524ms
+Step: 681.4191ms
+====================================
+Loop: 232
+  Solve: 80.8077ms
+  SolveCPU: 68.6689ms
+ Island solver: 152.0327ms
+Step: 690.1332ms
+====================================
+Loop: 233
+  Solve: 76.3004ms
+  SolveCPU: 63.3508ms
+ Island solver: 142.4325ms
+Step: 681.8442ms
+====================================
+Loop: 234
+  Solve: 75.8113ms
+  SolveCPU: 62.4486ms
+ Island solver: 140.8830ms
+Step: 677.4611ms
+====================================
+Loop: 235
+  Solve: 75.0871ms
+  SolveCPU: 71.2479ms
+ Island solver: 148.8760ms
+Step: 681.0412ms
+====================================
+Loop: 236
+  Solve: 76.6798ms
+  SolveCPU: 63.9343ms
+ Island solver: 143.3794ms
+Step: 684.5937ms
+====================================
+Loop: 237
+  Solve: 73.7228ms
+  SolveCPU: 64.9338ms
+ Island solver: 141.1584ms
+Step: 672.7127ms
+====================================
+Loop: 238
+  Solve: 74.9186ms
+  SolveCPU: 64.4158ms
+ Island solver: 141.8653ms
+Step: 671.7918ms
+====================================
+Loop: 239
+  Solve: 74.0693ms
+  SolveCPU: 63.3406ms
+ Island solver: 140.0775ms
+Step: 670.8757ms
+====================================
+Loop: 240
+  Solve: 73.1508ms
+  SolveCPU: 63.7039ms
+ Island solver: 139.4849ms
+Step: 666.2619ms
+====================================
+Loop: 241
+  Solve: 75.7460ms
+  SolveCPU: 64.0632ms
+ Island solver: 142.4843ms
+Step: 676.3243ms
+====================================
+Loop: 242
+  Solve: 75.5501ms
+  SolveCPU: 62.6758ms
+ Island solver: 140.7763ms
+Step: 674.7048ms
+====================================
+Loop: 243
+  Solve: 73.1204ms
+  SolveCPU: 64.1277ms
+ Island solver: 139.7418ms
+Step: 663.9937ms
+====================================
+Loop: 244
+  Solve: 76.1246ms
+  SolveCPU: 68.9728ms
+ Island solver: 147.9062ms
+Step: 705.2124ms
+====================================
+Loop: 245
+  Solve: 74.3092ms
+  SolveCPU: 72.9451ms
+ Island solver: 150.4722ms
+Step: 718.7651ms
+====================================
+Loop: 246
+  Solve: 73.1804ms
+  SolveCPU: 69.2146ms
+ Island solver: 144.8856ms
+Step: 672.7547ms
+====================================
+Loop: 247
+  Solve: 73.0859ms
+  SolveCPU: 65.6339ms
+ Island solver: 141.3430ms
+Step: 680.0655ms
+====================================
+Loop: 248
+  Solve: 72.7721ms
+  SolveCPU: 68.7448ms
+ Island solver: 144.0184ms
+Step: 678.6539ms
+====================================
+Loop: 249
+  Solve: 71.6966ms
+  SolveCPU: 70.3518ms
+ Island solver: 144.5401ms
+Step: 668.6581ms
+====================================
+Loop: 250
+  Solve: 72.6651ms
+  SolveCPU: 61.8974ms
+ Island solver: 137.1827ms
+Step: 675.2338ms
+====================================
+Loop: 251
+  Solve: 71.2823ms
+  SolveCPU: 64.0520ms
+ Island solver: 137.8239ms
+Step: 682.5336ms
+====================================
+Loop: 252
+  Solve: 71.9276ms
+  SolveCPU: 66.6804ms
+ Island solver: 141.0942ms
+Step: 681.7999ms
+====================================
+Loop: 253
+  Solve: 71.8960ms
+  SolveCPU: 61.0991ms
+ Island solver: 135.4810ms
+Step: 679.7709ms
+====================================
+Loop: 254
+  Solve: 70.4802ms
+  SolveCPU: 64.5944ms
+ Island solver: 137.6710ms
+Step: 705.0712ms
+====================================
+Loop: 255
+  Solve: 71.0962ms
+  SolveCPU: 67.8372ms
+ Island solver: 141.5407ms
+Step: 725.0764ms
+====================================
+Loop: 256
+  Solve: 70.4271ms
+  SolveCPU: 63.9609ms
+ Island solver: 136.9768ms
+Step: 685.2424ms
+====================================
+Loop: 257
+  Solve: 75.0696ms
+  SolveCPU: 77.0560ms
+ Island solver: 154.6018ms
+Step: 785.0733ms
+====================================
+Loop: 258
+  Solve: 72.4605ms
+  SolveCPU: 73.3975ms
+ Island solver: 149.1498ms
+Step: 692.8725ms
+====================================
+Loop: 259
+  Solve: 72.9994ms
+  SolveCPU: 73.1510ms
+ Island solver: 148.9198ms
+Step: 685.7450ms
+====================================
+Loop: 260
+  Solve: 71.8211ms
+  SolveCPU: 60.9943ms
+ Island solver: 135.3970ms
+Step: 679.0670ms
+====================================
+Loop: 261
+  Solve: 71.8319ms
+  SolveCPU: 63.2766ms
+ Island solver: 137.6405ms
+Step: 685.7921ms
+====================================
+Loop: 262
+  Solve: 75.1826ms
+  SolveCPU: 66.8192ms
+ Island solver: 144.6494ms
+Step: 728.5071ms
+====================================
+Loop: 263
+  Solve: 75.2152ms
+  SolveCPU: 76.7769ms
+ Island solver: 154.7142ms
+Step: 789.3049ms
+====================================
+Loop: 264
+  Solve: 73.4222ms
+  SolveCPU: 80.2259ms
+ Island solver: 156.2641ms
+Step: 744.9023ms
+====================================
+Loop: 265
+  Solve: 73.9494ms
+  SolveCPU: 67.8194ms
+ Island solver: 144.3406ms
+Step: 695.3051ms
+====================================
+Loop: 266
+  Solve: 74.4303ms
+  SolveCPU: 64.6006ms
+ Island solver: 141.8391ms
+Step: 677.0180ms
+====================================
+Loop: 267
+  Solve: 72.5552ms
+  SolveCPU: 61.9343ms
+ Island solver: 137.1681ms
+Step: 689.1367ms
+====================================
+Loop: 268
+  Solve: 74.6120ms
+  SolveCPU: 67.0956ms
+ Island solver: 144.3601ms
+Step: 708.5021ms
+====================================
+Loop: 269
+  Solve: 75.2766ms
+  SolveCPU: 71.2619ms
+ Island solver: 149.1836ms
+Step: 733.8364ms
+====================================
+Loop: 270
+  Solve: 76.3678ms
+  SolveCPU: 71.3539ms
+ Island solver: 150.6166ms
+Step: 766.7866ms
+====================================
+Loop: 271
+  Solve: 74.6883ms
+  SolveCPU: 100.8556ms
+ Island solver: 178.2296ms
+Step: 965.1516ms
+====================================
+Loop: 272
+  Solve: 86.3911ms
+  SolveCPU: 94.6081ms
+ Island solver: 183.7272ms
+Step: 963.5292ms
+====================================
+Loop: 273
+  Solve: 74.4552ms
+  SolveCPU: 70.9010ms
+ Island solver: 147.9563ms
+Step: 764.0264ms
+====================================
+Loop: 274
+  Solve: 85.4931ms
+  SolveCPU: 71.9354ms
+ Island solver: 163.0614ms
+Step: 863.1165ms
+====================================
+Loop: 275
+  Solve: 82.0600ms
+  SolveCPU: 78.5656ms
+ Island solver: 164.1631ms
+Step: 998.7994ms
+====================================
+Loop: 276
+  Solve: 76.1972ms
+  SolveCPU: 62.1888ms
+ Island solver: 141.1390ms
+Step: 806.4243ms
+====================================
+Loop: 277
+  Solve: 80.2170ms
+  SolveCPU: 63.9426ms
+ Island solver: 148.8279ms
+Step: 850.4586ms
+====================================
+Loop: 278
+  Solve: 75.8328ms
+  SolveCPU: 61.9145ms
+ Island solver: 141.9359ms
+Step: 758.8181ms
+====================================
+Loop: 279
+  Solve: 76.1946ms
+  SolveCPU: 64.4948ms
+ Island solver: 143.8000ms
+Step: 761.1554ms
+====================================
+Loop: 280
+  Solve: 74.9156ms
+  SolveCPU: 65.0038ms
+ Island solver: 143.9426ms
+Step: 808.5986ms
+====================================
+Loop: 281
+  Solve: 74.1579ms
+  SolveCPU: 73.4190ms
+ Island solver: 150.2104ms
+Step: 738.9622ms
+====================================
+Loop: 282
+  Solve: 74.8014ms
+  SolveCPU: 60.6180ms
+ Island solver: 138.0449ms
+Step: 712.2603ms
+====================================
+Loop: 283
+  Solve: 75.1172ms
+  SolveCPU: 62.5676ms
+ Island solver: 140.3648ms
+Step: 809.7772ms
+====================================
+Loop: 284
+  Solve: 76.1969ms
+  SolveCPU: 83.2005ms
+ Island solver: 161.9813ms
+Step: 823.7207ms
+====================================
+Loop: 285
+  Solve: 80.3033ms
+  SolveCPU: 67.4026ms
+ Island solver: 150.4809ms
+Step: 760.1257ms
+====================================
+Loop: 286
+  Solve: 76.6832ms
+  SolveCPU: 68.3532ms
+ Island solver: 147.6893ms
+Step: 707.8989ms
+====================================
+Loop: 287
+  Solve: 78.4545ms
+  SolveCPU: 65.5806ms
+ Island solver: 146.7316ms
+Step: 751.2952ms
+====================================
+Loop: 288
+  Solve: 78.4752ms
+  SolveCPU: 67.8628ms
+ Island solver: 148.9806ms
+Step: 756.7470ms
+====================================
+Loop: 289
+  Solve: 79.4615ms
+  SolveCPU: 62.6744ms
+ Island solver: 144.7843ms
+Step: 772.9459ms
+====================================
+Loop: 290
+  Solve: 82.2884ms
+  SolveCPU: 79.2224ms
+ Island solver: 164.1390ms
+Step: 763.2151ms
+====================================
+Loop: 291
+  Solve: 81.0089ms
+  SolveCPU: 61.9772ms
+ Island solver: 145.7125ms
+Step: 756.1544ms
+====================================
+Loop: 292
+  Solve: 80.9077ms
+  SolveCPU: 64.8437ms
+ Island solver: 148.5133ms
+Step: 732.0974ms
+====================================
+Loop: 293
+  Solve: 85.4542ms
+  SolveCPU: 63.7749ms
+ Island solver: 151.8851ms
+Step: 761.0737ms
+====================================
+Loop: 294
+  Solve: 80.9218ms
+  SolveCPU: 76.5189ms
+ Island solver: 160.0638ms
+Step: 819.6635ms
+====================================
+Loop: 295
+  Solve: 82.4158ms
+  SolveCPU: 64.0424ms
+ Island solver: 149.4196ms
+Step: 782.1520ms
+====================================
+Loop: 296
+  Solve: 85.5819ms
+  SolveCPU: 95.2166ms
+ Island solver: 183.5621ms
+Step: 870.8535ms
+====================================
+Loop: 297
+  Solve: 82.6345ms
+  SolveCPU: 94.1630ms
+ Island solver: 180.5969ms
+Step: 852.7043ms
+====================================
+Loop: 298
+  Solve: 81.4502ms
+  SolveCPU: 66.9336ms
+ Island solver: 151.1692ms
+Step: 805.5090ms
+====================================
+Loop: 299
+  Solve: 85.3909ms
+  SolveCPU: 77.7387ms
+ Island solver: 166.4445ms
+Step: 816.9197ms
+====================================
+Loop: 300
+  Solve: 86.1530ms
+  SolveCPU: 86.0849ms
+ Island solver: 175.9216ms
+Step: 825.0169ms
+====================================
+Loop: 301
+  Solve: 82.8812ms
+  SolveCPU: 64.5228ms
+ Island solver: 150.2324ms
+Step: 780.8554ms
+====================================
+Loop: 302
+  Solve: 82.8755ms
+  SolveCPU: 72.1562ms
+ Island solver: 157.9247ms
+Step: 766.3805ms
+====================================
+Loop: 303
+  Solve: 86.4946ms
+  SolveCPU: 79.7846ms
+ Island solver: 168.9998ms
+Step: 831.4376ms
+====================================
+Loop: 304
+  Solve: 85.8698ms
+  SolveCPU: 67.3675ms
+ Island solver: 156.2796ms
+Step: 763.3685ms
+====================================
+Loop: 305
+  Solve: 89.4469ms
+  SolveCPU: 88.5088ms
+ Island solver: 180.9341ms
+Step: 829.7255ms
+====================================
+Loop: 306
+  Solve: 87.2342ms
+  SolveCPU: 70.2219ms
+ Island solver: 163.1796ms
+Step: 816.9630ms
+====================================
+Loop: 307
+  Solve: 87.6063ms
+  SolveCPU: 76.2981ms
+ Island solver: 166.8681ms
+Step: 815.3295ms
+====================================
+Loop: 308
+  Solve: 87.1261ms
+  SolveCPU: 71.9411ms
+ Island solver: 162.1571ms
+Step: 785.5366ms
+====================================
+Loop: 309
+  Solve: 88.2353ms
+  SolveCPU: 68.7620ms
+ Island solver: 160.1571ms
+Step: 784.2998ms
+====================================
+Loop: 310
+  Solve: 89.2166ms
+  SolveCPU: 73.1251ms
+ Island solver: 165.2703ms
+Step: 807.2412ms
+====================================
+Loop: 311
+  Solve: 93.3037ms
+  SolveCPU: 89.3210ms
+ Island solver: 185.4364ms
+Step: 863.0512ms
+====================================
+Loop: 312
+  Solve: 91.0816ms
+  SolveCPU: 75.4419ms
+ Island solver: 169.3956ms
+Step: 788.3973ms
+====================================
+Loop: 313
+  Solve: 89.6021ms
+  SolveCPU: 67.8314ms
+ Island solver: 160.3394ms
+Step: 781.3580ms
+====================================
+Loop: 314
+  Solve: 90.4930ms
+  SolveCPU: 68.7341ms
+ Island solver: 162.1289ms
+Step: 789.4401ms
+====================================
+Loop: 315
+  Solve: 91.5042ms
+  SolveCPU: 75.8577ms
+ Island solver: 170.1390ms
+Step: 793.5618ms
+====================================
+Loop: 316
+  Solve: 90.8354ms
+  SolveCPU: 69.5761ms
+ Island solver: 163.3308ms
+Step: 798.1077ms
+====================================
+Loop: 317
+  Solve: 91.1799ms
+  SolveCPU: 77.9486ms
+ Island solver: 172.1245ms
+Step: 804.0636ms
+====================================
+Loop: 318
+  Solve: 90.3681ms
+  SolveCPU: 74.3673ms
+ Island solver: 167.8316ms
+Step: 808.6029ms
+====================================
+Loop: 319
+  Solve: 91.0877ms
+  SolveCPU: 70.5446ms
+ Island solver: 164.4921ms
+Step: 804.9492ms
+====================================
+Loop: 320
+  Solve: 92.0167ms
+  SolveCPU: 72.9326ms
+ Island solver: 167.7802ms
+Step: 814.5759ms
+====================================
+Loop: 321
+  Solve: 93.5416ms
+  SolveCPU: 70.3078ms
+ Island solver: 167.5879ms
+Step: 810.0256ms
+====================================
+Loop: 322
+  Solve: 92.4248ms
+  SolveCPU: 79.8680ms
+ Island solver: 175.3349ms
+Step: 824.7761ms
+====================================
+Loop: 323
+  Solve: 93.4156ms
+  SolveCPU: 72.8684ms
+ Island solver: 169.4688ms
+Step: 818.0427ms
+====================================
+Loop: 324
+  Solve: 94.1474ms
+  SolveCPU: 82.4470ms
+ Island solver: 179.6306ms
+Step: 824.9555ms
+====================================
+Loop: 325
+  Solve: 94.4486ms
+  SolveCPU: 82.3255ms
+ Island solver: 179.7891ms
+Step: 821.8576ms
+====================================
+Loop: 326
+  Solve: 95.3043ms
+  SolveCPU: 73.1929ms
+ Island solver: 171.7297ms
+Step: 823.5350ms
+====================================
+Loop: 327
+  Solve: 95.7764ms
+  SolveCPU: 73.4326ms
+ Island solver: 172.1779ms
+Step: 827.1149ms
+====================================
+Loop: 328
+  Solve: 95.7027ms
+  SolveCPU: 86.0077ms
+ Island solver: 184.6799ms
+Step: 835.1360ms
+====================================
+Loop: 329
+  Solve: 96.3745ms
+  SolveCPU: 72.6487ms
+ Island solver: 171.9083ms
+Step: 830.1459ms
+====================================
+Loop: 330
+  Solve: 97.4710ms
+  SolveCPU: 81.7151ms
+ Island solver: 182.1486ms
+Step: 834.5754ms
+====================================
+Loop: 331
+  Solve: 98.0544ms
+  SolveCPU: 90.3597ms
+ Island solver: 191.3543ms
+Step: 842.9695ms
+====================================
+Loop: 332
+  Solve: 96.9388ms
+  SolveCPU: 75.0125ms
+ Island solver: 174.9308ms
+Step: 839.9963ms
+====================================
+Loop: 333
+  Solve: 97.6917ms
+  SolveCPU: 72.2166ms
+ Island solver: 172.8835ms
+Step: 824.3755ms
+====================================
+Loop: 334
+  Solve: 100.3157ms
+  SolveCPU: 83.0149ms
+ Island solver: 186.2246ms
+Step: 833.7758ms
+====================================
+Loop: 335
+  Solve: 100.7592ms
+  SolveCPU: 73.3765ms
+ Island solver: 177.0183ms
+Step: 841.2097ms
+====================================
+Loop: 336
+  Solve: 97.7015ms
+  SolveCPU: 83.9371ms
+ Island solver: 184.6422ms
+Step: 860.0068ms
+====================================
+Loop: 337
+  Solve: 98.4542ms
+  SolveCPU: 82.9087ms
+ Island solver: 184.3064ms
+Step: 853.4788ms
+====================================
+Loop: 338
+  Solve: 98.6927ms
+  SolveCPU: 78.1554ms
+ Island solver: 179.7599ms
+Step: 851.3072ms
+====================================
+Loop: 339
+  Solve: 100.5072ms
+  SolveCPU: 89.6311ms
+ Island solver: 193.1940ms
+Step: 877.3790ms
+====================================
+Loop: 340
+  Solve: 99.0752ms
+  SolveCPU: 79.1217ms
+ Island solver: 181.2997ms
+Step: 836.3044ms
+====================================
+Loop: 341
+  Solve: 102.4969ms
+  SolveCPU: 81.7548ms
+ Island solver: 187.3739ms
+Step: 849.4433ms
+====================================
+Loop: 342
+  Solve: 98.1365ms
+  SolveCPU: 80.1140ms
+ Island solver: 181.3853ms
+Step: 848.1917ms
+====================================
+Loop: 343
+  Solve: 97.5739ms
+  SolveCPU: 82.7295ms
+ Island solver: 183.4077ms
+Step: 840.4846ms
+====================================
+Loop: 344
+  Solve: 100.0366ms
+  SolveCPU: 82.8069ms
+ Island solver: 185.8537ms
+Step: 845.5447ms
+====================================
+Loop: 345
+  Solve: 112.8216ms
+  SolveCPU: 101.1377ms
+ Island solver: 216.8792ms
+Step: 896.5794ms
+====================================
+Loop: 346
+  Solve: 98.3887ms
+  SolveCPU: 77.7106ms
+ Island solver: 179.2411ms
+Step: 855.0754ms
+====================================
+Loop: 347
+  Solve: 100.3804ms
+  SolveCPU: 99.9973ms
+ Island solver: 203.8331ms
+Step: 914.8235ms
+====================================
+Loop: 348
+  Solve: 98.7653ms
+  SolveCPU: 101.3625ms
+ Island solver: 203.8776ms
+Step: 933.6269ms
+====================================
+Loop: 349
+  Solve: 101.0209ms
+  SolveCPU: 77.8786ms
+ Island solver: 182.0627ms
+Step: 857.8233ms
+====================================
+Loop: 350
+  Solve: 99.9474ms
+  SolveCPU: 79.2881ms
+ Island solver: 182.4203ms
+Step: 846.3246ms
+====================================
+Loop: 351
+  Solve: 99.0371ms
+  SolveCPU: 84.1564ms
+ Island solver: 186.3855ms
+Step: 840.1409ms
+====================================
+Loop: 352
+  Solve: 100.9547ms
+  SolveCPU: 80.5271ms
+ Island solver: 184.9733ms
+Step: 848.0165ms
+====================================
+Loop: 353
+  Solve: 99.4983ms
+  SolveCPU: 75.5445ms
+ Island solver: 178.2600ms
+Step: 840.3386ms
+====================================
+Loop: 354
+  Solve: 99.3995ms
+  SolveCPU: 75.4601ms
+ Island solver: 178.0320ms
+Step: 834.5255ms
+====================================
+Loop: 355
+  Solve: 100.8744ms
+  SolveCPU: 85.7635ms
+ Island solver: 189.8134ms
+Step: 843.3190ms
+====================================
+Loop: 356
+  Solve: 99.7105ms
+  SolveCPU: 74.7001ms
+ Island solver: 177.4171ms
+Step: 843.0400ms
+====================================
+Loop: 357
+  Solve: 101.1032ms
+  SolveCPU: 79.0671ms
+ Island solver: 183.4470ms
+Step: 849.8986ms
+====================================
+Loop: 358
+  Solve: 99.9380ms
+  SolveCPU: 85.5154ms
+ Island solver: 188.6756ms
+Step: 859.2153ms
+====================================
+Loop: 359
+  Solve: 100.7920ms
+  SolveCPU: 97.7258ms
+ Island solver: 201.6737ms
+Step: 870.8009ms
+====================================
+Loop: 360
+  Solve: 101.6177ms
+  SolveCPU: 90.2506ms
+ Island solver: 195.9774ms
+Step: 867.1367ms
+====================================
+Loop: 361
+  Solve: 97.2870ms
+  SolveCPU: 75.0750ms
+ Island solver: 175.5544ms
+Step: 839.5375ms
+====================================
+Loop: 362
+  Solve: 101.1659ms
+  SolveCPU: 81.6189ms
+ Island solver: 185.9484ms
+Step: 847.6271ms
+====================================
+Loop: 363
+  Solve: 98.9009ms
+  SolveCPU: 74.9474ms
+ Island solver: 176.9630ms
+Step: 847.0474ms
+====================================
+Loop: 364
+  Solve: 99.3233ms
+  SolveCPU: 89.9661ms
+ Island solver: 192.5499ms
+Step: 855.3152ms
+====================================
+Loop: 365
+  Solve: 98.3035ms
+  SolveCPU: 87.9437ms
+ Island solver: 189.2521ms
+Step: 844.5067ms
+====================================
+Loop: 366
+  Solve: 98.3821ms
+  SolveCPU: 85.9861ms
+ Island solver: 187.5620ms
+Step: 856.3812ms
+====================================
+Loop: 367
+  Solve: 99.2345ms
+  SolveCPU: 77.5280ms
+ Island solver: 179.9296ms
+Step: 850.8823ms
+====================================
+Loop: 368
+  Solve: 96.6609ms
+  SolveCPU: 83.5762ms
+ Island solver: 183.4551ms
+Step: 841.8099ms
+====================================
+Loop: 369
+  Solve: 98.7837ms
+  SolveCPU: 77.7514ms
+ Island solver: 179.6507ms
+Step: 840.1122ms
+====================================
+Loop: 370
+  Solve: 98.5973ms
+  SolveCPU: 75.5534ms
+ Island solver: 177.5140ms
+Step: 842.1288ms
+====================================
+Loop: 371
+  Solve: 100.2370ms
+  SolveCPU: 84.5077ms
+ Island solver: 188.0852ms
+Step: 847.7042ms
+====================================
+Loop: 372
+  Solve: 97.9283ms
+  SolveCPU: 78.3796ms
+ Island solver: 179.3288ms
+Step: 838.1707ms
+====================================
+Loop: 373
+  Solve: 98.2801ms
+  SolveCPU: 77.5073ms
+ Island solver: 178.9233ms
+Step: 837.8013ms
+====================================
+Loop: 374
+  Solve: 99.1555ms
+  SolveCPU: 81.8222ms
+ Island solver: 184.0422ms
+Step: 838.9971ms
+====================================
+Loop: 375
+  Solve: 98.8638ms
+  SolveCPU: 78.2276ms
+ Island solver: 180.1168ms
+Step: 839.6357ms
+====================================
+Loop: 376
+  Solve: 100.2165ms
+  SolveCPU: 78.7132ms
+ Island solver: 181.9413ms
+Step: 857.7460ms
+====================================
+Loop: 377
+  Solve: 100.7679ms
+  SolveCPU: 96.3284ms
+ Island solver: 200.9788ms
+Step: 891.8691ms
+====================================
+Loop: 378
+  Solve: 99.0769ms
+  SolveCPU: 84.9899ms
+ Island solver: 187.2889ms
+Step: 835.1946ms
+====================================
+Loop: 379
+  Solve: 99.6247ms
+  SolveCPU: 76.2151ms
+ Island solver: 178.9478ms
+Step: 834.9455ms
+====================================
+Loop: 380
+  Solve: 99.9208ms
+  SolveCPU: 90.6544ms
+ Island solver: 193.7584ms
+Step: 862.7617ms
+====================================
+Loop: 381
+  Solve: 98.1620ms
+  SolveCPU: 89.7531ms
+ Island solver: 191.2325ms
+Step: 836.0283ms
+====================================
+Loop: 382
+  Solve: 98.8278ms
+  SolveCPU: 87.8725ms
+ Island solver: 189.7380ms
+Step: 848.3097ms
+====================================
+Loop: 383
+  Solve: 97.6062ms
+  SolveCPU: 76.7610ms
+ Island solver: 177.5181ms
+Step: 840.6486ms
+====================================
+Loop: 384
+  Solve: 97.7110ms
+  SolveCPU: 86.2827ms
+ Island solver: 187.1911ms
+Step: 828.5013ms
+====================================
+Loop: 385
+  Solve: 97.1080ms
+  SolveCPU: 75.1200ms
+ Island solver: 175.2496ms
+Step: 821.9318ms
+====================================
+Loop: 386
+  Solve: 99.5171ms
+  SolveCPU: 75.4702ms
+ Island solver: 178.1298ms
+Step: 817.2675ms
+====================================
+Loop: 387
+  Solve: 97.6153ms
+  SolveCPU: 84.1025ms
+ Island solver: 184.8944ms
+Step: 825.2252ms
+====================================
+Loop: 388
+  Solve: 97.5800ms
+  SolveCPU: 74.1207ms
+ Island solver: 174.7102ms
+Step: 822.6181ms
+====================================
+Loop: 389
+  Solve: 96.7216ms
+  SolveCPU: 79.2781ms
+ Island solver: 179.1903ms
+Step: 821.6868ms
+====================================
+Loop: 390
+  Solve: 99.0495ms
+  SolveCPU: 78.6690ms
+ Island solver: 180.9908ms
+Step: 817.0541ms
+====================================
+Loop: 391
+  Solve: 96.6941ms
+  SolveCPU: 74.5850ms
+ Island solver: 174.4076ms
+Step: 818.3763ms
+====================================
+Loop: 392
+  Solve: 97.1604ms
+  SolveCPU: 74.5818ms
+ Island solver: 174.9348ms
+Step: 806.2471ms
+====================================
+Loop: 393
+  Solve: 97.0276ms
+  SolveCPU: 77.7913ms
+ Island solver: 177.7977ms
+Step: 816.3565ms
+====================================
+Loop: 394
+  Solve: 98.5572ms
+  SolveCPU: 74.2660ms
+ Island solver: 175.9732ms
+Step: 819.4176ms
+====================================
+Loop: 395
+  Solve: 97.7128ms
+  SolveCPU: 90.3814ms
+ Island solver: 191.3315ms
+Step: 823.2463ms
+====================================
+Loop: 396
+  Solve: 95.3826ms
+  SolveCPU: 73.7506ms
+ Island solver: 172.3710ms
+Step: 815.8412ms
+====================================
+Loop: 397
+  Solve: 97.4753ms
+  SolveCPU: 74.8965ms
+ Island solver: 175.6367ms
+Step: 807.5800ms
+====================================
+Loop: 398
+  Solve: 97.4491ms
+  SolveCPU: 81.9952ms
+ Island solver: 182.5323ms
+Step: 822.0754ms
+====================================
+Loop: 399
+  Solve: 96.1719ms
+  SolveCPU: 75.3909ms
+ Island solver: 174.6988ms
+Step: 815.5345ms
+====================================
+Loop: 400
+  Solve: 98.6821ms
+  SolveCPU: 75.3673ms
+ Island solver: 177.2168ms
+Step: 811.9605ms
+====================================
+Loop: 401
+  Solve: 96.1633ms
+  SolveCPU: 77.3957ms
+ Island solver: 177.4258ms
+Step: 801.9713ms
+====================================
+Loop: 402
+  Solve: 96.9416ms
+  SolveCPU: 74.7052ms
+ Island solver: 174.7877ms
+Step: 812.9905ms
+====================================
+Loop: 403
+  Solve: 97.3698ms
+  SolveCPU: 87.3295ms
+ Island solver: 187.8228ms
+Step: 808.9965ms
+====================================
+Loop: 404
+  Solve: 96.8771ms
+  SolveCPU: 73.8672ms
+ Island solver: 173.9218ms
+Step: 809.3606ms
+====================================
+Loop: 405
+  Solve: 97.5770ms
+  SolveCPU: 74.3459ms
+ Island solver: 175.1515ms
+Step: 801.2610ms
+====================================
+Loop: 406
+  Solve: 99.2582ms
+  SolveCPU: 76.8144ms
+ Island solver: 179.0558ms
+Step: 797.7440ms
+====================================
+Loop: 407
+  Solve: 96.5341ms
+  SolveCPU: 73.5793ms
+ Island solver: 173.2483ms
+Step: 798.4857ms
+====================================
+Loop: 408
+  Solve: 97.4576ms
+  SolveCPU: 86.6923ms
+ Island solver: 187.2591ms
+Step: 801.2916ms
+====================================
+Loop: 409
+  Solve: 96.9984ms
+  SolveCPU: 72.3028ms
+ Island solver: 172.4630ms
+Step: 796.4745ms
+====================================
+Loop: 410
+  Solve: 95.3144ms
+  SolveCPU: 73.7916ms
+ Island solver: 172.1923ms
+Step: 790.1844ms
+====================================
+Loop: 411
+  Solve: 95.2312ms
+  SolveCPU: 78.1117ms
+ Island solver: 176.2881ms
+Step: 791.7577ms
+====================================
+Loop: 412
+  Solve: 97.4103ms
+  SolveCPU: 73.7642ms
+ Island solver: 174.2712ms
+Step: 784.9595ms
+====================================
+Loop: 413
+  Solve: 96.1739ms
+  SolveCPU: 79.6548ms
+ Island solver: 178.9101ms
+Step: 803.3782ms
+====================================
+Loop: 414
+  Solve: 96.0683ms
+  SolveCPU: 72.2090ms
+ Island solver: 171.2494ms
+Step: 800.1545ms
+====================================
+Loop: 415
+  Solve: 96.0418ms
+  SolveCPU: 73.9287ms
+ Island solver: 173.0540ms
+Step: 783.9427ms
+====================================
+Loop: 416
+  Solve: 94.6239ms
+  SolveCPU: 72.5639ms
+ Island solver: 170.4503ms
+Step: 774.4030ms
+====================================
+Loop: 417
+  Solve: 92.7447ms
+  SolveCPU: 70.9972ms
+ Island solver: 166.8276ms
+Step: 763.1078ms
+====================================
+Loop: 418
+  Solve: 92.2267ms
+  SolveCPU: 76.3999ms
+ Island solver: 171.9566ms
+Step: 762.8044ms
+====================================
+Loop: 419
+  Solve: 92.8735ms
+  SolveCPU: 71.0342ms
+ Island solver: 167.0018ms
+Step: 757.4767ms
+====================================
+Loop: 420
+  Solve: 93.8586ms
+  SolveCPU: 72.6796ms
+ Island solver: 169.4443ms
+Step: 756.2484ms
+====================================
+Loop: 421
+  Solve: 91.4702ms
+  SolveCPU: 70.9428ms
+ Island solver: 165.4538ms
+Step: 751.5233ms
+====================================
+Loop: 422
+  Solve: 90.5589ms
+  SolveCPU: 71.0449ms
+ Island solver: 164.5812ms
+Step: 739.8670ms
+====================================
+Loop: 423
+  Solve: 89.2587ms
+  SolveCPU: 69.9701ms
+ Island solver: 162.5341ms
+Step: 742.2188ms
+====================================
+Loop: 424
+  Solve: 92.7242ms
+  SolveCPU: 69.8794ms
+ Island solver: 165.5158ms
+Step: 739.1510ms
+====================================
+Loop: 425
+  Solve: 90.9640ms
+  SolveCPU: 68.9760ms
+ Island solver: 162.9518ms
+Step: 732.9189ms
+====================================
+Loop: 426
+  Solve: 87.7743ms
+  SolveCPU: 67.6110ms
+ Island solver: 158.3815ms
+Step: 731.9508ms
+====================================
+Loop: 427
+  Solve: 88.4532ms
+  SolveCPU: 67.4487ms
+ Island solver: 159.2771ms
+Step: 730.7983ms
+====================================
+Loop: 428
+  Solve: 87.9827ms
+  SolveCPU: 68.0055ms
+ Island solver: 158.8316ms
+Step: 738.8000ms
+====================================
+Loop: 429
+  Solve: 86.9121ms
+  SolveCPU: 77.7128ms
+ Island solver: 167.6240ms
+Step: 722.4510ms
+====================================
+Loop: 430
+  Solve: 86.0730ms
+  SolveCPU: 67.9900ms
+ Island solver: 157.0418ms
+Step: 720.6161ms
+====================================
+Loop: 431
+  Solve: 88.6821ms
+  SolveCPU: 72.0464ms
+ Island solver: 163.6891ms
+Step: 719.4667ms
+====================================
+Loop: 432
+  Solve: 87.3936ms
+  SolveCPU: 66.9789ms
+ Island solver: 157.7122ms
+Step: 713.0510ms
+====================================
+Loop: 433
+  Solve: 88.2775ms
+  SolveCPU: 69.7922ms
+ Island solver: 161.0427ms
+Step: 759.5753ms
+====================================
+Loop: 434
+  Solve: 86.0546ms
+  SolveCPU: 70.5820ms
+ Island solver: 159.6340ms
+Step: 719.6122ms
+====================================
+Loop: 435
+  Solve: 87.8639ms
+  SolveCPU: 74.9901ms
+ Island solver: 166.1111ms
+Step: 753.9431ms
+====================================
+Loop: 436
+  Solve: 85.2360ms
+  SolveCPU: 80.9581ms
+ Island solver: 169.0566ms
+Step: 764.2520ms
+====================================
+Loop: 437
+  Solve: 86.9365ms
+  SolveCPU: 72.3341ms
+ Island solver: 162.2012ms
+Step: 742.3595ms
+====================================
+Loop: 438
+  Solve: 85.8854ms
+  SolveCPU: 64.3228ms
+ Island solver: 153.3143ms
+Step: 699.0397ms
+====================================
+Loop: 439
+  Solve: 85.1178ms
+  SolveCPU: 64.7158ms
+ Island solver: 152.7747ms
+Step: 701.5148ms
+====================================
+Loop: 440
+  Solve: 84.8402ms
+  SolveCPU: 76.9262ms
+ Island solver: 164.7037ms
+Step: 700.1870ms
+====================================
+Loop: 441
+  Solve: 84.6066ms
+  SolveCPU: 69.5344ms
+ Island solver: 157.0456ms
+Step: 696.1525ms
+====================================
+Loop: 442
+  Solve: 85.8483ms
+  SolveCPU: 67.4947ms
+ Island solver: 156.1512ms
+Step: 694.7065ms
+====================================
+Loop: 443
+  Solve: 83.9052ms
+  SolveCPU: 64.6015ms
+ Island solver: 151.5489ms
+Step: 678.3859ms
+====================================
+Loop: 444
+  Solve: 83.5302ms
+  SolveCPU: 63.4817ms
+ Island solver: 150.1714ms
+Step: 679.3530ms
+====================================
+Loop: 445
+  Solve: 86.1942ms
+  SolveCPU: 66.3401ms
+ Island solver: 155.4494ms
+Step: 670.6048ms
+====================================
+Loop: 446
+  Solve: 82.8492ms
+  SolveCPU: 65.0763ms
+ Island solver: 150.8071ms
+Step: 672.2641ms
+====================================
+Loop: 447
+  Solve: 82.4500ms
+  SolveCPU: 61.7310ms
+ Island solver: 147.2746ms
+Step: 672.5314ms
+====================================
+Loop: 448
+  Solve: 84.5312ms
+  SolveCPU: 70.8761ms
+ Island solver: 158.2828ms
+Step: 667.7078ms
+====================================
+Loop: 449
+  Solve: 82.0250ms
+  SolveCPU: 61.6908ms
+ Island solver: 146.5946ms
+Step: 658.5504ms
+====================================
+Loop: 450
+  Solve: 82.0799ms
+  SolveCPU: 67.7733ms
+ Island solver: 152.8292ms
+Step: 673.4870ms
+====================================
+Loop: 451
+  Solve: 85.4151ms
+  SolveCPU: 67.4200ms
+ Island solver: 155.5422ms
+Step: 657.7153ms
+====================================
+Loop: 452
+  Solve: 81.3969ms
+  SolveCPU: 61.7123ms
+ Island solver: 146.1796ms
+Step: 651.9319ms
+====================================
+Loop: 453
+  Solve: 80.7785ms
+  SolveCPU: 60.5176ms
+ Island solver: 144.1855ms
+Step: 659.1378ms
+====================================
+Loop: 454
+  Solve: 80.3643ms
+  SolveCPU: 62.8766ms
+ Island solver: 145.9747ms
+Step: 641.1760ms
+====================================
+Loop: 455
+  Solve: 82.5646ms
+  SolveCPU: 63.3242ms
+ Island solver: 148.7931ms
+Step: 662.2031ms
+====================================
+Loop: 456
+  Solve: 81.9151ms
+  SolveCPU: 74.9833ms
+ Island solver: 159.7814ms
+Step: 663.2975ms
+====================================
+Loop: 457
+  Solve: 81.0369ms
+  SolveCPU: 62.1669ms
+ Island solver: 146.3531ms
+Step: 653.2165ms
+====================================
+Loop: 458
+  Solve: 82.0624ms
+  SolveCPU: 69.8156ms
+ Island solver: 154.7239ms
+Step: 665.1145ms
+====================================
+Loop: 459
+  Solve: 80.5885ms
+  SolveCPU: 62.8440ms
+ Island solver: 146.2339ms
+Step: 636.3025ms
+====================================
+Loop: 460
+  Solve: 80.0914ms
+  SolveCPU: 66.3626ms
+ Island solver: 149.2673ms
+Step: 652.3293ms
+====================================
+Loop: 461
+  Solve: 83.0496ms
+  SolveCPU: 60.8826ms
+ Island solver: 146.8039ms
+Step: 629.4137ms
+====================================
+Loop: 462
+  Solve: 80.3454ms
+  SolveCPU: 59.7526ms
+ Island solver: 142.9197ms
+Step: 631.0418ms
+====================================
+Loop: 463
+  Solve: 79.7056ms
+  SolveCPU: 58.9585ms
+ Island solver: 141.6128ms
+Step: 633.9958ms
+====================================
+Loop: 464
+  Solve: 82.8547ms
+  SolveCPU: 58.6405ms
+ Island solver: 145.1697ms
+Step: 649.2710ms
+====================================
+Loop: 465
+  Solve: 80.0303ms
+  SolveCPU: 70.7672ms
+ Island solver: 153.7330ms
+Step: 667.3653ms
+====================================
+Loop: 466
+  Solve: 82.7768ms
+  SolveCPU: 60.4335ms
+ Island solver: 146.0407ms
+Step: 625.6837ms
+====================================
+Loop: 467
+  Solve: 79.0034ms
+  SolveCPU: 58.2568ms
+ Island solver: 140.1347ms
+Step: 632.2542ms
+====================================
+Loop: 468
+  Solve: 82.5499ms
+  SolveCPU: 64.6145ms
+ Island solver: 150.0651ms
+Step: 623.7184ms
+====================================
+Loop: 469
+  Solve: 78.5535ms
+  SolveCPU: 67.2073ms
+ Island solver: 148.6093ms
+Step: 618.0982ms
+====================================
+Loop: 470
+  Solve: 79.8303ms
+  SolveCPU: 57.4995ms
+ Island solver: 140.2481ms
+Step: 615.2467ms
+====================================
+Loop: 471
+  Solve: 79.3920ms
+  SolveCPU: 56.8246ms
+ Island solver: 139.0916ms
+Step: 615.9926ms
+====================================
+Loop: 472
+  Solve: 79.3044ms
+  SolveCPU: 56.5876ms
+ Island solver: 138.7138ms
+Step: 609.2379ms
+====================================
+Loop: 473
+  Solve: 80.7197ms
+  SolveCPU: 64.5994ms
+ Island solver: 148.2194ms
+Step: 618.0440ms
+====================================
+Loop: 474
+  Solve: 77.6409ms
+  SolveCPU: 56.4344ms
+ Island solver: 136.8825ms
+Step: 601.3973ms
+====================================
+Loop: 475
+  Solve: 77.3027ms
+  SolveCPU: 57.1585ms
+ Island solver: 137.2993ms
+Step: 604.7664ms
+====================================
+Loop: 476
+  Solve: 76.0989ms
+  SolveCPU: 57.3880ms
+ Island solver: 136.4158ms
+Step: 605.2155ms
+====================================
+Loop: 477
+  Solve: 82.8881ms
+  SolveCPU: 69.0965ms
+ Island solver: 155.2613ms
+Step: 669.7924ms
+====================================
+Loop: 478
+  Solve: 78.4416ms
+  SolveCPU: 63.5463ms
+ Island solver: 144.7811ms
+Step: 667.7378ms
+====================================
+Loop: 479
+  Solve: 81.8659ms
+  SolveCPU: 74.1912ms
+ Island solver: 159.2123ms
+Step: 680.5481ms
+====================================
+Loop: 480
+  Solve: 80.4567ms
+  SolveCPU: 62.3716ms
+ Island solver: 145.6284ms
+Step: 648.5165ms
+====================================
+Loop: 481
+  Solve: 78.9077ms
+  SolveCPU: 55.4976ms
+ Island solver: 137.2106ms
+Step: 598.0418ms
+====================================
+Loop: 482
+  Solve: 78.5130ms
+  SolveCPU: 56.0977ms
+ Island solver: 137.5215ms
+Step: 595.5903ms
+====================================
+Loop: 483
+  Solve: 77.2860ms
+  SolveCPU: 53.9454ms
+ Island solver: 134.1563ms
+Step: 597.0513ms
+====================================
+Loop: 484
+  Solve: 80.6704ms
+  SolveCPU: 67.8679ms
+ Island solver: 151.1981ms
+Step: 669.1539ms
+====================================
+Loop: 485
+  Solve: 78.8106ms
+  SolveCPU: 67.6724ms
+ Island solver: 149.2892ms
+Step: 605.6069ms
+====================================
+Loop: 486
+  Solve: 80.1954ms
+  SolveCPU: 74.6129ms
+ Island solver: 157.4819ms
+Step: 636.1471ms
+====================================
+Loop: 487
+  Solve: 81.0577ms
+  SolveCPU: 73.4896ms
+ Island solver: 157.3132ms
+Step: 646.2435ms
+====================================
+Loop: 488
+  Solve: 83.0914ms
+  SolveCPU: 70.3282ms
+ Island solver: 156.2530ms
+Step: 638.4663ms
+====================================
+Loop: 489
+  Solve: 79.1974ms
+  SolveCPU: 73.1959ms
+ Island solver: 155.2761ms
+Step: 634.6588ms
+====================================
+Loop: 490
+  Solve: 76.7003ms
+  SolveCPU: 53.8804ms
+ Island solver: 133.3522ms
+Step: 581.5848ms
+====================================
+Loop: 491
+  Solve: 79.3164ms
+  SolveCPU: 55.6606ms
+ Island solver: 137.7777ms
+Step: 591.8008ms
+====================================
+Loop: 492
+  Solve: 77.8366ms
+  SolveCPU: 54.1338ms
+ Island solver: 134.8468ms
+Step: 580.1149ms
+====================================
+Loop: 493
+  Solve: 80.1571ms
+  SolveCPU: 56.2333ms
+ Island solver: 139.2510ms
+Step: 575.6759ms
+====================================
+Loop: 494
+  Solve: 77.4396ms
+  SolveCPU: 53.0815ms
+ Island solver: 133.1583ms
+Step: 565.2505ms
+====================================
+Loop: 495
+  Solve: 76.8902ms
+  SolveCPU: 60.8879ms
+ Island solver: 140.5235ms
+Step: 575.9674ms
+====================================
+Loop: 496
+  Solve: 75.1278ms
+  SolveCPU: 52.7802ms
+ Island solver: 130.5970ms
+Step: 566.1505ms
+====================================
+Loop: 497
+  Solve: 75.9664ms
+  SolveCPU: 52.9345ms
+ Island solver: 131.5417ms
+Step: 568.0139ms
+====================================
+Loop: 498
+  Solve: 75.8994ms
+  SolveCPU: 52.5431ms
+ Island solver: 131.1941ms
+Step: 567.7449ms
+====================================
+Loop: 499
+  Solve: 76.3675ms
+  SolveCPU: 52.8067ms
+ Island solver: 131.8707ms
+Step: 565.0937ms
+====================================
+Loop: 500
+  Solve: 76.7987ms
+  SolveCPU: 53.5490ms
+ Island solver: 133.0516ms
+Step: 561.0496ms
+====================================
