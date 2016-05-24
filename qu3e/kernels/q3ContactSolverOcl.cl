@@ -153,21 +153,22 @@ kernel void preSolve
   q3VelocityStateOcl A = m_velocities[ cs->indexA ];
   q3VelocityStateOcl B = m_velocities[ cs->indexB ];
 
+  q3Vec3 normal = cs->normal;
+  r32 cs_mA = cs->mA;
+  r32 cs_mB = cs->mB;
+  q3Mat3 cs_iA = cs->iA;
+  q3Mat3 cs_iB = cs->iB;
+  q3Vec3 tangentVectors[2];
+
+  tangentVectors[0] = cs->tangentVectors[0];
+  tangentVectors[1] = cs->tangentVectors[1];
+
   for(uint i = 0; i < plan.y; ++i) {
     global q3ContactStateOcl *c = c_ + i;
 
     // Preload values
     q3Vec3 ra = c->ra;
     q3Vec3 rb = c->rb;
-    q3Vec3 normal = cs->normal;
-    r32 cs_mA = cs->mA;
-    r32 cs_mB = cs->mB;
-    q3Mat3 cs_iA = cs->iA;
-    q3Mat3 cs_iB = cs->iB;
-    q3Vec3 tangentVectors[2];
-
-    tangentVectors[0] = cs->tangentVectors[0];
-    tangentVectors[1] = cs->tangentVectors[1];
 
     // Precalculate JM^-1JT for contact and friction constraints
     q3Vec3 raCn = q3Cross( ra, normal );
@@ -246,17 +247,17 @@ kernel void solve
   q3VelocityStateOcl A = m_velocities[ cs->indexA ];
   q3VelocityStateOcl B = m_velocities[ cs->indexB ];
 
+  r32 cs_mA = cs->mA;
+  r32 cs_mB = cs->mB;
+  q3Mat3 cs_iA = cs->iA;
+  q3Mat3 cs_iB = cs->iB;
+  q3Vec3 cs_normal = cs->normal;
+
   for(uint i = 0; i < plan.y; ++i) {
     global q3ContactStateOcl *c = c_ + i;
 
     r32 c_normalImpulse = c->normalImpulse;
-    r32 cs_mA = cs->mA;
-    r32 cs_mB = cs->mB;
 
-    q3Mat3 cs_iA = cs->iA;
-    q3Mat3 cs_iB = cs->iB;
-
-    q3Vec3 cs_normal = cs->normal;
     q3Vec3 c_ra = c->ra;
     q3Vec3 c_rb = c->rb;
 
