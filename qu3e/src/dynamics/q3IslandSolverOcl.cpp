@@ -283,7 +283,7 @@ void q3IslandSolverOcl::Solve( q3Scene *scene ) {
     clErr = m_clQueue.enqueueUnmapMemObject(clBufferIndicies, indicies);
     CHECK_CL_ERROR(clErr, "Unmap indicies");
 
-    cl::Buffer clBufferBody = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data(), &clErr);
+    cl::Buffer clBufferBody = cl::Buffer(*m_clContext, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(q3Body) * m_container->m_bodies.size(), m_container->m_bodies.data(), &clErr);
     CHECK_CL_ERROR(clErr, "Buffer q3Body");
 
     m_clBufferVelocity = new cl::Buffer(*m_clContext, CL_MEM_READ_WRITE, sizeof(q3VelocityStateOcl) * m_bodyCount, NULL, &clErr);
